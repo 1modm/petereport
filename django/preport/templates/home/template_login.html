@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+      {% block meta %}
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+      {% endblock meta %}
+
+      <title>PeTeReport | {% block title %}{% endblock %}</title>
+
+      <link rel="shortcut icon" href="/static/favicon.ico" />
+
+      {% block stylesheets %}
+      
+      <!-- Google Font: Source Sans Pro -->
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+      <!-- Font Awesome -->
+      <link rel="stylesheet" href="/static/plugins/fontawesome-free/css/all.min.css">
+      <!-- Theme style -->
+      <link rel="stylesheet" href="/static/dist/css/adminlte.min.css">
+
+      {% endblock stylesheets %}
+
+    {% endblock head %}
+    {% load static %}
+
+</head>
+
+
+<body class="hold-transition login-page">
+
+{% block body %}
+
+<div class="wrapper">
+
+
+      {% block top_navigation %}
+          {% include "home/top_navigation.html" %}
+      {% endblock top_navigation %}
+
+      {% block aside_navigation %}
+          {% include "home/aside.html" %}
+      {% endblock aside_navigation %}
+
+      
+      <div class="content-wrapper">
+          {% block content %}
+            <!-- {{ content }} -->
+          {% endblock content %}
+      </div>
+
+
+      {% block footer %}
+        <footer>
+          {% include "home/footer.html" %}
+        </footer>
+      {% endblock footer %}
+
+
+</div>
+<!-- ./wrapper -->
+
+
+
+{% block javascripts %}
+
+<!-- jQuery -->
+<script src="/static//plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/static//plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/static//dist/js/adminlte.min.js"></script>
+
+{% endblock javascripts%}
+
+{% endblock body %}
+</body>
+</html>

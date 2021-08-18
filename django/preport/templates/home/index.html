@@ -1,0 +1,265 @@
+{% extends "home/template.html" %}
+
+{% load martortags %}
+
+{% block title %} Dashboard {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+
+{% block content %}
+
+    <br>
+
+    <section class="content">
+      <div class="container-fluid">
+
+      <div class="row">
+        <div class="col-lg-3 col-xs-6">
+
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3>{{total_products}}</h3> 
+              <p>Products</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-cube"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-xs-6">
+
+          <div class="small-box bg-green">
+            <div class="inner">
+              <h3>{{total_reports}}</h3>
+              <p>Reports</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-file-code"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-xs-6">
+
+          <div class="small-box bg-yellow">
+            <div class="inner">
+              <h3>{{count_product_findings_total}}</h3>
+              <p>Total Findings</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-bug"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-xs-6">
+
+          <div class="small-box bg-red">
+            <div class="inner">
+              <h3>{{count_product_findings_critical_high}}</h3>
+              <p>Critical/High Findings</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-exclamation-triangle"></i>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    Overall Breakdown by Categories
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+
+                <div class="card-body">
+                    <div id="CWEPieChartEcharts" style="width:90%; height:350px;"></div>
+                </div>
+
+              </div>
+
+
+        </div>
+      </div>
+
+
+      <div class="card card-outline card-info">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="far fa-list-alt"></i>
+            Top 10 risk findings
+          </h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body">
+          
+            <table class="table">
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="width: 10%">Product</th>
+                      <th class="text-center" style="width: 25%">Report</th>
+                      <th class="text-center" style="width: 40%">Finding</th>
+                      <th class="text-center" style="width: 10%">CWE</th>
+                      <th class="text-center" style="width: 10%">Risk Score</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+
+                  {% for finding in DB_finding_query %}
+                    <tr>
+                      <td class=" last" align="center"><a href="/product/view/{{finding.report.product.id}}">{{ finding.report.product.name }}</a></td>
+
+                      <td class=" last" align="center"><a href="/report/view/{{finding.report.id}}">{{ finding.report.title }}</a></td>
+
+                      {% if finding.cvss_score >= 9 %}
+                        <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#CC0000"><i class="fa fa-bug "></i> {{finding.title}}</a></b></td>
+                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{finding.cwe.cwe_id}}</a></td>
+                        <td><span class="badge bg-danger" style="font-size:15px;margin-left: 5%;">Critical {{ finding.cvss_score }}</span></td>
+                      {% elif finding.cvss_score >= 7 %}
+                        <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#F20000"><i class="fa fa-bug "></i> {{finding.title}}</a></b></td>
+                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{finding.cwe.cwe_id}}</a></td>
+                        <td><span class="badge bg-danger" style="font-size:15px;margin-left: 5%;">High {{ finding.cvss_score }}</span></td>
+                      {% elif finding.cvss_score >= 4 %}
+                        <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#FC7F03"><i class="fa fa-bug "></i> {{finding.title}}</a></b></td>
+                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{finding.cwe.cwe_id}}</a></td>
+                        <td><span class="badge bg-warning" style="font-size:15px;margin-left: 5%;">Medium {{ finding.cvss_score }}</span></td>
+                      {% elif finding.cvss_score >= 0.1 %}
+                        <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#05B04F"><i class="fa fa-bug "></i> {{finding.title}}</a></b></td>
+                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{finding.cwe.cwe_id}}</a></td>
+                        <td><span class="badge bg-success" style="font-size:15px;margin-left: 5%;">Low {{ finding.cvss_score }}</span></td>
+                      {% else %}
+                        <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#45A7F7"><i class="fa fa-bug "></i> {{finding.title}}</a></b></td>
+                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{finding.cwe.cwe_id}}</a></td>
+                        <td><span class="badge bg-info" style="font-size:15px;margin-left: 5%;">Info {{ finding.cvss_score }}</span></td>
+                      {% endif %}
+
+                  {% endfor %}
+                    
+                  </tbody>
+            </table>
+
+        </div>
+
+      </div>
+
+      </div>
+    </section>
+
+
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super}}
+
+<script>
+
+(function($,sr){
+    // debouncing function from John Hann
+    // http://unscriptable.com/index.php/2009/03/20/debouncing-javascript-methods/
+    var debounce = function (func, threshold, execAsap) {
+      var timeout;
+
+        return function debounced () {
+            var obj = this, args = arguments;
+            function delayed () {
+                if (!execAsap)
+                    func.apply(obj, args); 
+                timeout = null; 
+            }
+
+            if (timeout)
+                clearTimeout(timeout);
+            else if (execAsap)
+                func.apply(obj, args);
+
+            timeout = setTimeout(delayed, threshold || 100); 
+        };
+    };
+
+    // smartresize 
+    jQuery.fn[sr] = function(fn){  return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr); };
+
+})(jQuery,'smartresize');
+/**
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
+    $BODY = $('body'),
+    $MENU_TOGGLE = $('#menu_toggle'),
+    $SIDEBAR_MENU = $('#sidebar-menu'),
+    $SIDEBAR_FOOTER = $('.sidebar-footer'),
+    $LEFT_COL = $('.left_col'),
+    $RIGHT_COL = $('.right_col'),
+    $NAV_MENU = $('.nav_menu'),
+    $FOOTER = $('footer');
+</script>
+
+
+
+<script type="text/javascript">
+    var chart_CWE = echarts.init(document.getElementById('CWEPieChartEcharts'));
+
+    var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b} <br>{c}'
+            },
+            series: [
+                {
+                    name: 'CWE',
+                    type: 'pie',
+                    radius: '70%',
+                    animation: false,
+
+                    data: {{cwe_categories|safe}},
+                    labelLine: {
+                        show: true
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+    };
+
+    chart_CWE.setOption(option);
+
+</script>
+
+
+
+{% endblock javascripts %}

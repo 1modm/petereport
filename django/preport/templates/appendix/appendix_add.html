@@ -1,0 +1,92 @@
+{% extends 'home/template.html' %}
+
+{% block title %} Appendix {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>Report: {{DB_report_query.title}} - {{ DB_report_query.report_id }} </h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
+          <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+              <div class="card-header">
+                <h3 class="card-title">Appendix</h3>
+              </div>
+              
+              <form role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card-body">
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Finding</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.finding }}
+                      </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Appendix Title</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.title }}
+                      </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Appendix Description</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.description }}
+                      </div>
+                  </div>
+
+                </div>
+
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-danger" value="Save" name="_finish">Save and finish</button>
+                  <button type="submit" class="btn btn-primary" value="Next" name="_next">Save and add a new appendix</button>
+                </div>
+              </form>
+            </div>
+
+
+        </div>
+      </div>
+    </div>
+</section>
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super}}
+
+{% endblock javascripts %}
+
+
+
+

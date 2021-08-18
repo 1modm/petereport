@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx:/opt/petereport/nginx
+      - ./nginx/petereport.conf:/etc/nginx/conf.d/petereport.conf
+      - ./django/petereport/static:/opt/petereport/django/petereport/static
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - petereport
+
+  petereport:
+    build:
+      context: .
+      dockerfile: ./django/config/Dockerfile
+    command: bash -c "
+      sleep 1 &&
+      pipenv install &&
+      pipenv run ./django/manage.py makemigrations &&
+      pipenv run ./django/manage.py migrate &&
+      pipenv run ./django/manage.py loaddata ./django/config/cwe-list.json &&
+      pipenv run gunicorn --chdir ./django petereport.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - .:/opt/petereport
+    expose:
+      - 8000
+    restart: unless-stopped

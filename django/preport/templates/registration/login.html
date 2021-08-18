@@ -1,0 +1,68 @@
+
+{% extends 'home/template_login.html' %}
+
+{% block title %} Login {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block body_class %}login{% endblock body_class %}
+
+{% block body %}
+
+
+<div class="login-box">
+  <div class="login-logo">
+    <a href="/"><b>PeTe</b>Reports</a>
+  </div>
+
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg">Sign in to start your session</p>
+
+      <form method="post" action="{% url 'login' %}">
+
+        {% csrf_token %}
+
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" name="username" autofocus maxlength="254" required id="id_username" />
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" name="password" required id="id_password" />
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="row">
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+          </div>
+
+        </div>
+      </form>
+
+      <br>
+
+
+
+    </div>
+
+  </div>
+</div>
+
+
+
+{% endblock body %}
+
+

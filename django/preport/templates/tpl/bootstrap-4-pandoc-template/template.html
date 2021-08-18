@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html $if(lang)$ lang="$lang$" $endif$>
+
+	<head>
+		<!-- Meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	$for(author-meta)$
+		<meta name="author" content="$author-meta$" />
+	$endfor$
+	$if(date-meta)$
+		<meta name="date" content="$date-meta$" />
+	$endif$
+		<title>$if(title)$$title$$endif$</title>
+		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="preport/templates/tpl/bootstrap-4-pandoc-template/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="preport/templates/tpl/bootstrap-4-pandoc-template/css/bootstrap-toc.min.css" />
+		<link rel="stylesheet" type="text/css" href="preport/templates/tpl/bootstrap-4-pandoc-template/css/main.css" />
+		<style type="text/css">code{white-space: pre;}</style>
+	$if(quotes)$
+		<style type="text/css">q { quotes: "“" "”" "‘" "’"; }</style>
+	$endif$
+		<style type="text/css">
+			body {
+				position: relative;
+			}
+		</style>
+
+		<!-- JS -->
+		<script src="preport/templates/tpl/bootstrap-4-pandoc-template/js/jquery-3.3.1.min.js"></script>
+		<script src="preport/templates/tpl/bootstrap-4-pandoc-template/js/popper.min.js"></script>
+		<script src='preport/templates/tpl/bootstrap-4-pandoc-template/js/bootstrap.min.js'></script>
+		<script src='preport/templates/tpl/bootstrap-4-pandoc-template/js/bootstrap-toc.min.js'></script>
+		<script src='preport/templates/tpl/bootstrap-4-pandoc-template/js/main.js'></script>
+
+		<!-- Title -->
+		<title>$if(title-prefix)$$title-prefix$ - $endif$$pagetitle$</title>
+
+	</head>
+
+	<body  data-spy="scroll" data-target="#toc" data-offset="56">
+
+		$if(title)$
+		<nav class="navbar navbar-dark bg-dark sticky-top">
+			<div class="container">
+
+				<a class="navbar-brand" href="#">$title$</a>
+
+				$for(author)$
+				<span class="navbar-text">
+				    $author$
+				</span>
+				$endfor$
+
+				$if(date)$
+				<span class="navbar-text">
+				    $date$
+				</span>
+				$endif$
+
+			</div>
+		</nav>
+
+		$endif$
+
+		<div class="container">
+			<div class="row">
+				$if(toc)$
+				<!-- TOC -->
+				<div class="col-sm-3">
+					<nav id="toc" data-spy="affix" data-toggle="toc" class="sticky-top"></nav>
+				</div>
+				$endif$
+
+				<!-- Main content -->
+				<div class="col-sm-9">
+
+				$body$
+
+				</div>
+			</div>
+		</div>
+	</body>
+
+
+<script src="petereport/static/echarts.min.js"></script>
+
+
+<script type="text/javascript">
+        // based on prepared DOM, initialize echarts instance
+        var myChartSeveritybar = echarts.init(document.getElementById('SeveritybarChartEcharts'));
+
+        // specify chart configuration item and data
+        var option = {
+            title: {
+            //text: 'Breakdown by Severity'
+            },
+            tooltip: {},
+            legend: {
+                data:['Severity']
+            },
+            xAxis: {
+                type: 'category',
+                data: ["Critical","High","Medium","Low","Info"]
+            },
+            yAxis: {
+              type: 'value',
+              interval: 1,
+            },
+            series: [{
+                //name: 'Severity',
+                type: 'bar',
+                stack: 1,
+        bars: {
+            show: false,
+            barWidth: 0.2,
+            fill:10
+        },
+
+                data: [
+
+                    {
+                        value: $counter_finding_critical$,
+                        itemStyle: {color: '#cc0000'},
+                    },
+                    {
+                        value: $counter_finding_high$,
+                        itemStyle: {color: '#ff403d'},
+                    },
+                    {
+                        value: $counter_finding_medium$,
+                        itemStyle: {color: '#fc7f03'},
+                    },
+                    {
+                        value: $counter_finding_low$,
+                        itemStyle: {color: '#05b04f'},
+                    },
+                    {
+                        value: $counter_finding_info$,
+                        itemStyle: {color: '#45a7f7'},
+                    }
+                ]
+            }]
+        };
+
+// use configuration item and data specified to show chart
+myChartSeveritybar.setOption(option);
+</script>
+
+
+
+</html>

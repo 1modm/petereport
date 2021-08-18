@@ -1,0 +1,797 @@
+{% extends 'home/template.html' %}
+
+{% load martortags %}
+
+{% block title %} Report Details {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+  
+
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+
+          <div class="col-sm-6">
+            <h4>{{ DB_report_query.title }} Report</h4>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name }}</a></li>
+              <li class="breadcrumb-item active">{{ DB_report_query.report_id }}</li>
+            </ol>
+          </div>
+        </div>
+
+
+         <br>
+
+        <div class="row">
+            <div class="col-md-5">
+
+              <a href="/report/findings/{{ DB_report_query.pk }}"><button type="button" class="btn btn-danger"><i class="fa fa-bug"></i> Findings</button></a>
+              <a href="/report/appendix/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> Appendix</button></a>
+            </div>
+
+            <div class="col-md-7 text-right">
+              <button type="button" onclick="SaveSummaryImage('Markdown');" class="btn btn-info"><i class="fa fa-download"></i> Markdown</button>
+              <button type="button" onclick="SaveSummaryImage('PDF');" class="btn btn-warning"><i class="fa fa-download"></i> PDF</button>
+              <a href="/report/download/html/{{ DB_report_query.pk }}"><button type="button" class="btn btn-primary"><i class="fa fa-download"></i> HTML</button></a>
+              <a href="/finding/csv/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-download"></i> CSV</button></a>
+            </div>
+        </div>
+
+        <br>
+
+
+      </div>
+    </section>
+
+
+
+    <section class="content">
+      <div class="container-fluid">
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="far fa-chart-bar"></i>
+                    <b>Executive Summary</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+
+                <div class="card-body">
+
+                      <div class="row">
+
+                        <div class="col text-center">
+
+                            {% if count_findings_critical > 0 %}
+                              <input type="text" value="{{count_findings_critical}}" class="dial" data-min="0" data-max="{{count_findings_critical}}" data-fgColor="#cc0000" data-readOnly=true data-width="60%">
+                            {% else %}
+                              <input type="text" value="{{count_findings_critical}}" class="dial" data-min="0" data-max="{{count_findings_critical}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
+                            {% endif %}
+
+                        <h3>Critical</h3>
+
+                        </div>
+
+                        <div class="col text-center">
+
+                            {% if count_findings_high > 0 %}
+                              <input type="text" value="{{count_findings_high}}" class="dial" data-min="0" data-max="{{count_findings_high}}" data-fgColor="#f50000" data-readOnly=true data-width="60%">
+                            {% else %}
+                              <input type="text" value="{{count_findings_high}}" class="dial" data-min="0" data-max="{{count_findings_high}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
+                            {% endif %}
+
+                        <h3>High</h3>
+                        </div>
+
+
+                        <div class="col text-center">
+
+                            {% if count_findings_medium > 0 %}
+                              <input type="text" value="{{count_findings_medium}}" class="dial" data-min="0" data-max="{{count_findings_medium}}" data-fgColor="#fc7f03" data-readOnly=true data-width="60%">
+                            {% else %}
+                              <input type="text" value="{{count_findings_medium}}" class="dial" data-min="0" data-max="{{count_findings_medium}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
+                            {% endif %}
+
+                        <h3>Medium</h3>
+                        </div>
+
+                        <div class="col text-center">
+
+                            {% if count_findings_low > 0 %}
+                              <input type="text" value="{{count_findings_low}}" class="dial" data-min="0" data-max="{{count_findings_low}}" data-fgColor="#05b04f" data-readOnly=true data-width="60%">
+                            {% else %}
+                              <input type="text" value="{{count_findings_low}}" class="dial" data-min="0" data-max="{{count_findings_low}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
+                            {% endif %}
+
+                        <h3>Low</h3>
+                        </div>
+
+
+                        <div class="col text-center">
+
+                            {% if count_findings_info > 0 %}
+                              <input type="text" value="{{count_findings_info}}" class="dial" data-min="0" data-max="{{count_findings_info}}" data-fgColor="#45a7f7" data-readOnly=true data-width="60%">
+                            {% else %}
+                              <input type="text" value="{{count_findings_info}}" class="dial" data-min="0" data-max="{{count_findings_info}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
+                            {% endif %}
+
+                        <h3>Informational</h3>
+                        </div>
+                      
+                      </div>
+
+        
+                  <hr>
+
+
+                  <div class="row">
+                    <div class="col-12 col-sm-4">
+                      <div class="info-box bg-light">
+                        <div class="info-box-content">
+                          <span class="info-box-number text-center text-muted">Creation date</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.creation_date|date:"Y-m-d H:i:s" }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                      <div class="info-box bg-light">
+                        <div class="info-box-content">
+                          <span class="info-box-number text-center text-muted">Report date</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_date|date:"d-m-Y" }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                      <div class="info-box bg-light">
+                        <div class="info-box-content">
+                          <span class="info-box-number text-center text-muted">Product</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.product.name }}<span>
+                        </span></span></div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="row">
+                    <div class="col-12 col-sm-4">
+                      <div class="info-box bg-light">
+                        <div class="info-box-content">
+                          <span class="info-box-number text-center text-muted">Report</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.title }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                      <div class="info-box bg-light">
+                        <div class="info-box-content">
+                          <span class="info-box-number text-center text-muted">Findings</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ count_finding_query }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-sm-4">
+                      <div class="info-box bg-light">
+                        <div class="info-box-content">
+                          <span class="info-box-number text-center text-muted">Report ID</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_id }}<span>
+                        </span></span></div>
+                      </div>
+                    </div>
+                  </div>
+ 
+
+
+                  <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-outline">
+                          <div class="card-body">
+                            {{ DB_report_query.executive_summary|safe_markdown }}
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                    
+
+                </div>
+              </div>
+
+        </div>
+      </div>
+
+
+
+
+      <!-- ---------------------------------------- -->
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Breakdown by Severity</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                    
+                  <center>
+                    <div id="SeveritybarChartEcharts" style="width:80%; height:450px;"></div>      
+                  </center>
+
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Breakdown by Categories</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                
+                  <center>
+                    <div id="CWEPieChartEcharts" style="width:90%; height:350px;"></div>      
+                  </center>
+
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+      <!-- ---------------------------------------- -->
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Scope</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+
+                  {{ DB_report_query.scope|safe_markdown }}
+
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Methodology</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                                  
+                  {{ DB_report_query.methodology|safe_markdown }}
+
+                </div>
+              </div>
+
+        </div>
+      </div>
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Recommendation</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                
+                  {{ DB_report_query.recommendation|safe_markdown }}
+
+                </div>
+              </div>
+        </div>
+      </div>
+
+
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>{{ count_finding_query }} Findings</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                    
+                     <div class="row">
+                      <div class="col-md-12">
+
+                      {% if count_finding_query == 0 %}
+
+                        <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm" data-toggle="modal">Add Findings</button></a>
+
+                      {% else %}
+
+                        <table id="findinglist" class="table table-bordered table-hover"> 
+
+                        <thead>
+                          <tr>
+                            <th style="width: 40%">Title</th>
+                            <th style="width: 5%">Severity</th>
+                            <th style="width: 10%">CVSS Score</th>
+                            <th style="width: 5%">CWE</th>
+                            <th style="width: 20%"class="text-center"> Actions</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {% for finding in DB_finding_query %}
+                          <tr>
+                                  <td>
+                                      {{ finding.title }}
+                                  </td>
+
+                                  <td>
+                                                                      
+                                        {% if finding.severity == "Critical" %}
+                                            <b><font color="#CC0000">{{ finding.severity }}</font></b>
+                                        {% elif finding.severity == "High" %}
+                                            <b><font color="#F20000">{{ finding.severity }}</font></b>
+                                        {% elif finding.severity == "Medium" %}
+                                            <b><font color="#FC7F03">{{ finding.severity }}</font></b>
+                                        {% elif finding.severity == "Low" %}
+                                            <b><font color="#05B04F">{{ finding.severity }}</font></b>
+                                        {% elif finding.severity == "Info" %}
+                                            <b><font color="#45A7F7">{{ finding.severity }}</font></b>
+                                        {% else %}
+                                            {{ finding.severity }}
+                                        {% endif %}
+
+                                  </td>
+                                  <td>
+                                      {{ finding.cvss_score }}
+                                  </td>
+                                  <td>
+                                      <a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{ finding.cwe.cwe_id }}</a>
+                                  </td>
+                                  <td align="center">
+                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-folder"></i> View</button></a>
+                                      <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> Edit</button></a> 
+                                      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> Delete</button>
+
+                                  </td>
+
+                          </tr>
+
+                          <div class="modal modal-danger fade mm-modal-{{finding.pk}}" id="modal-danger">
+                            <div class="modal-dialog">
+                              <div class="modal-content bg-danger">
+                                <div class="modal-header">
+                                  <h4 class="modal-title">Are you sure?</h4>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <p>Delete Finding&hellip;</p>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+                                  <a href="/finding/delete/{{ finding.pk }}"><button type="button" class="btn btn-outline-light">Delete Finding</button></a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          {% endfor %}
+
+                        </tbody>
+                      </table>
+
+
+                      {% endif %}
+         
+                      </div>
+
+                    </div>
+
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>{{ DB_appendix_query.count }} Appendix</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    
+                
+                  <div class="row">
+                    <div class="col-md-12">
+
+                      {% if count_appendix_query == 0 %}
+
+                        <a href="/appendix/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">Add Appendix</button></a>
+
+                      {% else %}
+
+                      <table id="appendixlist" class="table table-bordered table-hover"> 
+
+                        <thead>
+                          <tr>
+                            <th style="width: 35%">Title</th>
+                            <th style="width: 40%">Finding</th>
+                            <th style="width: 25%"class="text-center">Actions</th>
+                          </tr>
+                        </thead>
+
+
+                        <tbody>
+                          {% for appendix in DB_appendix_query %}
+                          <tr>
+
+                            <td>
+                                {{appendix.title}}
+                            </td>
+
+
+                            <td>
+                                {% for finding in appendix.finding.all %}
+                                  {{finding.title}}
+                                {% endfor %}
+                            </td>
+                            <td align="center">
+                                <a href="/appendix/view/{{ appendix.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> View</button></a>
+                                <a href="/appendix/edit/{{ appendix.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-appendix-modal-{{appendix.pk}}"><i class="fas fa-trash"></i> Delete</button>
+
+                            </td>
+
+                          </tr>
+
+                          <div class="modal modal-danger fade mm-appendix-modal-{{appendix.pk}}" id="modal-danger">
+                            <div class="modal-dialog">
+                              <div class="modal-content bg-danger">
+                                <div class="modal-header">
+                                  <h4 class="modal-title">Are you sure?</h4>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <p>Delete appendix&hellip;</p>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+                                  <a href="/appendix/delete/{{ appendix.pk }}"><button type="button" class="btn btn-outline-light">Delete Appendix</button></a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          {% endfor %}
+
+                        </tbody>
+                      </table>
+
+                    {% endif %}
+
+       
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
+        </div>
+      </div>
+
+
+
+
+      </div>
+    </section>
+
+
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+<script>
+    $(function() {
+        $(".dial").knob();
+    });
+</script>
+
+<script>
+    $('.dial').trigger(
+        'configure',
+        {
+            "min":0,
+            "max":10,
+            "fgColor":"#FF0000",
+            "skin":"tron",
+            "cursor":true
+        }
+    );
+</script>
+
+
+<script>
+  $(function () {
+    $("#findinglist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true, 
+      "lengthChange": false, 
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#findinglist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+<script>
+  $(function () {
+    $("#appendixlist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true, 
+      "lengthChange": false, 
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#appendixlist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+
+
+
+<script type="text/javascript">
+        var chartSeveritybar = echarts.init(document.getElementById('SeveritybarChartEcharts'));
+
+        var option = {
+            title: {
+            },
+            tooltip: {},
+            legend: {
+                data:['Severity']
+            },
+            xAxis: {
+                type: 'category',
+                data: ["Critical","High","Medium","Low","Info"]
+            },
+            yAxis: {
+              type: 'value',
+              interval: 1,
+            },
+
+            series: [{
+                type: 'bar',
+                stack: 1,
+                animation: false,
+            bars: {
+                show: false,
+                barWidth: 0.2,
+                fill:10
+            },
+
+            data: [
+
+                {
+                    value: {{count_findings_critical}},
+                    itemStyle: {color: '#cc0000'},
+                },
+                {
+                    value: {{count_findings_high}},
+                    itemStyle: {color: '#ff403d'},
+                },
+                {
+                    value: {{count_findings_medium}},
+                    itemStyle: {color: '#fc7f03'},
+                },
+                {
+                    value: {{count_findings_low}},
+                    itemStyle: {color: '#05b04f'},
+                },
+                {
+                    value: {{count_findings_info}},
+                    itemStyle: {color: '#45a7f7'},
+                }
+              ]
+            }]
+        };
+
+        chartSeveritybar.setOption(option);
+
+
+
+    </script>
+
+
+
+
+<script type="text/javascript">
+    var chart_CWE = echarts.init(document.getElementById('CWEPieChartEcharts'));
+
+    var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b} <br>{c}'
+            },
+            series: [
+                {
+                    name: 'CWE',
+                    type: 'pie',
+                    radius: '70%',
+                    animation: false,
+
+                    data: {{cwe_categories|safe}},
+                    labelLine: {
+                        show: true
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+    };
+
+    chart_CWE.setOption(option);
+
+</script>
+
+
+
+
+    <script>
+
+      function SaveSummaryImage(doc_type) {
+
+            var imgSeveritybar = new Image();
+            imgSeveritybar.src = chartSeveritybar.getConnectedDataURL({
+                pixelRatio: 2,
+                backgroundColor: '#fff'
+            });
+
+            var imgCWE = new Image();
+            imgCWE.src = chart_CWE.getConnectedDataURL({
+            //    //pixelRatio: 2,
+                backgroundColor: '#fff'
+            });
+
+
+            $.ajax({
+                type: 'POST',
+                url: "/report/uploadsummaryfindings/" + {{ DB_report_query.pk }},
+                headers:{
+                  "X-CSRFToken": '{{ csrf_token }}'
+                },
+                data : { 'fileSeveritybar': imgSeveritybar.src, 'file_cwe': imgCWE.src  },
+
+                success : function(json) {
+                    //console.log("requested complete");
+                    if (json.status == 'success'){
+                      console.log(doc_type);
+
+                      if (doc_type == 'PDF'){
+                        document.location.href = "/report/download/pdf/{{ DB_report_query.pk }}";
+                      }
+                      else if (doc_type == 'Markdown'){
+                        document.location.href = "/report/download/markdown/{{ DB_report_query.pk }}";
+                      }
+                                            
+                    }
+                }
+            })
+
+      }
+
+    </script>
+
+
+
+{% endblock javascripts %}

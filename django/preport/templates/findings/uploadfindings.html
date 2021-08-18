@@ -1,0 +1,112 @@
+{% extends 'home/template.html' %}
+
+{% block title %} Upload Findings {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-4">
+          <h1>Upload Findings</h1>
+        </div>
+        <div class="col-sm-8">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+            <li class="breadcrumb-item active">Upload Findings</a></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="content">
+
+
+
+
+
+    <div class="container-fluid">
+      <div class="card card-outline card-danger">
+        <div class="card-header">
+          <h3 class="card-title">Findings CSV Document</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+
+
+
+         <div class="row">
+              <div class="col-md-12">
+
+                  <div class="row">
+                      <div class="col-12 col-sm-12">
+
+                        <div class="language-scss highlighter-rouge">
+
+                        <div class="highlight">
+                          <pre class="highlight">
+// Comma-separated values (CSV) file format
+                        
+"ID","Status","Title","Severity","CVSS Base Score","CVSS Score","CWE","Description","Location","Impact","Recommendation","References","Appendix","Appendix Description"
+
+"2834q345-b24e-4ghf-r86d-ftue38af5480","Open","Finding 1","Low","3.7 (CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N)","3.7","73","Description","127.0.0.1","Impact","Recommendation","References","Appendix","Appendix Description"
+</pre></div>
+
+
+
+                      </div>
+                  </div>
+
+          </div>
+       </div> 
+
+
+
+          <div class="row">
+            <div class="col-md-12">
+
+                  <form method="post" enctype="multipart/form-data">
+                      {% csrf_token %}
+                    <div class="input-group">
+                      <div class="custom-file">
+                        <input type="file" name="file" class="form-control" id="file" required />
+                      </div>
+                      <div class="input-group-append">
+                        <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Upload</button>
+                      </div>
+                    </div>
+
+                  </form>
+
+            </div>
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+{% endblock javascripts %}

@@ -1,0 +1,348 @@
+{% extends 'home/template.html' %}
+
+{% load martortags %}
+
+{% block title %} Finding Details {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+  
+
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+
+          <div class="col-sm-3">
+            <h1>Finding Details</h1>
+          </div>
+          <div class="col-sm-9">
+            <ol class="breadcrumb float-sm-right">
+
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/product/view/{{ finding.report.product.pk}}">{{ finding.report.product.name}}</a></li>
+              <li class="breadcrumb-item"><a href="/report/view/{{ finding.report.pk}}">{{ finding.report.report_id}}</a></li>
+              <li class="breadcrumb-item active">{{ finding.title}}</li>
+
+            </ol>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+  <section class="content">
+    <div class="container-fluid">
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="far fa-chart-bar"></i>
+                    <b>Summary</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                    
+      
+                  <div class="row">
+                      <div class="col-12 col-sm-4">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">Finding ID</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.finding_id }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-4">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">Product</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_report.product.name }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-4">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">Report</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_report.title }}<span>
+                          </span></span></div>
+                        </div>
+                      </div>
+                    </div>
+
+
+
+                  <div class="row">
+                      <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">CWE</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cwe.cwe_id}} - {{finding.cwe.cwe_name }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">CVSS Score</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_base_score }}<span>
+                          </span></span></div>
+                        </div>
+                      </div>
+                    </div>
+
+        
+                    <div class="row">
+     
+                      <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">Status</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.status }}<span>
+                          </span></span></div>
+                        </div>
+                      </div>
+
+                        <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">Severity</span>
+                            <span class="info-box-text text-center text-muted mb-0">
+                                {% if finding.severity == "Critical" %}
+                                      <span><b><font color="#cc0000">{{finding.severity}}</font></b></span>
+                                  {% elif finding.severity == "High" %}
+                                      <span><b><font color="#ff403d">{{finding.severity}}</font></b></span>
+                                  {% elif finding.severity == "Medium" %}
+                                      <span><b><font color="#fc7f03">{{finding.severity}}</font></b></span>
+                                  {% elif finding.severity == "Low" %}
+                                      <span><b><font color="#05b04f">{{finding.severity}}</font></b></span>
+                                  {% elif finding.severity == "Info" %}
+                                      <span><b><font color="#45a7f7">{{finding.severity}}</font></b></span>
+                                  {% else %}
+                                      <span>{{finding.severity}}</span>
+                                {% endif %}
+                          </span>
+                          </div>
+                        </div>
+                      </div>
+
+
+                    </div>
+
+
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                   <b> Title</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ finding.title|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Description</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ finding.description|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Location</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ finding.location|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Impact</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ finding.impact|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Recommendation</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ finding.recommendation|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>References</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ finding.references|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+                                
+    {% if DB_appendix %}
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Additional Notes</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {% for appendix in DB_appendix %}
+                    <p>{{appendix.title}}</p>
+                  {% endfor %}
+                </div>
+              </div>
+        </div>
+      </div>
+    {% endif %}
+
+
+  </div>
+</section>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+{% endblock javascripts %}
+
+
+
+
+
+
+
+

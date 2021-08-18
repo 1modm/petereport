@@ -1,0 +1,293 @@
+{% extends 'home/template.html' %}
+
+{% load martortags %}
+
+{% block title %} Template Details {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+  
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Template Details</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/template/list/">Templates</a></li>
+              <li class="breadcrumb-item active">{{ DB_Template.title}}</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+
+  <section class="content">
+    <div class="container-fluid">
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="far fa-chart-bar"></i>
+                    Summary
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    
+      
+                  <div class="row">
+                      <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">Finding ID</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.finding_id }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">CWE</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cwe.cwe_id}} - {{DB_Template.cwe.cwe_name }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+
+        
+                    <div class="row">
+     
+                      <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">CVSS Score</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cvss_base_score }}<span>
+                          </span></span></div>
+                        </div>
+                      </div>
+
+                        <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">Severity</span>
+                            <span class="info-box-text text-center text-muted mb-0">
+                                {% if DB_Template.severity == "Critical" %}
+                                      <span><b><font color="#cc0000">{{DB_Template.severity}}</font></b></span>
+                                  {% elif DB_Template.severity == "High" %}
+                                      <span><b><font color="#ff403d">{{DB_Template.severity}}</font></b></span>
+                                  {% elif DB_Template.severity == "Medium" %}
+                                      <span><b><font color="#fc7f03">{{DB_Template.severity}}</font></b></span>
+                                  {% elif DB_Template.severity == "Low" %}
+                                      <span><b><font color="#05b04f">{{DB_Template.severity}}</font></b></span>
+                                  {% elif DB_Template.severity == "Info" %}
+                                      <span><b><font color="#45a7f7">{{DB_Template.severity}}</font></b></span>
+                                  {% else %}
+                                      <span>{{DB_Template.severity}}</span>
+                                {% endif %}
+                          </span>
+                          </div>
+                        </div>
+                      </div>
+
+
+                    </div>
+
+
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    Title
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ DB_Template.title|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    Description
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ DB_Template.description|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    Location
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ DB_Template.location|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    Impact
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ DB_Template.impact|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    Recommendation
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ DB_Template.recommendation|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    References
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ DB_Template.references|safe_markdown }}
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+
+
+      </div>
+    </section>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+{% endblock javascripts %}
+
+
+
+
+
+
+
+
