@@ -1,5 +1,7 @@
 from django import forms
-from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User, Group
+from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, PasswordInput, EmailField, BooleanField
 from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE
 from martor.fields import MartorFormField
 
@@ -126,3 +128,28 @@ class NewAppendixForm(forms.ModelForm):
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Title"}),
         }
 
+
+
+
+class AddUserForm(UserCreationForm):
+
+    group = ModelChoiceField(queryset=Group.objects.all(), empty_label="(Select a group)", widget=forms.Select(attrs={'class': 'form-control'}))
+    email = EmailField(max_length=254, help_text='Require a valid email address.', widget=forms.TextInput(
+                                attrs={'type': 'email', 'class': 'form-control',
+                                'placeholder': 'E-mail address'}))
+    superadmin = BooleanField(required=False)
+
+    class Meta:
+        model = User
+        fields = ('username', 'group', 'superadmin', 'email', 'password1', 'password2')
+
+        widgets = {
+            'username': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Username"}),
+            #'password1': PasswordInput(attrs={'class': 'form-control', 'required': "required", 'placeholder': "P@assW0rd"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(AddUserForm, self).__init__(*args, **kwargs) 
+        self.fields['username'].widget.attrs.update({'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Username"})
+        self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Secret P@assW0rd'})
+        self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Secret P@assW0rd'})

@@ -80,9 +80,12 @@
 
                     <td align="center">
                         <a href="/template/view/{{ template.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> View</button></a>
-                        <a href="/template/edit/{{ template.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{template.pk}}"><i class="fas fa-trash"></i> Delete</button>
 
+                        {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                          <a href="/template/edit/{{ template.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{template.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                        {% endif %}
+                        
                     </td>
           
 

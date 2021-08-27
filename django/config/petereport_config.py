@@ -2,6 +2,9 @@ PETEREPORT_CONFIG = {
 	'admin_username': 'admin',
 	'admin_password': 'P3t3r3p0rt',
 	'admin_email': 'admin@petereport.pentest',
+	'viewer_username': 'viewer',
+	'viewer_password': 'v13w3r',
+	'viewer_email': 'viewer@petereport.pentest',
 }
 
 DJANGO_CONFIG = {

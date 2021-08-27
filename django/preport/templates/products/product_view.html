@@ -147,8 +147,12 @@
                     <td>{{ report.creation_date | date:"d-m-Y" }} </td>
                     <td class="text-center">
                         <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> Summary</button></a>
-                        <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> Delete </button>
+                        
+                        {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                          <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> Delete </button>
+                        {% endif %}
+
                         <a href="/report/findings/{{ report.pk }}"><button type="button" class="btn btn-warning btn-sm"><i class="fa fa-folder"></i> Findings</button></a>
                         <a href="/report/appendix/{{ report.pk }}"><button type="button" class="btn btn-success btn-sm"><i class="fa fa-folder"></i> Appendix</button></a>
                     </td>

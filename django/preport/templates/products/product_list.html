@@ -71,20 +71,25 @@
                       <td>
                         <span class="pull-right badge bg-red">{{ product.db_report_set.all|findings_count }}</span> Findings
                       </td>
-                      <td class="project-actions text-right">
+                      <td class="project-actions text-center">
                           <a class="btn btn-primary btn-sm" href="/product/view/{{ product.pk }}">
                               <i class="fas fa-folder"></i>
                               View
                           </a>
-                          <a class="btn btn-info btn-sm" href="/product/edit/{{ product.pk }}">
-                              <i class="fas fa-pencil-alt"></i>
-                              Edit
-                          </a>
 
-                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{product.pk}}">
-                            <i class="fas fa-trash"></i>
-                              Delete
-                          </button>
+                          {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+
+                            <a class="btn btn-info btn-sm" href="/product/edit/{{ product.pk }}">
+                                <i class="fas fa-pencil-alt"></i>
+                                Edit
+                            </a>
+
+                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{product.pk}}">
+                              <i class="fas fa-trash"></i>
+                                Delete
+                            </button>
+
+                          {% endif %}
 
                       </td>
 

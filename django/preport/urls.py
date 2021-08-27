@@ -8,6 +8,11 @@ urlpatterns = [
     path('', views.index, name='index'),
     # Auth
     path('accounts/', include('django.contrib.auth.urls')),
+    # Configuration
+    path('configuration/users/', views.user_list, name='user_list'),
+    path('configuration/user/add', views.user_add, name='user_add'),
+    path('configuration/user/edit/<int:pk>', views.user_edit, name='user_edit'),
+    path('configuration/user/delete/<int:pk>', views.user_delete, name='user_delete'),
     # Products
     path('product/list/', views.product_list, name='product_list'),
     path('product/add/', views.product_add, name='product_add'),
@@ -47,5 +52,6 @@ urlpatterns = [
     path('template/view/<int:pk>', views.template_view, name='template_view'),
     path('template/delete/<int:pk>', views.template_delete, name='template_delete'),
     path('template/edit/<int:pk>', views.template_edit, name='template_edit'),
-
+    # CWE
+    path('cwe/list/', views.cwe_list, name='cwe_list'),
 ]

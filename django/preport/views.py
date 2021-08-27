@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.utils.html import strip_tags
 from django.core.files.storage import default_storage
@@ -10,10 +13,13 @@ from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 
 # Forms
-from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm
+from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm
 
 # Model
 from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE
+
+# Decorators
+from .decorators import allowed_users
 
 # Libraries
 import datetime
@@ -168,6 +174,79 @@ def index(request):
     return render(request, 'home/index.html', {'total_reports': total_reports, 'total_products': total_products, 'count_product_findings_total': count_product_findings_total, 'count_product_findings_critical_high': count_product_findings_critical_high, 'count_product_findings_medium': count_product_findings_medium, 'DB_finding_query':DB_finding_query, 'cwe_categories': cwe_categories})
 
 
+# ----------------------------------------------------------------------
+#                           Configuration 
+# ----------------------------------------------------------------------
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def user_list(request):
+    userList = User.objects.values()
+    group_list = Group.objects.all()
+
+    return render(request, 'configuration/user_list.html', {'group_list': group_list})
+
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def user_add(request):
+    
+    if request.method == 'POST':
+        form = AddUserForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user_group = form.cleaned_data.get('group')
+            superadmin = form.cleaned_data.get('superadmin')
+            user.is_staff = superadmin
+            user.is_superuser = superadmin
+            user.save()
+
+            user.groups.add(user_group)
+
+            return redirect('user_list')
+    else:
+        form = AddUserForm()
+
+    return render(request, 'configuration/user_add.html', {'form': form})
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def user_edit(request,pk):
+
+    DB_user_query = get_object_or_404(User, pk=pk)
+
+    if request.method == 'POST':
+        form = AddUserForm(request.POST, instance=DB_user_query)
+        if form.is_valid():
+            user = form.save(commit=False)
+            
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user_group = form.cleaned_data.get('group')
+            superadmin = form.cleaned_data.get('superadmin')
+            user.is_staff = superadmin
+            user.is_superuser = superadmin
+            user.save()
+
+            user.groups.add(user_group)
+
+            return redirect('user_list')
+    else:
+        form = AddUserForm(instance=DB_user_query)
+
+    return render(request, 'configuration/user_add.html', {'form': form})
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def user_delete(request,pk):
+    User.objects.filter(pk=pk).delete()
+    return redirect('user_list')
 
 
 
@@ -190,6 +269,7 @@ def product_list(request):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def product_add(request):
 
     if request.method == 'POST':
@@ -208,6 +288,7 @@ def product_add(request):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def product_edit(request,pk):
 
     DB_product_query = get_object_or_404(DB_Product, pk=pk)
@@ -228,6 +309,7 @@ def product_edit(request,pk):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def product_delete(request,pk):
     DB_Product.objects.filter(pk=pk).delete()
     return redirect('product_list')
@@ -268,6 +350,7 @@ def product_view(request,pk):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def report_add(request):
 
     today = datetime.date.today().strftime('%Y-%m-%d')
@@ -296,6 +379,7 @@ def report_add(request):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def report_delete(request,pk):
     report = get_object_or_404(DB_Report, pk=pk)
     DB_Report.objects.filter(pk=pk).delete()
@@ -303,6 +387,7 @@ def report_delete(request,pk):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def report_edit(request,pk):
 
     report = get_object_or_404(DB_Report, pk=pk)
@@ -789,6 +874,7 @@ def closedfindings(request):
     return render(request, 'findings/findings_list.html', {'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def finding_add(request,pk):
 
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
@@ -820,7 +906,9 @@ def finding_add(request,pk):
         'form': form, 'DB_report': DB_report_query})
 
 
+
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def finding_edit(request,pk):
 
     finding = get_object_or_404(DB_Finding, pk=pk)
@@ -845,7 +933,9 @@ def finding_edit(request,pk):
     })
 
 
+
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def finding_delete(request,pk):
 
     finding = get_object_or_404(DB_Finding, pk=pk)
@@ -912,6 +1002,7 @@ def downloadfindingscsv(request,pk):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def upload_csv_findings(request,pk):
     
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
@@ -997,6 +1088,7 @@ def reportappendix(request,pk):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def appendix_add(request,pk):
 
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
@@ -1026,6 +1118,7 @@ def appendix_add(request,pk):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def appendix_edit(request,pk):
 
     appendix = get_object_or_404(DB_Appendix, pk=pk)
@@ -1058,6 +1151,7 @@ def appendix_edit(request,pk):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def appendix_delete(request,pk):
 
     appendix = get_object_or_404(DB_Appendix, pk=pk)
@@ -1098,6 +1192,7 @@ def template_list(request):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def template_add(request):
 
     if request.method == 'POST':
@@ -1126,6 +1221,7 @@ def template_add(request):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def template_edit(request, pk):
 
     template = get_object_or_404(DB_Finding_Template, pk=pk)
@@ -1149,6 +1245,7 @@ def template_edit(request, pk):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def template_delete(request,pk):
 
     finding_template = get_object_or_404(DB_Finding_Template, pk=pk)
@@ -1165,6 +1262,7 @@ def template_view(request,pk):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def templateaddfinding(request,pk):
 
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
@@ -1174,6 +1272,7 @@ def templateaddfinding(request,pk):
 
 
 @login_required
+@allowed_users(allowed_roles=['administrator'])
 def templateaddreport(request,pk,reportpk):
 
     DB_report_query = get_object_or_404(DB_Report, pk=reportpk)
@@ -1188,4 +1287,17 @@ def templateaddreport(request,pk,reportpk):
 
     return redirect('report_view', pk=reportpk)
 
+
+# ----------------------------------------------------------------------
+#                           CWE 
+# ----------------------------------------------------------------------
+
+@login_required
+def cwe_list(request):
+
+    DB_cwe_query = DB_CWE.objects.order_by('pk').all()
+
+
+
+    return render(request, 'cwe/cwe_list.html', {'DB_cwe_query': DB_cwe_query})
 

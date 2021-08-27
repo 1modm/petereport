@@ -137,23 +137,23 @@
 
                       {% if finding.cvss_score >= 9 %}
                         <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#CC0000"><i class="fa fa-bug "></i> {{finding.title}}</a></b></td>
-                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{finding.cwe.cwe_id}}</a></td>
+                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html" target=”_blank”>{{finding.cwe.cwe_id}}</a></td>
                         <td><span class="badge bg-danger" style="font-size:15px;margin-left: 5%;">Critical {{ finding.cvss_score }}</span></td>
                       {% elif finding.cvss_score >= 7 %}
                         <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#F20000"><i class="fa fa-bug "></i> {{finding.title}}</a></b></td>
-                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{finding.cwe.cwe_id}}</a></td>
+                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html" target=”_blank”>{{finding.cwe.cwe_id}}</a></td>
                         <td><span class="badge bg-danger" style="font-size:15px;margin-left: 5%;">High {{ finding.cvss_score }}</span></td>
                       {% elif finding.cvss_score >= 4 %}
                         <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#FC7F03"><i class="fa fa-bug "></i> {{finding.title}}</a></b></td>
-                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{finding.cwe.cwe_id}}</a></td>
+                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html" target=”_blank”>{{finding.cwe.cwe_id}}</a></td>
                         <td><span class="badge bg-warning" style="font-size:15px;margin-left: 5%;">Medium {{ finding.cvss_score }}</span></td>
                       {% elif finding.cvss_score >= 0.1 %}
                         <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#05B04F"><i class="fa fa-bug "></i> {{finding.title}}</a></b></td>
-                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{finding.cwe.cwe_id}}</a></td>
+                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html" target=”_blank”>{{finding.cwe.cwe_id}}</a></td>
                         <td><span class="badge bg-success" style="font-size:15px;margin-left: 5%;">Low {{ finding.cvss_score }}</span></td>
                       {% else %}
                         <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#45A7F7"><i class="fa fa-bug "></i> {{finding.title}}</a></b></td>
-                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{finding.cwe.cwe_id}}</a></td>
+                        <td align="center"><a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html" target=”_blank”>{{finding.cwe.cwe_id}}</a></td>
                         <td><span class="badge bg-info" style="font-size:15px;margin-left: 5%;">Info {{ finding.cvss_score }}</span></td>
                       {% endif %}
 

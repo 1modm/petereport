@@ -1,0 +1,104 @@
+{% extends 'home/template.html' %}
+
+{% load app_filters %}
+
+{% block title %} CWE List {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>CWE List</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+
+    <div class="container-fluid">
+      <div class="card card-outline card-primary">
+        <div class="card-header">
+          <h3 class="card-title">{{ DB_cwe_query.count }} CWEs</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <table id="cwelist" class="table table-bordered table-hover">
+              <thead>
+                  <tr>
+                      <th style="width: 30%">
+                          Title
+                      </th>
+                      <th style="width: 70%">
+                          Description
+                      </th>
+
+                  </tr>
+              </thead>
+              <tbody>
+
+                  {% for cwe in DB_cwe_query %}
+
+                    <tr>
+                      <td>
+                        <a href="https://cwe.mitre.org/data/definitions/{{cwe.cwe_id}}.html" target=”_blank”>{{ cwe.cwe_id }} - {{ cwe.cwe_name }}</a>
+                      </td>
+                      <td>
+                        {{ cwe.cwe_description }}
+                      </td>
+
+
+                    </tr>
+                     
+                  {% endfor %}
+
+
+              </tbody>
+          </table>
+        </div>
+       
+      </div>
+      
+    </div>
+  </section>
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+<script>
+  $(function () {
+    $("#cwelist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true, 
+      "lengthChange": false, 
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#cwelist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+{% endblock javascripts %}
+
+
+

@@ -19,6 +19,7 @@
 `$ sudo apt-get install texlive-full`
 
 **Mac:**
+
 `$ brew remove basictex`
 
 `$ brew cask install mactex`
@@ -28,11 +29,13 @@
 https://pandoc.org/installing.html
 
 **Linux:**
+
 `$ sudo apt-get install pandoc`
 
 `$ sudo apt-get install python3-pypandoc`
 
 **Mac:**
+
 `$ brew install pandoc`
 
 `$ brew install pandoc-citeproc`
@@ -58,7 +61,7 @@ https://github.com/Wandmalfarbe/pandoc-latex-template
 4. Go to Django PeTeReport: `cd django/`
 5. Create the database: `python manage.py migrate`
 6. Make the latest database changes: `python manage.py makemigrations`
-7. Super user admin/P3t3r3p0rt will be created, but you can create a new super user: `python manage.py createsuperuser`
+7. Super user **admin/P3t3r3p0rt** will be created, but you can create a new super user: `python manage.py createsuperuser`
 8. Populate the CWE data `python manage.py loaddata config/cwe-list.json`
 
 
@@ -68,7 +71,7 @@ https://github.com/Wandmalfarbe/pandoc-latex-template
 2. Go to Django PeTeReport: `cd django/`
 3. Start the django server: `python manage.py runserver` or `python manage.py runserver 0.0.0.0:8000`
 4. Go to [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-5. Login with the default user created admin/P3t3r3p0rt or the user credentials configured in the configuration file
+5. Login with any of users created **admin/P3t3r3p0rt** (administrator) and **viewer/v13w3r** (viewer) or the user credentials configured in the configuration file
 6. Try harder
 7. Create a report
 8. Close up and stop the server: `Ctrl + C`
@@ -101,6 +104,6 @@ https://github.com/Wandmalfarbe/pandoc-latex-template
 ## Configuration
 
 1. Stop the server if it's running: `Ctrl + C`
-2. Customize reports and configuration in `config/petereport_config.py`
+2. Customize reports and configuration in `django/config/petereport_config.py`
 3. Start the django server: `python manage.py runserver` or `python manage.py runserver 0.0.0.0:8000`
 
