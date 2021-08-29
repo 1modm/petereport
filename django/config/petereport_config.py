@@ -4,15 +4,20 @@ PETEREPORT_CONFIG = {
 	'admin_email': 'admin@petereport.pentest',
 	'viewer_username': 'viewer',
 	'viewer_password': 'v13w3r',
-	'viewer_email': 'viewer@petereport.pentest',
+	'viewer_email': 'viewer@petereport.pentest'
+}
+
+DEFECTDOJO_CONFIG = {
+	'DefectDojoURL': 'https://demo.defectdojo.org',
+	'apiKey': 'Token Key' # Format Token Key
 }
 
 DJANGO_CONFIG = {
-	'secret_key': 'django-insecure-key-CHANGEMEPLEASE',
+	'secret_key': 'django-insecure-key-CHANGEMEPLEASE-pKj9bd9h7*RMCuU',
 	'debug': True,
 	'admin_module': True,
 	'allowed_hosts': '[\'*\']',
-	'server_host': 'http://127.0.0.1:8000',
+	'server_host': 'http://127.0.0.1:8000'
 }
 
 PETEREPORT_TEMPLATES = {

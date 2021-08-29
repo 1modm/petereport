@@ -1,6 +1,5 @@
 # PeTeReport 
 
-
 <h4 align="center">A simple, fast, Pentesting content management and reporting tool</h4>
 
 <h1 align="center">
@@ -35,12 +34,16 @@ Focused in product security the tool help security researchers and pentesters to
 | CSV Output format                                   | ✔ |
 | PDF Output format                                   | ✔ |
 | Markdown Output format                              | ✔ |
-| Jupyter Output format                               |   |
 | CVSS 3.1 Score                                      | ✔ |
 | Docker installation                                 | ✔ |
-| DefectDojo integration                              |   |
+| DefectDojo integration                              | ✔ |
 | User management                                     | ✔ |
 
+
+## TODO
+
+- [ ] Jupyter Output format
+- [ ] API
 
 ## Demo
 

@@ -38,6 +38,8 @@ urlpatterns = [
     path('finding/closed/', views.closedfindings, name='closedfindings'),
     path('finding/csv/<int:pk>', views.downloadfindingscsv, name='downloadfindingscsv'),
     path('findings/upload/<int:pk>', views.upload_csv_findings, name='upload_csv_findings'),
+    path('findings/defectdojo/products/<int:pk>', views.defectdojo_products, name='defectdojo_products'),
+    path('findings/defectdojo/import/<int:pk>/<int:ddpk>', views.defectdojo_import, name='defectdojo_import'),
     # Appendix
     path('report/appendix/<int:pk>', views.reportappendix, name='reportappendix'),
     path('appendix/add/<int:pk>', views.appendix_add, name='appendix_add'),

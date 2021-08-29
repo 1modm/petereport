@@ -8,8 +8,6 @@
 
 {% block content %}
   
-
-
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
@@ -25,16 +23,16 @@
         </div>
       </div>
 
-
       <br>
 
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-12">
 
           {% if user.groups.all.0|stringformat:'s' == "administrator" %}
             <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-danger"><i class="fa fa-edit"></i> Add Finding</button></a> 
             <a href="/template/add/finding/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> Add Finding from template</button></a> 
             <a href="/findings/upload/{{ DB_report_query.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-upload"></i> Upload Findings</button></a>
+            <a href="/findings/defectdojo/products/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-upload"></i> Import Findings from DefectDojo</button></a>
           {% endif %}
 
         </div>
@@ -112,10 +110,10 @@
                                       <a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{ finding.cwe.cwe_id }}</a>
                                   </td>
                                   <td align="center">
-                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-folder"></i> View</button></a>
+                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> View</button></a>
 
                                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                        <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> Edit</button></a> 
+                                        <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
                                         <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> Delete</button>
                                       {% endif %}
                                       
