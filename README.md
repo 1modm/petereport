@@ -33,6 +33,7 @@ Focused in product security the tool help security researchers and pentesters to
 | HTML Output format                                  | ✔ |
 | CSV Output format                                   | ✔ |
 | PDF Output format                                   | ✔ |
+| Jupyter Notebook Output format                      | ✔ |
 | Markdown Output format                              | ✔ |
 | CVSS 3.1 Score                                      | ✔ |
 | Docker installation                                 | ✔ |
@@ -42,7 +43,7 @@ Focused in product security the tool help security researchers and pentesters to
 
 ## TODO
 
-- [ ] Jupyter Output format
+- [ ] Docx Output format
 - [ ] API
 
 ## Demo

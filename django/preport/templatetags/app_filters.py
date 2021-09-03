@@ -12,7 +12,7 @@ register = template.Library()
 @register.filter('findings_count')
 def findings_count(reports):
     """
-    usage example {{ value1|findings_count:value2 }}
+    usage example {{ value1|findings_count }}
     """
     count_findings = 0
 
@@ -22,3 +22,13 @@ def findings_count(reports):
 
     return count_findings
 
+
+@register.filter('jupyter_format')
+def jupyter_format(text):
+    """
+    usage example {{ string|jupyter_format}}
+    """
+
+    formated_text = "\\n".join(line.strip() for line in text.splitlines())
+
+    return mark_safe(formated_text)

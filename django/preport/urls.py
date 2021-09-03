@@ -28,6 +28,7 @@ urlpatterns = [
     path('report/download/markdown/<int:pk>', views.reportdownloadmarkdown, name='reportdownloadmarkdown'),
     path('report/download/html/<int:pk>', views.reportdownloadhtml, name='reportdownloadhtml'),
     path('report/download/pdf/<int:pk>', views.reportdownloadpdf, name='reportdownloadpdf'),
+    path('report/download/jupyter/<int:pk>', views.reportdownloadjupyter, name='reportdownloadjupyter'),
     # Findings
     path('report/findings/<int:pk>', views.reportfindings, name='reportfindings'),
     path('finding/add/<int:pk>', views.finding_add, name='finding_add'),

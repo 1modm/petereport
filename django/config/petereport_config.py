@@ -30,6 +30,7 @@ PETEREPORT_TEMPLATES = {
 	'report_markdown_name': 'PEN-MD',
 	'report_html_name': 'PEN-HTML',
 	'report_pdf_name': 'PEN-PDF',
+	'report_jupyter_name': 'PEN-JUPYTER',
 	'initial_text': 'TBC',
 	'titlepage-color': "1E90FF",
 	'titlepage-text-color': "FFFAFA",

@@ -557,18 +557,20 @@ def reportdownloadmarkdown(request,pk):
         counter_finding += 1
 
         # Summary table
-        md_finding_summary += render_to_string('tpl/md_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding})
+        md_finding_summary += render_to_string('tpl/markdown/md_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding})
+
         # finding
-        md_finding += render_to_string('tpl/md_finding.md', {'finding': finding})
+        md_finding = render_to_string('tpl/markdown/md_finding.md', {'finding': finding})
+
         # appendix
         if finding.appendix_finding.all():
 
             template_appendix = "# Additional Notes\n\n"
 
             for appendix_in_finding in finding.appendix_finding.all():
-                md_finding += render_to_string('tpl/md_appendix_in_finding.md', {'appendix_in_finding': appendix_in_finding})
+                md_finding += render_to_string('tpl/markdown/md_appendix_in_finding.md', {'appendix_in_finding': appendix_in_finding})
 
-                md_appendix = render_to_string('tpl/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
+                md_appendix = render_to_string('tpl/markdown/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
 
                 template_appendix += ''.join(md_appendix)
 
@@ -577,8 +579,7 @@ def reportdownloadmarkdown(request,pk):
         
         template_findings += ''.join(md_finding)
 
-
-    render_md = render_to_string('tpl/md_report.md', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
+    render_md = render_to_string('tpl/markdown/md_report.md', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
 
     final_markdown = textwrap.dedent(render_md)
     final_markdown_output = mark_safe(final_markdown)
@@ -634,7 +635,7 @@ def reportdownloadhtml(request,pk):
 
 
     # Summary table
-    finding_summary_table = render_to_string('tpl/html_finding_summary_table.html')
+    finding_summary_table = render_to_string('tpl/html/html_finding_summary_table.html')
 
     # FINDINGS
     for finding in DB_finding_query:
@@ -662,10 +663,10 @@ def reportdownloadhtml(request,pk):
             counter_finding_info += 1 
 
         # Summary table
-        finding_summary_table += render_to_string('tpl/html_finding_summary.html', {'finding': finding, 'counter_finding': counter_finding, 'color_text_severity': color_text_severity})
+        finding_summary_table += render_to_string('tpl/html/html_finding_summary.html', {'finding': finding, 'counter_finding': counter_finding, 'color_text_severity': color_text_severity})
         
         # finding
-        html_finding = render_to_string('tpl/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity})
+        html_finding = render_to_string('tpl/html/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity})
 
         # appendix
         if finding.appendix_finding.all():
@@ -673,13 +674,13 @@ def reportdownloadhtml(request,pk):
             template_appendix = "# Additional Notes\n\n"
 
             for appendix_in_finding in finding.appendix_finding.all():
-                html_finding += render_to_string('tpl/md_appendix_in_finding.md', {'appendix_in_finding': appendix_in_finding})
+                html_finding += render_to_string('tpl/html/md_appendix_in_finding.md', {'appendix_in_finding': appendix_in_finding})
 
-                html_appendix = render_to_string('tpl/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
+                html_appendix = render_to_string('tpl/html/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
 
                 template_appendix += ''.join(html_appendix)
 
-            html_finding += render_to_string('tpl/html_finding_close_table.html')
+            html_finding += render_to_string('tpl/html/html_finding_close_table.html')
 
         else:
             html_finding += "N/A </td> </tr> </tbody> </table>"
@@ -688,9 +689,9 @@ def reportdownloadhtml(request,pk):
         template_findings += ''.join(html_finding)
 
     # Summary table end
-    finding_summary_table += render_to_string('tpl/html_finding_end_table.html')
+    finding_summary_table += render_to_string('tpl/html/html_finding_end_table.html')
 
-    render_md = render_to_string('tpl/html_report.md', {'DB_report_query': DB_report_query, 'template_findings': mark_safe(template_findings), 'template_appendix': mark_safe(template_appendix), 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'finding_summary_table': finding_summary_table})
+    render_md = render_to_string('tpl/html/html_report.md', {'DB_report_query': DB_report_query, 'template_findings': mark_safe(template_findings), 'template_appendix': mark_safe(template_appendix), 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'finding_summary_table': finding_summary_table})
 
     final_markdown = textwrap.dedent(render_md)
     final_markdown_output = mark_safe(final_markdown)
@@ -793,30 +794,32 @@ def reportdownloadpdf(request,pk):
             severity_box = 'infobox'
 
         # Summary table
-        pdf_finding_summary += render_to_string('tpl/pdf_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding, 'severity_box': severity_box})
+        pdf_finding_summary += render_to_string('tpl/pdf/pdf_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding, 'severity_box': severity_box})
         
         severity_color_finding = "\\textcolor{" + f"{severity_color}" +"}{" + f"{finding.severity}" + "}"
                 
-        pdf_finding = render_to_string('tpl/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding})
+        # finding
+        pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding})
 
+        # appendix
         if finding.appendix_finding.all():
 
             template_appendix = "# Additional Notes\n\n"
 
             for appendix_in_finding in finding.appendix_finding.all():
-                pdf_finding += render_to_string('tpl/pdf_appendix_in_finding.md', {'appendix_in_finding': appendix_in_finding})
-                pdf_appendix = render_to_string('tpl/pdf_appendix.md', {'appendix_in_finding': appendix_in_finding})
+                pdf_finding += render_to_string('tpl/pdf/pdf_appendix_in_finding.md', {'appendix_in_finding': appendix_in_finding})
+                pdf_appendix = render_to_string('tpl/pdf/pdf_appendix.md', {'appendix_in_finding': appendix_in_finding})
                 template_appendix += ''.join(pdf_appendix)
         else:
-            pdf_finding += render_to_string('tpl/pdf_appendix_na_in_finding.md')
+            pdf_finding += render_to_string('tpl/pdf/pdf_appendix_na_in_finding.md')
 
 
         template_findings += ''.join(pdf_finding)
 
 
-    pdf_markdown_report = render_to_string('tpl/pdf_header.yaml', {'DB_report_query': DB_report_query, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'titlepagecolor': PETEREPORT_TEMPLATES['titlepage-color'], 'titlepagetextcolor': PETEREPORT_TEMPLATES['titlepage-text-color'], 'titlerulecolor': PETEREPORT_TEMPLATES['titlepage-rule-color'], 'titlepageruleheight': PETEREPORT_TEMPLATES['titlepage-rule-height'] })
+    pdf_markdown_report = render_to_string('tpl/pdf/pdf_header.yaml', {'DB_report_query': DB_report_query, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'titlepagecolor': PETEREPORT_TEMPLATES['titlepage-color'], 'titlepagetextcolor': PETEREPORT_TEMPLATES['titlepage-text-color'], 'titlerulecolor': PETEREPORT_TEMPLATES['titlepage-rule-color'], 'titlepageruleheight': PETEREPORT_TEMPLATES['titlepage-rule-height'] })
 
-    pdf_markdown_report += render_to_string('tpl/pdf_report.md', {'DB_report_query': DB_report_query, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image, 'pdf_finding_summary': pdf_finding_summary, 'template_findings': template_findings, 'template_appendix': template_appendix})
+    pdf_markdown_report += render_to_string('tpl/pdf/pdf_report.md', {'DB_report_query': DB_report_query, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image, 'pdf_finding_summary': pdf_finding_summary, 'template_findings': template_findings, 'template_appendix': template_appendix})
 
     final_markdown = textwrap.dedent(pdf_markdown_report)
     final_markdown_output = mark_safe(final_markdown)
@@ -824,7 +827,7 @@ def reportdownloadpdf(request,pk):
     pathfile = f"pdf/{name_file}"
     pdf_file_output = os.path.join(REPORTS_MEDIA_ROOT, pathfile)
 
-    header_file = "pdf_header.tex"
+    header_file = "pdf/pdf_header.tex"
     PDF_HEADER_FILE = os.path.join(TEMPLATES_ROOT, header_file)
 
     PETEREPORT_LATEX_FILE = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['pdf_latex_template'])
@@ -841,6 +844,90 @@ def reportdownloadpdf(request,pk):
 
     raise Http404
 
+
+
+
+
+@login_required
+def reportdownloadjupyter(request,pk):
+
+    # DB
+    DB_report_query = get_object_or_404(DB_Report, pk=pk)
+    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+
+    # Datetime
+    today = datetime.date.today().strftime('%Y-%m-%d')
+    nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
+
+    # MD filename
+    name_file = PETEREPORT_TEMPLATES['report_jupyter_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.ipynb'
+
+    # INIT
+    template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = ""
+    counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
+    md_author = PETEREPORT_MARKDOWN['author']
+    md_subject = PETEREPORT_MARKDOWN['subject']
+    md_website = PETEREPORT_MARKDOWN['website']
+
+    
+    # IMAGES
+    if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
+        report_executive_summary_image = DB_report_query.executive_summary_image
+        report_executive_categories_image = DB_report_query.categories_summary_image
+    elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
+        report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
+        report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
+
+
+    # FINDINGS
+    for finding in DB_finding_query:
+        counter_finding += 1
+
+        if finding.severity == 'Critical':
+            counter_finding_critical += 1 
+        elif finding.severity == 'High':
+            counter_finding_high += 1 
+        elif finding.severity == 'Medium':
+            counter_finding_medium += 1 
+        elif finding.severity == 'Low':
+            counter_finding_low += 1 
+        else:
+            counter_finding_info += 1 
+
+        # Summary table
+        ipynb_finding_summary += render_to_string('tpl/jupyter/finding_summary.ipynb', {'finding': finding, 'counter_finding': counter_finding})
+        
+        # finding
+        ipynb_finding = render_to_string('tpl/jupyter/finding.ipynb', {'finding': finding})
+
+        # appendix
+        if finding.appendix_finding.all():
+
+            template_appendix = render_to_string('tpl/jupyter/additional_notes.ipynb')
+
+            for appendix_in_finding in finding.appendix_finding.all():
+                ipynb_finding += render_to_string('tpl/jupyter/appendix_in_finding.ipynb', {'appendix_in_finding': appendix_in_finding})
+
+                ipynb_appendix = render_to_string('tpl/jupyter/appendix.ipynb', {'appendix_in_finding': appendix_in_finding})
+
+                template_appendix += ''.join(ipynb_appendix)
+
+        else:
+            ipynb_finding += render_to_string('tpl/jupyter/NA.ipynb')
+        
+        template_findings += ''.join(ipynb_finding)
+
+    render_jupyter = render_to_string('tpl/jupyter/report.ipynb', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'finding_summary': ipynb_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
+
+    final_markdown = textwrap.dedent(render_jupyter)
+    final_markdown_output = mark_safe(final_markdown)
+
+    # Create the HttpResponse object with the appropriate header.
+    response = HttpResponse(final_markdown_output, content_type='application/x-ipynb+json')
+    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
+
+    return response
 
 
 
