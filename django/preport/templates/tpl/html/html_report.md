@@ -58,3 +58,5 @@ colorlinks: true
 {{template_findings}}
 
 {{template_appendix}}
+
+{{template_attacktree}}

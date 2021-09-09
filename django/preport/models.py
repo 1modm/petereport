@@ -55,8 +55,8 @@ class DB_Finding(models.Model):
 # ---------- Finding templates ------------
 
 class DB_Finding_Template(models.Model):
-	finding_id = models.CharField(blank=True, max_length=200)
-	title = models.CharField(blank=True, max_length=200)
+	finding_id = models.CharField(blank=False, max_length=200)
+	title = models.CharField(blank=False, max_length=200)
 	severity = models.CharField(blank=True, max_length=200)
 	cvss_base_score = models.CharField(blank=True, max_length=200)
 	cvss_score = models.DecimalField(max_digits=3, decimal_places=1, default=0)
@@ -71,7 +71,14 @@ class DB_Finding_Template(models.Model):
 
 class DB_Appendix(models.Model):
 	finding = models.ManyToManyField(DB_Finding, related_name='appendix_finding', blank=True)
-	title = models.CharField(blank=True, max_length=200)
+	title = models.CharField(blank=False, max_length=200)
 	description = MartorField()
 
 
+# ---------- Attack Tree ------------
+
+class DB_AttackTree(models.Model):
+	finding = models.ManyToManyField(DB_Finding, related_name='attacktree_finding', blank=True)
+	title = models.CharField(blank=False, max_length=200)
+	attacktree = models.TextField(blank=True, null=True)
+	svg_file = models.TextField(blank=True, null=True)

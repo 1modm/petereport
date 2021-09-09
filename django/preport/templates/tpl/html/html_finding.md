@@ -44,8 +44,17 @@
 <td>{{finding.references|safe}}</td>
 </tr>
 
+{% if template_appendix_in_finding %}
 <tr>
-<td style="width: 15%">**Additional notes**</td>
+{{template_appendix_in_finding|safe}}
+</tr> 
+{% endif %}
 
-<td>
+{% if template_attacktree_in_finding %}
+<tr>
+{{template_attacktree_in_finding|safe}}
+</tr> 
+{% endif %}
 
+
+</tbody> </table>

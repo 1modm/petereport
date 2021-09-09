@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, PasswordInput, EmailField, BooleanField
-from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE
+from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree
 from martor.fields import MartorFormField
 
 import datetime
@@ -27,7 +27,6 @@ class NewReportForm(forms.ModelForm):
     product = ProductModelChoiceField(queryset=DB_Product.objects.all(), empty_label="(Select a product)", widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
-
         today = datetime.date.today().strftime('%Y-%m-%d')
         nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
         model = DB_Report
@@ -145,11 +144,32 @@ class AddUserForm(UserCreationForm):
 
         widgets = {
             'username': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Username"}),
-            #'password1': PasswordInput(attrs={'class': 'form-control', 'required': "required", 'placeholder': "P@assW0rd"}),
+            #'password1': PasswordInput(attrs={'class': 'form-control', 'required': "required", 'placeholder': "P@ssW0rd"}),
         }
 
     def __init__(self, *args, **kwargs):
         super(AddUserForm, self).__init__(*args, **kwargs) 
         self.fields['username'].widget.attrs.update({'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Username"})
-        self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Secret P@assW0rd'})
-        self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Secret P@assW0rd'})
+        self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Secret P@ssW0rd'})
+        self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Secret P@ssW0rd'})
+
+
+
+class NewAttackTreeForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        reportpk = kwargs.pop('reportpk')
+        super(NewAttackTreeForm, self).__init__(*args, **kwargs)
+
+        DB_finding_query = DB_Finding.objects.filter(report=reportpk)
+
+        self.fields["finding"] = FindingModelChoiceField(queryset=DB_finding_query, empty_label="(Select a finding)", widget=forms.Select(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = DB_AttackTree
+        fields = ('finding', 'title', 'attacktree', 'svg_file')
+
+        widgets = {
+            'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Title"}),
+            'attacktree': Textarea(attrs={'class': 'form-control', 'rows': "20", 'required': "required", 'placeholder': "Attack Tree"}),
+        }

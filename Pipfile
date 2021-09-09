@@ -12,5 +12,6 @@ requests			= ">=2.25.1"
 martor				= "==1.6.3"
 pypandoc			= "==1.6.3"
 termcolor			= "==1.1.0"
+cairosvg			= "==2.5.2"
 
 [dev-packages]

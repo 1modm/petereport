@@ -13,10 +13,10 @@ from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 
 # Forms
-from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm
+from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewAttackTreeForm
 
 # Model
-from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE
+from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree
 
 # Decorators
 from .decorators import allowed_users
@@ -33,6 +33,8 @@ import io
 import os
 from collections import Counter
 import pypandoc
+import cairosvg
+from PIL import Image
 
 # Martor
 from petereport.settings import MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, SERVER_CONF
@@ -347,6 +349,13 @@ def product_view(request,pk):
 #                           Reports 
 # ----------------------------------------------------------------------
 
+@login_required
+def report_list(request):
+
+    DB_report_query = DB_Report.objects.order_by('pk').all()
+
+    return render(request, 'reports/report_list.html', {'DB_report_query': DB_report_query})
+
 
 
 @login_required
@@ -414,6 +423,9 @@ def report_view(request,pk):
     DB_appendix_query = DB_Appendix.objects.filter(finding__in=DB_finding_query)
     count_appendix_query = DB_appendix_query.count()
 
+    DB_attacktree_query = DB_AttackTree.objects.filter(finding__in=DB_finding_query)
+    count_attacktree_query = DB_attacktree_query.count()
+
     count_findings_critical = 0
     count_findings_high = 0
     count_findings_medium = 0
@@ -449,7 +461,7 @@ def report_view(request,pk):
         cwe_categories.append(dict_cwe)
 
 
-    return render(request, 'reports/report_view.html', {'DB_appendix_query': DB_appendix_query, 'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_appendix_query': count_appendix_query, 'count_finding_query': count_finding_query, 'count_findings_critical': count_findings_critical, 'count_findings_high': count_findings_high, 'count_findings_medium': count_findings_medium, 'count_findings_low': count_findings_low, 'count_findings_info': count_findings_info, 'cwe_categories': cwe_categories})
+    return render(request, 'reports/report_view.html', {'DB_appendix_query': DB_appendix_query, 'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_appendix_query': count_appendix_query, 'count_finding_query': count_finding_query, 'count_findings_critical': count_findings_critical, 'count_findings_high': count_findings_high, 'count_findings_medium': count_findings_medium, 'count_findings_low': count_findings_low, 'count_findings_info': count_findings_info, 'cwe_categories': cwe_categories, 'DB_attacktree_query': DB_attacktree_query, 'count_attacktree_query': count_attacktree_query})
 
 
 
@@ -555,28 +567,36 @@ def reportdownloadmarkdown(request,pk):
     # FINDINGS
     for finding in DB_finding_query:
         counter_finding += 1
+        template_appendix_in_finding = template_attacktree_in_finding = None
 
         # Summary table
         md_finding_summary += render_to_string('tpl/markdown/md_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding})
-
-        # finding
-        md_finding = render_to_string('tpl/markdown/md_finding.md', {'finding': finding})
 
         # appendix
         if finding.appendix_finding.all():
 
             template_appendix = "# Additional Notes\n\n"
+            template_appendix_in_finding = "**Additional notes**\n"
 
             for appendix_in_finding in finding.appendix_finding.all():
-                md_finding += render_to_string('tpl/markdown/md_appendix_in_finding.md', {'appendix_in_finding': appendix_in_finding})
-
                 md_appendix = render_to_string('tpl/markdown/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
 
                 template_appendix += ''.join(md_appendix)
+                template_appendix_in_finding += ''.join(appendix_in_finding.title + "\n")
 
-        else:
-            md_finding += "N/A\n"
-        
+        # attack trees
+        if finding.attacktree_finding.all():
+
+            template_attacktree_in_finding = "**Attack tree**\n"
+
+            for attacktree_in_finding in finding.attacktree_finding.all():
+                md_attacktree = render_to_string('tpl/markdown/md_attacktree.md', {'attacktree_in_finding': attacktree_in_finding})
+
+                template_attacktree_in_finding += ''.join(md_attacktree + "\n")
+
+        # finding
+        md_finding = render_to_string('tpl/markdown/md_finding.md', {'finding': finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
+
         template_findings += ''.join(md_finding)
 
     render_md = render_to_string('tpl/markdown/md_report.md', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
@@ -640,6 +660,7 @@ def reportdownloadhtml(request,pk):
     # FINDINGS
     for finding in DB_finding_query:
         counter_finding += 1
+        template_appendix_in_finding = template_attacktree_in_finding = None
 
         if finding.severity == 'Critical':
             color_cell_bg = CRITICAL
@@ -665,26 +686,39 @@ def reportdownloadhtml(request,pk):
         # Summary table
         finding_summary_table += render_to_string('tpl/html/html_finding_summary.html', {'finding': finding, 'counter_finding': counter_finding, 'color_text_severity': color_text_severity})
         
-        # finding
-        html_finding = render_to_string('tpl/html/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity})
 
         # appendix
         if finding.appendix_finding.all():
 
             template_appendix = "# Additional Notes\n\n"
+            template_appendix_in_finding = "<td style=\"width: 15%\">**Additional notes**</td><td>\n"
 
             for appendix_in_finding in finding.appendix_finding.all():
-                html_finding += render_to_string('tpl/html/md_appendix_in_finding.md', {'appendix_in_finding': appendix_in_finding})
-
                 html_appendix = render_to_string('tpl/html/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
 
                 template_appendix += ''.join(html_appendix)
+                template_appendix_in_finding += ''.join(appendix_in_finding.title + "<br>")
 
-            html_finding += render_to_string('tpl/html/html_finding_close_table.html')
+            template_appendix_in_finding += ''.join("</td>\n")
 
-        else:
-            html_finding += "N/A </td> </tr> </tbody> </table>"
         
+        # attack trees
+        if finding.attacktree_finding.all():
+
+            template_attacktree_in_finding = "<td style=\"width: 15%\">**Attack tree**</td><td>\n"
+
+            for attacktree_in_finding in finding.attacktree_finding.all():
+                html_attacktree = render_to_string('tpl/html/md_attacktree.md', {'attacktree_in_finding': attacktree_in_finding})
+                
+                html_attacktree_svg = (html_attacktree.replace("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"", "")).replace("\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">", "")
+
+                template_attacktree_in_finding += ''.join(html_attacktree_svg + "<br>")
+                
+            template_attacktree_in_finding += ''.join("</td>\n")
+
+
+        # finding
+        html_finding = render_to_string('tpl/html/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
 
         template_findings += ''.join(html_finding)
 
@@ -756,6 +790,7 @@ def reportdownloadpdf(request,pk):
 
     for finding in DB_finding_query:
         counter_finding += 1
+        template_appendix_in_finding = template_attacktree_in_finding = ''
 
         if finding.severity == 'Critical':
             color_cell_bg = CRITICAL
@@ -798,21 +833,50 @@ def reportdownloadpdf(request,pk):
         
         severity_color_finding = "\\textcolor{" + f"{severity_color}" +"}{" + f"{finding.severity}" + "}"
                 
-        # finding
-        pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding})
-
         # appendix
         if finding.appendix_finding.all():
 
             template_appendix = "# Additional Notes\n\n"
+            template_appendix_in_finding = "**Additional notes**\n\n"
 
             for appendix_in_finding in finding.appendix_finding.all():
-                pdf_finding += render_to_string('tpl/pdf/pdf_appendix_in_finding.md', {'appendix_in_finding': appendix_in_finding})
-                pdf_appendix = render_to_string('tpl/pdf/pdf_appendix.md', {'appendix_in_finding': appendix_in_finding})
-                template_appendix += ''.join(pdf_appendix)
-        else:
-            pdf_finding += render_to_string('tpl/pdf/pdf_appendix_na_in_finding.md')
 
+                pdf_appendix = render_to_string('tpl/pdf/pdf_appendix.md', {'appendix_in_finding': appendix_in_finding})
+
+                template_appendix += ''.join(pdf_appendix)
+                template_appendix_in_finding += ''.join(appendix_in_finding.title + "\n")
+
+            template_appendix_in_finding += ''.join("\\pagebreak")
+
+        else:
+            template_appendix_in_finding += ''.join("\\pagebreak")
+
+        # attack trees
+        if finding.attacktree_finding.all():
+
+            template_attacktree_in_finding = "**Attack tree**\n\n"
+
+            for attacktree_in_finding in finding.attacktree_finding.all():
+
+                img = cairosvg.svg2png(bytestring=attacktree_in_finding.svg_file)
+                byte_io = io.BytesIO()
+                img = Image.open(io.BytesIO(img))
+
+                img.save(byte_io,format="PNG") 
+                image_content_base64 = base64.b64encode(byte_io.getbuffer()).decode('utf-8')
+                image_content_base64_final = 'data:image/png;base64,' + image_content_base64
+
+                pdf_attacktree = render_to_string('tpl/pdf/pdf_attacktree.md', {'attacktree_in_finding': attacktree_in_finding, 'image_content_base64': image_content_base64_final})
+        
+                template_attacktree_in_finding += ''.join(pdf_attacktree + "\n")
+
+            template_attacktree_in_finding += ''.join("\\pagebreak")
+
+        else:
+            template_attacktree_in_finding += ''.join("\\pagebreak")
+
+        # finding
+        pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
 
         template_findings += ''.join(pdf_finding)
 
@@ -883,6 +947,7 @@ def reportdownloadjupyter(request,pk):
     # FINDINGS
     for finding in DB_finding_query:
         counter_finding += 1
+        template_appendix_in_finding = template_attacktree_in_finding = ''
 
         if finding.severity == 'Critical':
             counter_finding_critical += 1 
@@ -915,10 +980,33 @@ def reportdownloadjupyter(request,pk):
 
         else:
             ipynb_finding += render_to_string('tpl/jupyter/NA.ipynb')
+
+
+        # attack trees
+        if finding.attacktree_finding.all():
+
+            template_attacktree = render_to_string('tpl/jupyter/attacktrees.ipynb')
+
+            for attacktree_in_finding in finding.attacktree_finding.all():
+
+                img = cairosvg.svg2png(bytestring=attacktree_in_finding.svg_file)
+                byte_io = io.BytesIO()
+                img = Image.open(io.BytesIO(img))
+
+                img.save(byte_io,format="PNG") 
+                image_content_base64 = base64.b64encode(byte_io.getbuffer()).decode('utf-8')
+                image_content_base64_final = 'data:image/png;base64,' + image_content_base64
+
+                ipynb_finding += render_to_string('tpl/jupyter/attacktree_in_finding.ipynb', {'attacktree_in_finding': attacktree_in_finding})
+
+                ipynb_attacktree = render_to_string('tpl/jupyter/attacktree.ipynb', {'attacktree_in_finding': attacktree_in_finding, 'image_content_base64': image_content_base64_final})
+
+                template_attacktree += ''.join(ipynb_attacktree)
+                
         
         template_findings += ''.join(ipynb_finding)
 
-    render_jupyter = render_to_string('tpl/jupyter/report.ipynb', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'finding_summary': ipynb_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
+    render_jupyter = render_to_string('tpl/jupyter/report.ipynb', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'template_attacktree': template_attacktree, 'finding_summary': ipynb_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
 
     final_markdown = textwrap.dedent(render_jupyter)
     final_markdown_output = mark_safe(final_markdown)
@@ -1038,8 +1126,9 @@ def finding_view(request,pk):
     finding = get_object_or_404(DB_Finding, pk=pk)
     DB_finding_query = DB_Finding.objects.filter(pk=pk).order_by('cvss_score').reverse()
     DB_appendix = DB_Appendix.objects.filter(finding__in=DB_finding_query)
+    DB_attacktree = DB_AttackTree.objects.filter(finding__in=DB_finding_query)
 
-    return render(request, 'findings/finding_view.html', {'DB_report': finding.report, 'finding': finding, 'DB_appendix': DB_appendix})
+    return render(request, 'findings/finding_view.html', {'DB_report': finding.report, 'finding': finding, 'DB_appendix': DB_appendix, 'DB_attacktree': DB_attacktree})
 
 
 
@@ -1056,11 +1145,11 @@ def downloadfindingscsv(request,pk):
 
     csv.register_dialect('MMDialect', quoting=csv.QUOTE_ALL, skipinitialspace=True)
     writer = csv.writer(response, dialect='MMDialect')
-    writer.writerow(["ID", "Status", "Title", "Severity", "CVSS Base Score", "CVSS Score", "CWE", "CWEid", "Description", "Location", "Impact", "Recommendation", "References", "Appendix", "Appendix Description"])
+    writer.writerow(["ID", "Status", "Title", "Severity", "CVSS Base Score", "CVSS Score", "CWE", "CWE ID", "Description", "Location", "Impact", "Recommendation", "References", "Appendix", "Appendix Description"])
 
     for finding in DB_finding_query:
         cwe_title = f"{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
-        cwe_id = finding.cwe.id
+        cwe_id = finding.cwe.cwe_id
 
         if finding.appendix_finding.exists():
             for appendix in finding.appendix_finding.all():
@@ -1465,3 +1554,140 @@ def cwe_list(request):
 
     return render(request, 'cwe/cwe_list.html', {'DB_cwe_query': DB_cwe_query})
 
+
+
+# ----------------------------------------------------------------------
+#                           Attack Tree 
+# ----------------------------------------------------------------------
+
+
+@login_required
+def reportattacktree(request,pk):
+    DB_report_query = get_object_or_404(DB_Report, pk=pk)
+    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+    DB_attacktree_query = DB_AttackTree.objects.filter(finding__in=DB_finding_query)
+
+    count_attacktree_query = DB_attacktree_query.count()
+
+    return render(request, 'attacktree/reportattacktree.html', {'DB_report_query': DB_report_query, 'DB_attacktree_query': DB_attacktree_query, 'count_attacktree_query': count_attacktree_query})
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def attacktree_delete(request,pk):
+
+    attacktree = get_object_or_404(DB_AttackTree, pk=pk)
+    finding_pk = attacktree.finding.first().pk
+    DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
+    report = DB_finding_query.report
+
+    DB_AttackTree.objects.filter(pk=pk).delete()
+    
+    return redirect('reportattacktree', pk=report.pk)
+
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def attacktree_add(request,pk):
+
+    DB_report_query = get_object_or_404(DB_Report, pk=pk)
+
+    initial_attack_tree = '''facts:
+- asset1: Asset 1
+  from:
+  - attack1
+- asset2: Asset 2
+  from:
+  - attack2
+
+attacks:
+- attack1: Attack 1
+  from:
+  - mitigation1
+- attack2: Attack 2
+  from:
+  - mitigation2
+- attack3: Attack 3
+  from:
+  - mitigation2
+
+mitigations:
+- mitigation1: Mitigation 1
+  from:
+  - reality
+- mitigation2: Mitigation 2
+  from:
+  - reality
+
+goals:
+- asset_compromised: Asset Compromised
+  from:
+  - asset1
+  - asset2
+  - attack3
+    '''
+
+    if request.method == 'POST':
+        form = NewAttackTreeForm(request.POST, reportpk=pk)
+        if form.is_valid():
+            attacktree = form.save(commit=False)            
+            finding_pk = form['finding'].value()
+            DB_finding_m2m = get_object_or_404(DB_Finding, pk=finding_pk)
+            attacktree.save()
+            attacktree.finding.add(finding_pk)
+
+            if '_finish' in request.POST:
+                return redirect('reportattacktree', pk=pk)
+            elif '_next' in request.POST:
+                return redirect('attacktree_add', pk=pk)
+    else:
+        form = NewAttackTreeForm(reportpk=pk)
+        form.fields['title'].initial = 'TBD'
+        form.fields['attacktree'].initial = initial_attack_tree
+
+    return render(request, 'attacktree/attacktree_add.html', {
+        'form': form, 'DB_report_query': DB_report_query
+    })
+
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def attacktree_edit(request,pk):
+
+    attacktree_db = get_object_or_404(DB_AttackTree, pk=pk)
+    finding_pk = attacktree_db.finding.first().pk
+    DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
+
+    report = DB_finding_query.report
+    DB_report_query = get_object_or_404(DB_Report, pk=report.pk)
+
+    if request.method == 'POST':
+        form = NewAttackTreeForm(request.POST, instance=attacktree_db, reportpk=report.pk)
+        if form.is_valid():
+            attacktree = form.save(commit=False)
+            new_finding_pk = form['finding'].value()
+            New_DB_finding = DB_Finding.objects.filter(pk=new_finding_pk)
+            attacktree.save()
+            attacktree.finding.set(New_DB_finding, clear=True)
+
+            if '_finish' in request.POST:
+                return redirect('reportattacktree', pk=report.pk)
+            elif '_next' in request.POST:
+                return redirect('attacktree_add', pk=report.pk)
+    else:
+        form = NewAttackTreeForm(reportpk=report.pk, instance=attacktree_db, initial={'finding': finding_pk})
+
+    return render(request, 'attacktree/attacktree_add.html', {
+        'form': form, 'DB_report_query': DB_report_query
+    })
+
+
+@login_required
+def attacktree_view(request,pk):
+    attacktree = get_object_or_404(DB_AttackTree, pk=pk)
+    finding_pk = attacktree.finding.first().pk
+    DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
+
+    return render(request, 'attacktree/attacktree_view.html', {'DB_finding_query': DB_finding_query, 'DB_attacktree': attacktree})

@@ -1,30 +1,35 @@
 ## {{finding.title}}
 
-**Severity:** {{finding.severity}}
+**Severity:** {{finding.severity|safe}}
 
-**CVSS Score:** {{finding.cvss_base_score}}
+**CVSS Score:** {{finding.cvss_base_score|safe}}
 
-**CWE:** {{finding.cwe.cwe_id}} - {{finding.cwe.cwe_name}}
+**CWE:** {{finding.cwe.cwe_id|safe}} - {{finding.cwe.cwe_name|safe}}
 
 **Description**
 
-{{finding.description}}
+{{finding.description|safe}}
 
 **Location**
 
-{{finding.location}}
+{{finding.location|safe}}
 
 **Impact**
 
-{{finding.impact}}
+{{finding.impact|safe}}
 
 **Recommendation**
 
-{{finding.recommendation}}
+{{finding.recommendation|safe}}
 
 **References**
 
-{{finding.references}}
+{{finding.references|safe}}
 
-**Additional notes**
+{% if template_appendix_in_finding %}
+{{template_appendix_in_finding|safe}}
+{% endif %}
 
+{% if template_attacktree_in_finding %}
+{{template_attacktree_in_finding|safe}}
+{% endif %}

@@ -1,0 +1,164 @@
+{% extends 'home/template.html' %}
+
+{% block title %} Attack Tree {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>Report: {{DB_report_query.title}} - {{ DB_report_query.report_id }} </h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
+          <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-md-12">
+
+            <div class="card card-outline card-info">
+              <div class="card-header">
+                <h3 class="card-title">Security decision trees</h3>
+              </div>
+
+                <div class="card-body">
+                  <p>
+                  The visualization of the attack path of a vulnerability or finding has been implemented adapting a web app that simplifies building attack decision trees as described in the Security Chaos Engineering report: <a href="https://www.deciduous.app/">Deciduous</a>
+                  </p>
+
+                  <p>
+                  So all the credits to <a href="https://twitter.com/swagitda_">@swagitda</a>. How to / getting started guide: <a href="https://swagitda.com/blog/posts/deciduous-attack-tree-app/">https://swagitda.com/blog/posts/deciduous-attack-tree-app/</a>
+                  </p>
+
+                  <p>
+                  Also if needed to attach an Attack Path Planner I recommend you to take a look into: <a href="https://jackson_t.gitlab.io/walter-planner/">Walter: Attack Path Planner</a>
+                  </p>
+
+                </div>
+        </div>
+
+      </div>
+    </div>
+</section>
+
+
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-md-12">
+
+            <div class="card card-outline card-success">
+              <div class="card-header">
+                <h3 class="card-title">Attack Tree</h3>
+              </div>
+              
+              <form role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card-body">
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Finding</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.finding }}
+                      </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Title</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.title }}
+                      </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Attack Tree</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.attacktree }}
+                      </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.svg_file.as_hidden }}
+                    </div>
+                  </div>
+
+
+                </div>
+
+                <div class="card-footer">
+                  <a id="UpdateRenderTarget"><button type="submit" class="btn btn-danger" value="Save" name="_finish">Save and finish</button></a>
+                  <a id="downloadLink" download="decision-tree.dot"><button type="button" class="btn btn-info"><i class="fa fa-download"></i> Download DOT</button></a>
+                  <a id="downloadSvgLink" download="decision-tree.svg"><button type="button" class="btn btn-info"><i class="fa fa-download"></i> Download SVG</button></a>
+                </div>
+              </form>
+            </div>
+
+        </div>
+
+
+      </div>
+    </div>
+</section>
+
+
+
+
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+
+        <div class="col-md-12">
+            <div class="card card-outline card-success">
+              <div class="card-header">
+                <h3 class="card-title">Attack Tree</h3>
+              </div>
+
+              <center>
+                  <div id="errorTarget"></div>
+                  <div id="renderTarget"></div>
+              <center>
+            </div>
+        </div>
+
+      </div>
+    </div>
+</section>
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+
+  {{ block.super}}
+
+<!-- Deciduous Attack Tree -->
+<script src="https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<script src="/static/deciduous/deciduous.js"></script>
+
+{% endblock javascripts %}
+
+
+
+

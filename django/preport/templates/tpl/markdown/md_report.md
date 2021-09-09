@@ -49,4 +49,3 @@ website: {{md_website}}
 {{template_findings}}
 
 {{template_appendix}}
-

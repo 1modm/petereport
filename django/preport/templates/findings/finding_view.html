@@ -319,7 +319,41 @@
                 </div>
                 <div class="card-body">
                   {% for appendix in DB_appendix %}
-                    <p>{{appendix.title}}</p>
+                    <p>{{ appendix.title|safe_markdown }}</p>
+                    <p>{{ appendix.description|safe_markdown }}</p>
+                    <hr>
+                  {% endfor %}
+                </div>
+              </div>
+        </div>
+      </div>
+    {% endif %}
+
+
+    {% if DB_attacktree %}
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>Attack Tree</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {% for attacktree in DB_attacktree %}
+                    <p>{{ attacktree.title|safe_markdown }}</p>
+                    <center>
+                      <p>{{ attacktree.svg_file|safe }}</p>
+                    </center>
+                    <hr>
                   {% endfor %}
                 </div>
               </div>

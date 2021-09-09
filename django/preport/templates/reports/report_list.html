@@ -1,127 +1,38 @@
 {% extends 'home/template.html' %}
 
-{% load martortags %}
+{% load app_filters %}
 
-{% block title %} Product Details {% endblock title %}
+{% block title %} Report List {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
 {% endblock stylesheets %}
 
 {% block content %}
-  
 
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
-
           <div class="col-sm-6">
-            <h1>Product {{ DB_product_query.name }}</h1>
+            <h1>Report List</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">Home</a></li>
-              <li class="breadcrumb-item"><a href="/product/list/">Products</a></li>
-              <li class="breadcrumb-item active">{{ DB_product_query.name }}</li>
+              <li class="breadcrumb-item active">Reports</li>
             </ol>
           </div>
         </div>
       </div>
     </section>
 
-
-
     <section class="content">
-      <div class="container-fluid">
-      <hr>
 
-      <div class="row">
-        <div class="col-lg-3 col-xs-6">
-
-          <div class="small-box bg-info">
-            <div class="inner">
-              <h3>{{count_product_report}}</h3> 
-              <p>Reports</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-file-code"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-xs-6">
-
-          <div class="small-box bg-green">
-            <div class="inner">
-              <h3>{{product_findings}}</h3>
-
-              <p>Findings</p>
-            </div>
-            <div class="icon">
-              <i class="fa fa-bug"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-xs-6">
-
-          <div class="small-box bg-yellow">
-            <div class="inner">
-              <h3>{{count_product_findings_medium}}</h3>
-
-              <p>Medium Severity Findings</p>
-            </div>
-            <div class="icon">
-              <i class="fa fa-exclamation-triangle"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-xs-6">
-
-          <div class="small-box bg-red">
-            <div class="inner">
-              <h3>{{count_product_findings_critical_high}}</h3>
-
-              <p>Critical/High Severity Findings</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-radiation-alt"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-  
-
-
-      <div class="row">
-        <div class="col-md-12">
-
-            <div class="card card-outline card-primary">
-                <div class="card-header">
-                  <h3 class="card-title">
-                    <dt>Description</dt>
-                  </h3>
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="card-body">
-                    <p>{{ DB_product_query.description | safe_markdown }}</p>
-                </div>
-              </div>
-        </div>
-      </div>
-
-
-
+    <div class="container-fluid">
       <div class="card card-outline card-primary">
         <div class="card-header">
-          <h3 class="card-title">
-            <dt>Reports</dt>
-          </h3>
+          <h3 class="card-title">{{ DB_report_query.count }} Reports</h3>
+
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
               <i class="fas fa-minus"></i>
@@ -132,10 +43,10 @@
           <table id="reportlist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                    <th style="width: 20%">ID</th>
-                    <th style="width: 35%">Report</th>
-                    <th style="width: 5%">Date</th>
-                    <th style="width: 15%">Findings</th>
+                    <th style="width: 18%">ID</th>
+                    <th style="width: 33%">Report</th>
+                    <th style="width: 12%">Product</th>
+                    <th style="width: 12%">Findings</th>
                     <th style="width: 25%" class="text-center">Actions</th>
                   </tr>
               </thead>
@@ -145,7 +56,7 @@
                   <tr>
                     <td>{{ report.report_id }} </td>
                     <td>{{ report.title }} </td>
-                    <td>{{ report.creation_date | date:"d-m-Y" }} </td>
+                    <td>{{ report.product.name }} </td>
                     <td>
                       <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> Findings
                     </td>
@@ -185,11 +96,12 @@
               </tbody>
           </table>
         </div>
+       
       </div>
+      
     </div>
   </section>
 
-<br>
 
 
 {% endblock content %}
@@ -210,5 +122,7 @@
   });
 </script>
 
-
 {% endblock javascripts %}
+
+
+

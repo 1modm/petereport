@@ -83,16 +83,38 @@
 
           </li>
 
-        {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+
           <li class="nav-item">
-            <a href="/report/add" class="nav-link">
+            <a href="/product/list" class="nav-link">
               <i class="nav-icon fas fa-copy text-success"></i>
               <p>
-                Add Report
+                Reports
+                <i class="right fas fa-angle-left"></i>
               </p>
             </a>
-          </li>
+
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/report/list" class="nav-link">
+                  <i class="nav-icon fas fa-table"></i>
+                  <p>All Reports</p>
+                </a>
+              </li>
+            </ul>
+
+        {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/report/add" class="nav-link">
+                  <i class="nav-icon fas fa-edit"></i>
+                  <p>Add Report</p>
+                </a>
+              </li>
+            </ul>
         {% endif %}
+
+          </li>
+
 
           <li class="nav-item">
             <a href="/finding/open/" class="nav-link">

@@ -20,6 +20,7 @@ urlpatterns = [
     path('product/delete/<int:pk>', views.product_delete, name='product_delete'),
     path('product/view/<int:pk>', views.product_view, name='product_view'),
     # Reports
+    path('report/list/', views.report_list, name='report_list'),
     path('report/add/', views.report_add, name='report_add'),
     path('report/view/<int:pk>', views.report_view, name='report_view'),
     path('report/edit/<int:pk>', views.report_edit, name='report_edit'),
@@ -57,4 +58,10 @@ urlpatterns = [
     path('template/edit/<int:pk>', views.template_edit, name='template_edit'),
     # CWE
     path('cwe/list/', views.cwe_list, name='cwe_list'),
+    # Attack Tree
+    path('report/attacktree/<int:pk>', views.reportattacktree, name='reportattacktree'),
+    path('attacktree/add/<int:pk>', views.attacktree_add, name='attacktree_add'),
+    path('attacktree/delete/<int:pk>', views.attacktree_delete, name='attacktree_delete'),
+    path('attacktree/edit/<int:pk>', views.attacktree_edit, name='attacktree_edit'),
+    path('attacktree/view/<int:pk>', views.attacktree_view, name='attacktree_view'),
 ]
