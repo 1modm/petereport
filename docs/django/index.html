@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="M">
+  <link rel="canonical" href="https://1modm.github.io/petereport/django/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Django - PeTeReport</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Django";
+    var mkdocs_page_input_path = "django.md";
+    var mkdocs_page_url = "/petereport/django/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> PeTeReport</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <p class="caption"><span class="caption-text">Getting Started</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">PeTeReport</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Installation and deployment</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../docker/">Docker</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Django</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#environment">Environment</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#pipenv">Pipenv</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#latex">Latex</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pandoc">Pandoc</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eisvogel">Eisvogel</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#petereport">PeTeReport</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#start-the-server">Start the server</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#upgrade-petereport">Upgrade PeTeReport</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#clean-petereport">Clean PeTeReport</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../default_creds/">Default Credentials</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">User Guide</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../users/">User management</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../products/">Products</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../reports/">Reports</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../findings/">Findings</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../appendix/">Appendix</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../attacktree/">Attack tree</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">PeTeReport</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Installation and deployment &raquo;</li>
+        
+      
+    
+    <li>Django</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/1modm/petereport/edit/main/docs/django.md"> Edit on petereport</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="django-installation">Django installation</h1>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>PeTeReport requires Python ≥ 3.8. Recommended installation requires <code>pip</code>. As a base requirement, the following packages are needed:</p>
+<ul>
+<li>Ubuntu/Debian: <code>$ sudo apt-get install python3-pip python3-venv build-essential</code></li>
+<li>OpenSuse: <code>$ sudo zypper install python3-devel gcc</code></li>
+<li>CentOS: <code>$ sudo yum install python3-devel gcc</code></li>
+</ul>
+<h2 id="environment">Environment</h2>
+<p>It is strongly recommended to set up the installation in a <a href="https://pipenv.pypa.io/en/latest/">virtual environment (Pipenv)</a>:</p>
+<h3 id="pipenv">Pipenv</h3>
+<ul>
+<li><strong>Linux:</strong> <code>$ sudo apt-get install pipenv</code></li>
+<li><strong>pip:</strong> <code>$ python3 -m pip install pipenv</code></li>
+<li><strong>MAC:</strong> <code>$ brew install pipenv</code></li>
+</ul>
+<h2 id="dependencies">Dependencies</h2>
+<p><strong>Easiest way in Linux (ubuntu):</strong> <code>$ sudo bash scripts/ubuntu_environment_install.sh</code></p>
+<h3 id="latex"><a href="https://www.tug.org/texlive/">Latex</a></h3>
+<p><strong>Linux:</strong></p>
+<pre><code class="language-bash">$ sudo apt-get install texlive-full
+</code></pre>
+<p><strong>Mac:</strong></p>
+<pre><code class="language-bash">$ brew remove basictex
+$ brew cask install mactex
+</code></pre>
+<h3 id="pandoc"><a href="https://pandoc.org/installing.html">Pandoc</a></h3>
+<p><strong>Linux:</strong></p>
+<pre><code class="language-bash">$ sudo apt-get install pandoc
+$ sudo apt-get install python3-pypandoc
+</code></pre>
+<p><strong>Mac:</strong></p>
+<pre><code class="language-bash">$ brew install pandoc
+$ brew install pandoc-citeproc
+</code></pre>
+<h3 id="eisvogel"><a href="https://github.com/Wandmalfarbe/pandoc-latex-template">Eisvogel</a></h3>
+<pre><code class="language-bash">$ python3 -m pip install pandoc-latex-environment
+</code></pre>
+<ol>
+<li>Download the latest version of the Eisvogel template from the release page.</li>
+<li>Extract the downloaded ZIP archive and open the folder.</li>
+<li>Move the template eisvogel.tex to your pandoc templates folder and rename the file to eisvogel.latex. The location of the templates folder depends on your operating system: <code>/Users/$USER/.pandoc/templates/eisvogel.latex</code> or <code>/home/$USER/.pandoc/templates</code></li>
+</ol>
+<h2 id="petereport">PeTeReport</h2>
+<ol>
+<li>Clone the project and cd into PeTeReport: <code>cd petereport/</code></li>
+<li>Create a new virtual environment and installing dependencies: <code>pipenv install</code></li>
+<li>Run the virtual environment: <code>pipenv shell</code></li>
+<li>Go to Django PeTeReport: <code>cd django/</code></li>
+<li>Create the database: <code>python manage.py migrate</code></li>
+<li>Make the latest database changes: <code>python manage.py makemigrations</code></li>
+<li>Super user <strong>admin/P3t3r3p0rt</strong> will be created, but you can create a new super user: <code>python manage.py createsuperuser</code></li>
+<li>Populate the CWE data <code>python manage.py loaddata config/cwe-list.json</code></li>
+</ol>
+<h3 id="start-the-server">Start the server</h3>
+<ol>
+<li>Run the virtual environment: <code>pipenv shell</code></li>
+<li>Go to Django PeTeReport: <code>cd django/</code></li>
+<li>Start the django server: <code>python manage.py runserver</code> or <code>python manage.py runserver 0.0.0.0:8000</code></li>
+<li>Go to <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a></li>
+<li>Login with any of users created <strong>admin/P3t3r3p0rt</strong> (administrator) and <strong>viewer/v13w3r</strong> (viewer) or the user credentials configured in the configuration file</li>
+<li>Try harder</li>
+<li>Create a report</li>
+<li>Close up and stop the server: <code>Ctrl + C</code></li>
+</ol>
+<h3 id="upgrade-petereport">Upgrade PeTeReport</h3>
+<ol>
+<li>Stop the server if it's running: <code>Ctrl + C</code></li>
+<li>Pull the latest code base via git: <code>git pull</code> or download the source and replace the files.</li>
+<li>Setup any additional dependencies: <code>pipenv install</code></li>
+<li>Run the virtual environment: <code>pipenv shell</code></li>
+<li>Make the latest database changes: <code>python manage.py makemigrations</code></li>
+<li>Make the latest database changes: <code>python manage.py migrate</code></li>
+<li>Start the server: <code>python manage.py runserver</code></li>
+<li>Try harder again</li>
+</ol>
+<h3 id="clean-petereport">Clean PeTeReport</h3>
+<ol>
+<li>Stop the server if it's running: <code>Ctrl + C</code></li>
+<li>Run the virtual environment: <code>pipenv shell</code></li>
+<li>Go to Django PeTeReport: <code>cd django/</code></li>
+<li>Run cleaner: <code>python clean.py</code></li>
+<li>Make the latest database changes: <code>python manage.py makemigrations</code></li>
+<li>Make the latest database changes: <code>python manage.py migrate</code></li>
+<li>Start the server: <code>python manage.py runserver</code></li>
+<li>Try harder again</li>
+</ol>
+<h3 id="configuration">Configuration</h3>
+<ol>
+<li>Stop the server if it's running: <code>Ctrl + C</code></li>
+<li>Customize reports and configuration in <code>django/config/petereport_config.py</code></li>
+<li>Start the django server: <code>python manage.py runserver</code> or <code>python manage.py runserver 0.0.0.0:8000</code></li>
+</ol>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../default_creds/" class="btn btn-neutral float-right" title="Default Credentials">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../docker/" class="btn btn-neutral" title="Docker"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../docker/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../default_creds/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
