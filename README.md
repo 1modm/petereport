@@ -17,7 +17,7 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 
 ## Documentation
 
-![Documentation](https://1modm.github.io/petereport/)
+[Documentation](https://1modm.github.io/petereport/)
 
 ## Installation and deployment
 
