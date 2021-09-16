@@ -194,7 +194,7 @@ $ brew install pandoc-citeproc
 <li>Clone the project and cd into PeTeReport: <code>cd petereport/</code></li>
 <li>Create a new virtual environment and installing dependencies: <code>pipenv install</code></li>
 <li>Run the virtual environment: <code>pipenv shell</code></li>
-<li>Go to Django PeTeReport: <code>cd django/</code></li>
+<li>Go to Django PeTeReport App: <code>cd app/</code></li>
 <li>Create the database: <code>python manage.py migrate</code></li>
 <li>Make the latest database changes: <code>python manage.py makemigrations</code></li>
 <li>Super user <strong>admin/P3t3r3p0rt</strong> will be created, but you can create a new super user: <code>python manage.py createsuperuser</code></li>
@@ -203,7 +203,7 @@ $ brew install pandoc-citeproc
 <h3 id="start-the-server">Start the server</h3>
 <ol>
 <li>Run the virtual environment: <code>pipenv shell</code></li>
-<li>Go to Django PeTeReport: <code>cd django/</code></li>
+<li>Go to Django PeTeReport App: <code>cd app/</code></li>
 <li>Start the django server: <code>python manage.py runserver</code> or <code>python manage.py runserver 0.0.0.0:8000</code></li>
 <li>Go to <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a></li>
 <li>Login with any of users created <strong>admin/P3t3r3p0rt</strong> (administrator) and <strong>viewer/v13w3r</strong> (viewer) or the user credentials configured in the configuration file</li>
@@ -226,7 +226,7 @@ $ brew install pandoc-citeproc
 <ol>
 <li>Stop the server if it's running: <code>Ctrl + C</code></li>
 <li>Run the virtual environment: <code>pipenv shell</code></li>
-<li>Go to Django PeTeReport: <code>cd django/</code></li>
+<li>Go to Django PeTeReport App: <code>cd app/</code></li>
 <li>Run cleaner: <code>python clean.py</code></li>
 <li>Make the latest database changes: <code>python manage.py makemigrations</code></li>
 <li>Make the latest database changes: <code>python manage.py migrate</code></li>
@@ -236,7 +236,7 @@ $ brew install pandoc-citeproc
 <h3 id="configuration">Configuration</h3>
 <ol>
 <li>Stop the server if it's running: <code>Ctrl + C</code></li>
-<li>Customize reports and configuration in <code>django/config/petereport_config.py</code></li>
+<li>Customize reports and configuration in <code>app/config/petereport_config.py</code></li>
 <li>Start the django server: <code>python manage.py runserver</code> or <code>python manage.py runserver 0.0.0.0:8000</code></li>
 </ol>
               
