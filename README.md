@@ -30,7 +30,7 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 - [x] Customizable reports templates
 - [x] Findings template database
 - [x] Possibility to add appendix to findings
-- [x] Possibility to add attack trees [Deciduous](https://www.deciduous.app/) to findings
+- [x] Possibility to add attack trees Deciduous to findings
 - [x] HTML Output format
 - [x] CSV Output format
 - [x] PDF Output format
