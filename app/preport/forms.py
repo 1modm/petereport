@@ -63,7 +63,7 @@ class NewFindingForm(forms.ModelForm):
 
     severity = forms.ChoiceField(choices=severity_choices, required=True, widget=forms.Select(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Critical/High/Medium/Low/Info/None"}))
     status = forms.ChoiceField(choices=status_choices, required=True, widget=forms.Select(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Open/Close"}))
-    cwe = CWEModelChoiceField(queryset=DB_CWE.objects.all(), empty_label="(Select a CWE)", widget=forms.Select(attrs={'class': 'form-control'}))
+    cwe = CWEModelChoiceField(queryset=DB_CWE.objects.all(), empty_label="(Select a CWE)", widget=forms.Select(attrs={'class': 'form-control select2CWE'}))
 
     class Meta:
         model = DB_Finding
