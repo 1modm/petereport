@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="card-body">
-                    <div id="CWEPieChartEcharts" style="width:90%; height:350px;"></div>
+                    <div id="CWEPieChartEcharts" style="width:100%; height:350px;"></div>
                 </div>
 
               </div>
@@ -233,6 +233,16 @@ var CURRENT_URL = window.location.href.split('#')[0].split('?')[0],
             tooltip: {
                 trigger: 'item',
                 formatter: '{b} <br>{c}'
+            },
+            toolbox: {
+              show: true,
+              feature: {
+                  saveAsImage: {
+                    show: true,
+                    title: "Save Image",
+                    name: "Breakdown_by_Categories"
+                  }
+              }
             },
             series: [
                 {

@@ -61,4 +61,3 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 - [MD Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-MD_Offensive_Security_Network_202108181118.md "MD Sample")
 - [CSV Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-CSV_Offensive_Security_Network_202108181118.csv "CSV Sample")
 
-

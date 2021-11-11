@@ -21,7 +21,11 @@
 
 <tr>
 <td style="width: 15%">**Description**</td>
-<td>{{finding.description|safe}}</td>
+<td>
+
+{{finding.description|safe}}
+
+</td>
 </tr>
 
 <tr>
