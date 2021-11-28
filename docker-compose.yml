@@ -23,7 +23,7 @@ services:
       pipenv run ./app/manage.py makemigrations &&
       pipenv run ./app/manage.py migrate &&
       pipenv run ./app/manage.py loaddata ./app/config/cwe-list.json &&
-      pipenv run gunicorn --chdir ./app petereport.wsgi:application --bind 0.0.0.0:8000"
+      pipenv run gunicorn --chdir ./app petereport.wsgi:application --timeout 120 --graceful-timeout 60 --bind 0.0.0.0:8000"
     volumes:
       - .:/opt/petereport
     expose:

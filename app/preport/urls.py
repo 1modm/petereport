@@ -64,4 +64,4 @@ urlpatterns = [
     path('attacktree/delete/<int:pk>', views.attacktree_delete, name='attacktree_delete'),
     path('attacktree/edit/<int:pk>', views.attacktree_edit, name='attacktree_edit'),
     path('attacktree/view/<int:pk>', views.attacktree_view, name='attacktree_view'),
-]
+] 

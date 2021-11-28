@@ -161,9 +161,10 @@ def index(request):
     cwe_categories = []
 
     for key_cwe, value_cwe in cwe_cat.items():
+        fixed_key_cwe = '\n'.join(key_cwe[i:i+70] for i in range(0, len(key_cwe), 70))
         dict_cwe = {
             "value": value_cwe,
-            "name": key_cwe
+            "name": fixed_key_cwe
         }
 
         cwe_categories.append(dict_cwe)
@@ -186,7 +187,7 @@ def user_list(request):
     userList = User.objects.values()
     group_list = Group.objects.all()
 
-    return render(request, 'configuration/user_list.html', {'group_list': group_list})
+    return render(request, 'configuration/user_list.html', {'userList': userList, 'group_list': group_list})
 
 
 
@@ -454,9 +455,10 @@ def report_view(request,pk):
     cwe_categories = []
 
     for key_cwe, value_cwe in cwe_cat.items():
+        fixed_key_cwe = '\n'.join(key_cwe[i:i+70] for i in range(0, len(key_cwe), 70))
         dict_cwe = {
             "value": value_cwe,
-            "name": key_cwe
+            "name": fixed_key_cwe
         }
         cwe_categories.append(dict_cwe)
 
@@ -1200,7 +1202,7 @@ def upload_csv_findings(request,pk):
         f_severity = header.index("Severity")
         f_cvss_score = header.index("CVSS Base Score")
         f_cvss = header.index("CVSS Score")
-        f_cwe = header.index("CWEid")
+        f_cwe = header.index("CWE ID")
         f_description = header.index("Description")
         f_location = header.index("Location")
         f_impact = header.index("Impact")

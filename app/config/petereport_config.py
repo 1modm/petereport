@@ -14,8 +14,8 @@ DEFECTDOJO_CONFIG = {
 
 DJANGO_CONFIG = {
 	'secret_key': 'django-insecure-key-CHANGEMEPLEASE-pKj9bd9h7*RMCuU',
-	'debug': True,
-	'admin_module': True,
+	'debug': False,
+	'admin_module': False,
 	'allowed_hosts': '[\'*\']',
 	'server_host': 'http://127.0.0.1:8000'
 }
