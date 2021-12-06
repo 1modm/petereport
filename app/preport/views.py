@@ -949,7 +949,7 @@ def reportdownloadjupyter(request,pk):
     # FINDINGS
     for finding in DB_finding_query:
         counter_finding += 1
-        template_appendix_in_finding = template_attacktree_in_finding = ''
+        template_appendix_in_finding = template_attacktree_in_finding = template_attacktree = ''
 
         if finding.severity == 'Critical':
             counter_finding_critical += 1 

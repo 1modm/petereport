@@ -10,7 +10,7 @@ titlepage: true
 titlepage-color: "{{titlepagecolor}}"
 titlepage-text-color: "{{titlepagetextcolor}}"
 titlepage-rule-color: "{{titlerulecolor}}"
-titlepage-rule-height: {{titlepageruleheight}}
+titlepage-rule-height: "{{titlepageruleheight}}"
 book: false
 toc-own-page: true
 code-block-font-size: \scriptsize
