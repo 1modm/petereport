@@ -9,7 +9,7 @@ PETEREPORT_CONFIG = {
 
 DEFECTDOJO_CONFIG = {
 	'DefectDojoURL': 'https://demo.defectdojo.org',
-	'apiKey': 'Token Key' # Format Token Key
+	'apiKey': 'Token Key' # Format: Token <api_key>
 }
 
 DJANGO_CONFIG = {

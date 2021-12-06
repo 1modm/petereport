@@ -102,7 +102,7 @@
                                         {% elif finding.severity == "Info" %}
                                             <b><font color="#45A7F7">{{ finding.severity }}</font></b>
                                         {% else %}
-                                            {{ finding.severity }}
+                                            <b>{{ finding.severity }}</b> (will not appear in the report)
                                         {% endif %}
 
                                   </td>

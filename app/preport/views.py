@@ -432,23 +432,30 @@ def report_view(request,pk):
     count_findings_medium = 0
     count_findings_low = 0
     count_findings_info = 0
+    count_findings_none = 0
 
     cwe_rows = []
     
     for finding in DB_finding_query:
-        finding_cwe = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
-        cwe_rows.append(finding_cwe)
+        # Only reporting Critical/High/Medium/Low/Info findings
+        if finding.severity == 'None':
+            count_findings_none += 1
+        else:
 
-        if finding.severity == 'Critical':
-            count_findings_critical += 1
-        elif finding.severity == 'High':
-            count_findings_high += 1
-        elif finding.severity == 'Medium':
-            count_findings_medium += 1
-        elif finding.severity == 'Low':
-            count_findings_low += 1
-        elif finding.severity == 'Info':
-            count_findings_info += 1
+            finding_cwe = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
+            cwe_rows.append(finding_cwe)
+
+            if finding.severity == 'Critical':
+                count_findings_critical += 1
+            elif finding.severity == 'High':
+                count_findings_high += 1
+            elif finding.severity == 'Medium':
+                count_findings_medium += 1
+            elif finding.severity == 'Low':
+                count_findings_low += 1
+            elif finding.severity == 'Info':
+                count_findings_info += 1
+
 
     cwe_cat = Counter(cwe_rows)
 
@@ -463,7 +470,7 @@ def report_view(request,pk):
         cwe_categories.append(dict_cwe)
 
 
-    return render(request, 'reports/report_view.html', {'DB_appendix_query': DB_appendix_query, 'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_appendix_query': count_appendix_query, 'count_finding_query': count_finding_query, 'count_findings_critical': count_findings_critical, 'count_findings_high': count_findings_high, 'count_findings_medium': count_findings_medium, 'count_findings_low': count_findings_low, 'count_findings_info': count_findings_info, 'cwe_categories': cwe_categories, 'DB_attacktree_query': DB_attacktree_query, 'count_attacktree_query': count_attacktree_query})
+    return render(request, 'reports/report_view.html', {'DB_appendix_query': DB_appendix_query, 'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_appendix_query': count_appendix_query, 'count_finding_query': count_finding_query, 'count_findings_critical': count_findings_critical, 'count_findings_high': count_findings_high, 'count_findings_medium': count_findings_medium, 'count_findings_low': count_findings_low, 'count_findings_info': count_findings_info, 'count_findings_none': count_findings_none, 'cwe_categories': cwe_categories, 'DB_attacktree_query': DB_attacktree_query, 'count_attacktree_query': count_attacktree_query})
 
 
 
@@ -568,38 +575,42 @@ def reportdownloadmarkdown(request,pk):
 
     # FINDINGS
     for finding in DB_finding_query:
-        counter_finding += 1
-        template_appendix_in_finding = template_attacktree_in_finding = None
+        # Only reporting Critical/High/Medium/Low/Info findings
+        if finding.severity == 'None':
+            pass
+        else:
+            counter_finding += 1
+            template_appendix_in_finding = template_attacktree_in_finding = None
 
-        # Summary table
-        md_finding_summary += render_to_string('tpl/markdown/md_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding})
+            # Summary table
+            md_finding_summary += render_to_string('tpl/markdown/md_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding})
 
-        # appendix
-        if finding.appendix_finding.all():
+            # appendix
+            if finding.appendix_finding.all():
 
-            template_appendix = "# Additional Notes\n\n"
-            template_appendix_in_finding = "**Additional notes**\n"
+                template_appendix = "# Additional Notes\n\n"
+                template_appendix_in_finding = "**Additional notes**\n"
 
-            for appendix_in_finding in finding.appendix_finding.all():
-                md_appendix = render_to_string('tpl/markdown/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
+                for appendix_in_finding in finding.appendix_finding.all():
+                    md_appendix = render_to_string('tpl/markdown/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
 
-                template_appendix += ''.join(md_appendix)
-                template_appendix_in_finding += ''.join(appendix_in_finding.title + "\n")
+                    template_appendix += ''.join(md_appendix)
+                    template_appendix_in_finding += ''.join(appendix_in_finding.title + "\n")
 
-        # attack trees
-        if finding.attacktree_finding.all():
+            # attack trees
+            if finding.attacktree_finding.all():
 
-            template_attacktree_in_finding = "**Attack tree**\n"
+                template_attacktree_in_finding = "**Attack tree**\n"
 
-            for attacktree_in_finding in finding.attacktree_finding.all():
-                md_attacktree = render_to_string('tpl/markdown/md_attacktree.md', {'attacktree_in_finding': attacktree_in_finding})
+                for attacktree_in_finding in finding.attacktree_finding.all():
+                    md_attacktree = render_to_string('tpl/markdown/md_attacktree.md', {'attacktree_in_finding': attacktree_in_finding})
 
-                template_attacktree_in_finding += ''.join(md_attacktree + "\n")
+                    template_attacktree_in_finding += ''.join(md_attacktree + "\n")
 
-        # finding
-        md_finding = render_to_string('tpl/markdown/md_finding.md', {'finding': finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
+            # finding
+            md_finding = render_to_string('tpl/markdown/md_finding.md', {'finding': finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
 
-        template_findings += ''.join(md_finding)
+            template_findings += ''.join(md_finding)
 
     render_md = render_to_string('tpl/markdown/md_report.md', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
 
@@ -661,68 +672,72 @@ def reportdownloadhtml(request,pk):
 
     # FINDINGS
     for finding in DB_finding_query:
-        counter_finding += 1
-        template_appendix_in_finding = template_attacktree_in_finding = None
-
-        if finding.severity == 'Critical':
-            color_cell_bg = CRITICAL
-            color_text_severity = CRITICAL
-            counter_finding_critical += 1 
-        elif finding.severity == 'High':
-            color_cell_bg = HIGH
-            color_text_severity = HIGH
-            counter_finding_high += 1 
-        elif finding.severity == 'Medium':
-            color_cell_bg = WARNING
-            color_text_severity = WARNING
-            counter_finding_medium += 1 
-        elif finding.severity == 'Low':
-            color_cell_bg = LOW
-            color_text_severity = LOW
-            counter_finding_low += 1 
+        # Only reporting Critical/High/Medium/Low/Info findings
+        if finding.severity == 'None':
+            pass
         else:
-            color_cell_bg = INFO
-            color_text_severity = INFO
-            counter_finding_info += 1 
+            counter_finding += 1
+            template_appendix_in_finding = template_attacktree_in_finding = None
 
-        # Summary table
-        finding_summary_table += render_to_string('tpl/html/html_finding_summary.html', {'finding': finding, 'counter_finding': counter_finding, 'color_text_severity': color_text_severity})
-        
+            if finding.severity == 'Critical':
+                color_cell_bg = CRITICAL
+                color_text_severity = CRITICAL
+                counter_finding_critical += 1 
+            elif finding.severity == 'High':
+                color_cell_bg = HIGH
+                color_text_severity = HIGH
+                counter_finding_high += 1 
+            elif finding.severity == 'Medium':
+                color_cell_bg = WARNING
+                color_text_severity = WARNING
+                counter_finding_medium += 1 
+            elif finding.severity == 'Low':
+                color_cell_bg = LOW
+                color_text_severity = LOW
+                counter_finding_low += 1 
+            else:
+                color_cell_bg = INFO
+                color_text_severity = INFO
+                counter_finding_info += 1 
 
-        # appendix
-        if finding.appendix_finding.all():
+            # Summary table
+            finding_summary_table += render_to_string('tpl/html/html_finding_summary.html', {'finding': finding, 'counter_finding': counter_finding, 'color_text_severity': color_text_severity})
+            
 
-            template_appendix = "# Additional Notes\n\n"
-            template_appendix_in_finding = "<td style=\"width: 15%\">**Additional notes**</td><td>\n"
+            # appendix
+            if finding.appendix_finding.all():
 
-            for appendix_in_finding in finding.appendix_finding.all():
-                html_appendix = render_to_string('tpl/html/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
+                template_appendix = "# Additional Notes\n\n"
+                template_appendix_in_finding = "<td style=\"width: 15%\">**Additional notes**</td><td>\n"
 
-                template_appendix += ''.join(html_appendix)
-                template_appendix_in_finding += ''.join(appendix_in_finding.title + "<br>")
+                for appendix_in_finding in finding.appendix_finding.all():
+                    html_appendix = render_to_string('tpl/html/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
 
-            template_appendix_in_finding += ''.join("</td>\n")
+                    template_appendix += ''.join(html_appendix)
+                    template_appendix_in_finding += ''.join(appendix_in_finding.title + "<br>")
 
-        
-        # attack trees
-        if finding.attacktree_finding.all():
+                template_appendix_in_finding += ''.join("</td>\n")
 
-            template_attacktree_in_finding = "<td style=\"width: 15%\">**Attack tree**</td><td>\n"
+            
+            # attack trees
+            if finding.attacktree_finding.all():
 
-            for attacktree_in_finding in finding.attacktree_finding.all():
-                html_attacktree = render_to_string('tpl/html/md_attacktree.md', {'attacktree_in_finding': attacktree_in_finding})
-                
-                html_attacktree_svg = (html_attacktree.replace("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"", "")).replace("\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">", "")
+                template_attacktree_in_finding = "<td style=\"width: 15%\">**Attack tree**</td><td>\n"
 
-                template_attacktree_in_finding += ''.join(html_attacktree_svg + "<br>")
-                
-            template_attacktree_in_finding += ''.join("</td>\n")
+                for attacktree_in_finding in finding.attacktree_finding.all():
+                    html_attacktree = render_to_string('tpl/html/md_attacktree.md', {'attacktree_in_finding': attacktree_in_finding})
+                    
+                    html_attacktree_svg = (html_attacktree.replace("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"", "")).replace("\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">", "")
+
+                    template_attacktree_in_finding += ''.join(html_attacktree_svg + "<br>")
+                    
+                template_attacktree_in_finding += ''.join("</td>\n")
 
 
-        # finding
-        html_finding = render_to_string('tpl/html/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
+            # finding
+            html_finding = render_to_string('tpl/html/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
 
-        template_findings += ''.join(html_finding)
+            template_findings += ''.join(html_finding)
 
     # Summary table end
     finding_summary_table += render_to_string('tpl/html/html_finding_end_table.html')
@@ -791,96 +806,100 @@ def reportdownloadpdf(request,pk):
         report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
 
     for finding in DB_finding_query:
-        counter_finding += 1
-        template_appendix_in_finding = template_attacktree_in_finding = ''
-
-        if finding.severity == 'Critical':
-            color_cell_bg = CRITICAL
-            color_text_severity = CRITICAL
-            counter_finding_critical += 1
-            icon_finding = 'important'
-            severity_color = 'criticalcolor'
-            severity_box = 'criticalbox'
-        elif finding.severity == 'High':
-            color_cell_bg = HIGH
-            color_text_severity = HIGH
-            counter_finding_high += 1
-            icon_finding = 'highnote'
-            severity_color = 'highcolor'
-            severity_box = 'highbox'
-        elif finding.severity == 'Medium':
-            color_cell_bg = WARNING
-            color_text_severity = WARNING
-            counter_finding_medium += 1
-            icon_finding = 'mediumnote'
-            severity_color = 'mediumcolor'
-            severity_box = 'mediumbox'
-        elif finding.severity == 'Low':
-            color_cell_bg = LOW
-            color_text_severity = LOW
-            counter_finding_low += 1
-            icon_finding = 'lownote'
-            severity_color = 'lowcolor'
-            severity_box = 'lowbox'
+        # Only reporting Critical/High/Medium/Low/Info findings
+        if finding.severity == 'None':
+            pass
         else:
-            color_cell_bg = INFO
-            color_text_severity = INFO
-            counter_finding_info += 1
-            icon_finding = 'debugnote'
-            severity_color = 'debugcolor'
-            severity_box = 'infobox'
+            counter_finding += 1
+            template_appendix_in_finding = template_attacktree_in_finding = ''
 
-        # Summary table
-        pdf_finding_summary += render_to_string('tpl/pdf/pdf_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding, 'severity_box': severity_box})
-        
-        severity_color_finding = "\\textcolor{" + f"{severity_color}" +"}{" + f"{finding.severity}" + "}"
-                
-        # appendix
-        if finding.appendix_finding.all():
+            if finding.severity == 'Critical':
+                color_cell_bg = CRITICAL
+                color_text_severity = CRITICAL
+                counter_finding_critical += 1
+                icon_finding = 'important'
+                severity_color = 'criticalcolor'
+                severity_box = 'criticalbox'
+            elif finding.severity == 'High':
+                color_cell_bg = HIGH
+                color_text_severity = HIGH
+                counter_finding_high += 1
+                icon_finding = 'highnote'
+                severity_color = 'highcolor'
+                severity_box = 'highbox'
+            elif finding.severity == 'Medium':
+                color_cell_bg = WARNING
+                color_text_severity = WARNING
+                counter_finding_medium += 1
+                icon_finding = 'mediumnote'
+                severity_color = 'mediumcolor'
+                severity_box = 'mediumbox'
+            elif finding.severity == 'Low':
+                color_cell_bg = LOW
+                color_text_severity = LOW
+                counter_finding_low += 1
+                icon_finding = 'lownote'
+                severity_color = 'lowcolor'
+                severity_box = 'lowbox'
+            else:
+                color_cell_bg = INFO
+                color_text_severity = INFO
+                counter_finding_info += 1
+                icon_finding = 'debugnote'
+                severity_color = 'debugcolor'
+                severity_box = 'infobox'
 
-            template_appendix = "# Additional Notes\n\n"
-            template_appendix_in_finding = "**Additional notes**\n\n"
+            # Summary table
+            pdf_finding_summary += render_to_string('tpl/pdf/pdf_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding, 'severity_box': severity_box})
+            
+            severity_color_finding = "\\textcolor{" + f"{severity_color}" +"}{" + f"{finding.severity}" + "}"
+                    
+            # appendix
+            if finding.appendix_finding.all():
 
-            for appendix_in_finding in finding.appendix_finding.all():
+                template_appendix = "# Additional Notes\n\n"
+                template_appendix_in_finding = "**Additional notes**\n\n"
 
-                pdf_appendix = render_to_string('tpl/pdf/pdf_appendix.md', {'appendix_in_finding': appendix_in_finding})
+                for appendix_in_finding in finding.appendix_finding.all():
 
-                template_appendix += ''.join(pdf_appendix)
-                template_appendix_in_finding += ''.join(appendix_in_finding.title + "\n")
+                    pdf_appendix = render_to_string('tpl/pdf/pdf_appendix.md', {'appendix_in_finding': appendix_in_finding})
 
-            template_appendix_in_finding += ''.join("\\pagebreak")
+                    template_appendix += ''.join(pdf_appendix)
+                    template_appendix_in_finding += ''.join(appendix_in_finding.title + "\n")
 
-        else:
-            template_appendix_in_finding += ''.join("\\pagebreak")
+                template_appendix_in_finding += ''.join("\\pagebreak")
 
-        # attack trees
-        if finding.attacktree_finding.all():
+            else:
+                template_appendix_in_finding += ''.join("\\pagebreak")
 
-            template_attacktree_in_finding = "**Attack tree**\n\n"
+            # attack trees
+            if finding.attacktree_finding.all():
 
-            for attacktree_in_finding in finding.attacktree_finding.all():
+                template_attacktree_in_finding = "**Attack tree**\n\n"
 
-                img = cairosvg.svg2png(bytestring=attacktree_in_finding.svg_file)
-                byte_io = io.BytesIO()
-                img = Image.open(io.BytesIO(img))
+                for attacktree_in_finding in finding.attacktree_finding.all():
 
-                img.save(byte_io,format="PNG") 
-                image_content_base64 = base64.b64encode(byte_io.getbuffer()).decode('utf-8')
-                image_content_base64_final = 'data:image/png;base64,' + image_content_base64
+                    img = cairosvg.svg2png(bytestring=attacktree_in_finding.svg_file)
+                    byte_io = io.BytesIO()
+                    img = Image.open(io.BytesIO(img))
 
-                pdf_attacktree = render_to_string('tpl/pdf/pdf_attacktree.md', {'attacktree_in_finding': attacktree_in_finding, 'image_content_base64': image_content_base64_final})
-        
-                template_attacktree_in_finding += ''.join(pdf_attacktree + "\n")
+                    img.save(byte_io,format="PNG") 
+                    image_content_base64 = base64.b64encode(byte_io.getbuffer()).decode('utf-8')
+                    image_content_base64_final = 'data:image/png;base64,' + image_content_base64
 
-            template_attacktree_in_finding += ''.join("\\pagebreak")
+                    pdf_attacktree = render_to_string('tpl/pdf/pdf_attacktree.md', {'attacktree_in_finding': attacktree_in_finding, 'image_content_base64': image_content_base64_final})
+            
+                    template_attacktree_in_finding += ''.join(pdf_attacktree + "\n")
 
-        else:
-            template_attacktree_in_finding += ''.join("\\pagebreak")
+                template_attacktree_in_finding += ''.join("\\pagebreak")
 
-        # finding
-        pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
+            else:
+                template_attacktree_in_finding += ''.join("\\pagebreak")
 
-        template_findings += ''.join(pdf_finding)
+            # finding
+            pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
+
+            template_findings += ''.join(pdf_finding)
 
 
     pdf_markdown_report = render_to_string('tpl/pdf/pdf_header.yaml', {'DB_report_query': DB_report_query, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'titlepagecolor': PETEREPORT_TEMPLATES['titlepage-color'], 'titlepagetextcolor': PETEREPORT_TEMPLATES['titlepage-text-color'], 'titlerulecolor': PETEREPORT_TEMPLATES['titlepage-rule-color'], 'titlepageruleheight': PETEREPORT_TEMPLATES['titlepage-rule-height'] })
@@ -948,65 +967,69 @@ def reportdownloadjupyter(request,pk):
 
     # FINDINGS
     for finding in DB_finding_query:
-        counter_finding += 1
-        template_appendix_in_finding = template_attacktree_in_finding = template_attacktree = ''
-
-        if finding.severity == 'Critical':
-            counter_finding_critical += 1 
-        elif finding.severity == 'High':
-            counter_finding_high += 1 
-        elif finding.severity == 'Medium':
-            counter_finding_medium += 1 
-        elif finding.severity == 'Low':
-            counter_finding_low += 1 
+        # Only reporting Critical/High/Medium/Low/Info findings
+        if finding.severity == 'None':
+            pass
         else:
-            counter_finding_info += 1 
+            counter_finding += 1
+            template_appendix_in_finding = template_attacktree_in_finding = template_attacktree = ''
 
-        # Summary table
-        ipynb_finding_summary += render_to_string('tpl/jupyter/finding_summary.ipynb', {'finding': finding, 'counter_finding': counter_finding})
-        
-        # finding
-        ipynb_finding = render_to_string('tpl/jupyter/finding.ipynb', {'finding': finding})
+            if finding.severity == 'Critical':
+                counter_finding_critical += 1 
+            elif finding.severity == 'High':
+                counter_finding_high += 1 
+            elif finding.severity == 'Medium':
+                counter_finding_medium += 1 
+            elif finding.severity == 'Low':
+                counter_finding_low += 1 
+            else:
+                counter_finding_info += 1 
 
-        # appendix
-        if finding.appendix_finding.all():
+            # Summary table
+            ipynb_finding_summary += render_to_string('tpl/jupyter/finding_summary.ipynb', {'finding': finding, 'counter_finding': counter_finding})
+            
+            # finding
+            ipynb_finding = render_to_string('tpl/jupyter/finding.ipynb', {'finding': finding})
 
-            template_appendix = render_to_string('tpl/jupyter/additional_notes.ipynb')
+            # appendix
+            if finding.appendix_finding.all():
 
-            for appendix_in_finding in finding.appendix_finding.all():
-                ipynb_finding += render_to_string('tpl/jupyter/appendix_in_finding.ipynb', {'appendix_in_finding': appendix_in_finding})
+                template_appendix = render_to_string('tpl/jupyter/additional_notes.ipynb')
 
-                ipynb_appendix = render_to_string('tpl/jupyter/appendix.ipynb', {'appendix_in_finding': appendix_in_finding})
+                for appendix_in_finding in finding.appendix_finding.all():
+                    ipynb_finding += render_to_string('tpl/jupyter/appendix_in_finding.ipynb', {'appendix_in_finding': appendix_in_finding})
 
-                template_appendix += ''.join(ipynb_appendix)
+                    ipynb_appendix = render_to_string('tpl/jupyter/appendix.ipynb', {'appendix_in_finding': appendix_in_finding})
 
-        else:
-            ipynb_finding += render_to_string('tpl/jupyter/NA.ipynb')
+                    template_appendix += ''.join(ipynb_appendix)
+
+            else:
+                ipynb_finding += render_to_string('tpl/jupyter/NA.ipynb')
 
 
-        # attack trees
-        if finding.attacktree_finding.all():
+            # attack trees
+            if finding.attacktree_finding.all():
 
-            template_attacktree = render_to_string('tpl/jupyter/attacktrees.ipynb')
+                template_attacktree = render_to_string('tpl/jupyter/attacktrees.ipynb')
 
-            for attacktree_in_finding in finding.attacktree_finding.all():
+                for attacktree_in_finding in finding.attacktree_finding.all():
 
-                img = cairosvg.svg2png(bytestring=attacktree_in_finding.svg_file)
-                byte_io = io.BytesIO()
-                img = Image.open(io.BytesIO(img))
+                    img = cairosvg.svg2png(bytestring=attacktree_in_finding.svg_file)
+                    byte_io = io.BytesIO()
+                    img = Image.open(io.BytesIO(img))
 
-                img.save(byte_io,format="PNG") 
-                image_content_base64 = base64.b64encode(byte_io.getbuffer()).decode('utf-8')
-                image_content_base64_final = 'data:image/png;base64,' + image_content_base64
+                    img.save(byte_io,format="PNG") 
+                    image_content_base64 = base64.b64encode(byte_io.getbuffer()).decode('utf-8')
+                    image_content_base64_final = 'data:image/png;base64,' + image_content_base64
 
-                ipynb_finding += render_to_string('tpl/jupyter/attacktree_in_finding.ipynb', {'attacktree_in_finding': attacktree_in_finding})
+                    ipynb_finding += render_to_string('tpl/jupyter/attacktree_in_finding.ipynb', {'attacktree_in_finding': attacktree_in_finding})
 
-                ipynb_attacktree = render_to_string('tpl/jupyter/attacktree.ipynb', {'attacktree_in_finding': attacktree_in_finding, 'image_content_base64': image_content_base64_final})
+                    ipynb_attacktree = render_to_string('tpl/jupyter/attacktree.ipynb', {'attacktree_in_finding': attacktree_in_finding, 'image_content_base64': image_content_base64_final})
 
-                template_attacktree += ''.join(ipynb_attacktree)
-                
-        
-        template_findings += ''.join(ipynb_finding)
+                    template_attacktree += ''.join(ipynb_attacktree)
+                    
+            
+            template_findings += ''.join(ipynb_finding)
 
     render_jupyter = render_to_string('tpl/jupyter/report.ipynb', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'template_attacktree': template_attacktree, 'finding_summary': ipynb_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
 

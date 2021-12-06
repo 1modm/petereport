@@ -79,7 +79,7 @@
 
                       <div class="row">
 
-                        <div class="col text-center">
+                        <div class="col-2 text-center">
 
                             {% if count_findings_critical > 0 %}
                               <input type="text" value="{{count_findings_critical}}" class="dial" data-min="0" data-max="{{count_findings_critical}}" data-fgColor="#cc0000" data-readOnly=true data-width="60%">
@@ -91,7 +91,7 @@
 
                         </div>
 
-                        <div class="col text-center">
+                        <div class="col-2 text-center">
 
                             {% if count_findings_high > 0 %}
                               <input type="text" value="{{count_findings_high}}" class="dial" data-min="0" data-max="{{count_findings_high}}" data-fgColor="#f50000" data-readOnly=true data-width="60%">
@@ -103,7 +103,7 @@
                         </div>
 
 
-                        <div class="col text-center">
+                        <div class="col-2 text-center">
 
                             {% if count_findings_medium > 0 %}
                               <input type="text" value="{{count_findings_medium}}" class="dial" data-min="0" data-max="{{count_findings_medium}}" data-fgColor="#fc7f03" data-readOnly=true data-width="60%">
@@ -114,7 +114,7 @@
                         <h3>Medium</h3>
                         </div>
 
-                        <div class="col text-center">
+                        <div class="col-2 text-center">
 
                             {% if count_findings_low > 0 %}
                               <input type="text" value="{{count_findings_low}}" class="dial" data-min="0" data-max="{{count_findings_low}}" data-fgColor="#05b04f" data-readOnly=true data-width="60%">
@@ -126,7 +126,7 @@
                         </div>
 
 
-                        <div class="col text-center">
+                        <div class="col-2 text-center">
 
                             {% if count_findings_info > 0 %}
                               <input type="text" value="{{count_findings_info}}" class="dial" data-min="0" data-max="{{count_findings_info}}" data-fgColor="#45a7f7" data-readOnly=true data-width="60%">
@@ -134,9 +134,21 @@
                               <input type="text" value="{{count_findings_info}}" class="dial" data-min="0" data-max="{{count_findings_info}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
                             {% endif %}
 
-                        <h3>Informational</h3>
+                        <h3>Info</h3>
                         </div>
                       
+                        <div class="col-2 text-center">
+
+                            {% if count_findings_none > 0 %}
+                              <input type="text" value="{{count_findings_none}}" class="dial" data-min="0" data-max="{{count_findings_none}}" data-fgColor="#999999" data-readOnly=true data-width="60%">
+                            {% else %}
+                              <input type="text" value="{{count_findings_none}}" class="dial" data-min="0" data-max="{{count_findings_none}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
+                            {% endif %}
+
+                        <h3>None</h3>
+                        </div>
+
+
                       </div>
 
         
@@ -422,7 +434,7 @@
                                         {% elif finding.severity == "Info" %}
                                             <b><font color="#45A7F7">{{ finding.severity }}</font></b>
                                         {% else %}
-                                            {{ finding.severity }}
+                                            <b>{{ finding.severity }}</b> (will not appear in the report)
                                         {% endif %}
 
                                   </td>
