@@ -15,6 +15,10 @@ while read -r p ; do sudo apt-get install -y $p ; done < <(cat << "EOF"
     texlive-full
     pandoc
     python3-pypandoc
+    cairosvg 
+    python3-cairosvg
+    libcairo2
+    libcairo2-dev
 EOF
 )
 

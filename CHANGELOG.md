@@ -31,4 +31,3 @@ Changelog
 ## Version 0.1
 
 * [#64f78b2](https://github.com/1modm/petereport/commit/64f78b2edf504638ee619428dd4e2a54aeb9aaab) First commit
-
