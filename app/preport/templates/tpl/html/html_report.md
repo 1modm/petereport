@@ -1,7 +1,9 @@
+{% load martortags %}
+{% load bleach_tags %}
 ---
-title: "{{DB_report_query.title}}"
-product: "{{DB_report_query.product.name}}"
-author: ["{{md_author}}", "Report ID: {{DB_report_query.report_id}}"]
+title: "{{DB_report_query.title|safe| bleach}}"
+product: "{{DB_report_query.product.name|safe| bleach}}"
+author: ["{{md_author}}", "Report ID: {{DB_report_query.report_id|safe| bleach}}"]
 date: "{{report_date}}"
 subject: "{{md_subject}}"
 subtitle: "{{DB_report_query.report_id}}"
@@ -19,11 +21,11 @@ colorlinks: true
 
 ## Description
 
-{{DB_report_query.product.description|safe}}
+{{DB_report_query.product.description|safe| bleach}}
 
 # Executive Summary
 
-{{DB_report_query.executive_summary|safe}}
+{{DB_report_query.executive_summary|safe| bleach}}
 
 ## Summary of Findings Identified
 
@@ -39,19 +41,19 @@ colorlinks: true
 
 ### In Scope
 
-{{DB_report_query.scope|safe}}
+{{DB_report_query.scope|safe| bleach}}
 
 ### Out of Scope
 
-{{DB_report_query.outofscope|safe}}
+{{DB_report_query.outofscope|safe| bleach}}
 
 ## Methodology
 
-{{DB_report_query.methodology|safe}}
+{{DB_report_query.methodology|safe| bleach}}
 
 ## Recommendations
 
-{{DB_report_query.recommendation|safe}}
+{{DB_report_query.recommendation|safe| bleach}}
 
 # Findings and Risk Analysis
 

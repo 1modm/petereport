@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## Version 0.7
+
+### Enhancements and Bugfixes:
+* [#36](https://github.com/1modm/petereport/issues/36) Security Issue - Stored XSS (Attack Tree)
+
 ## Version 0.6
 
 ### Enhancements and Bugfixes:

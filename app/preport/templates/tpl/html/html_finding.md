@@ -1,4 +1,6 @@
-## {{finding.title|safe}}
+{% load martortags %}
+{% load bleach_tags %}
+## {{finding.title|safe| bleach}}
 
 <table class="table table-bordered">
 
@@ -6,7 +8,7 @@
 
 <tr>
 <td style="width: 15%">**Severity**</td>
-<td>**<span style="color:#{{color_text_severity}}">{{finding.severity}} </span>**</td>
+<td>**<span style="color:#{{color_text_severity}}">{{finding.severity| bleach}} </span>**</td>
 </tr>
 
 <tr>
@@ -23,40 +25,40 @@
 <td style="width: 15%">**Description**</td>
 <td>
 
-{{finding.description|safe}}
+{{finding.description|safe| bleach}}
 
 </td>
 </tr>
 
 <tr>
 <td style="width: 15%">**Location**</td>
-<td>{{finding.location|safe}}</td>
+<td>{{finding.location|safe| bleach}}</td>
 </tr>
 
 <tr>
 <td style="width: 15%">**Impact**</td>
-<td>{{finding.impact|safe}}</td>
+<td>{{finding.impact|safe| bleach}}</td>
 </tr>
 
 <tr>
 <td style="width: 15%">**Recommendation**</td>
-<td>{{finding.recommendation|safe}}</td>
+<td>{{finding.recommendation|safe| bleach}}</td>
 </tr>
 
 <tr>
 <td style="width: 15%">**References**</td>
-<td>{{finding.references|safe}}</td>
+<td>{{finding.references|safe| bleach}}</td>
 </tr>
 
 {% if template_appendix_in_finding %}
 <tr>
-{{template_appendix_in_finding|safe}}
+{{template_appendix_in_finding|safe| bleach}}
 </tr> 
 {% endif %}
 
 {% if template_attacktree_in_finding %}
 <tr>
-{{template_attacktree_in_finding|safe}}
+{{template_attacktree_in_finding|safe| bleach}}
 </tr> 
 {% endif %}
 

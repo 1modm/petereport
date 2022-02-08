@@ -195,7 +195,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ finding.description|safe_markdown | bleach }}
+                  {{ finding.description | safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -350,9 +350,9 @@
                 </div>
                 <div class="card-body">
                   {% for attacktree in DB_attacktree %}
-                    <p>{{ attacktree.title|safe_markdown | bleach }}</p>
+                    <p>{{ attacktree.title | safe_markdown | bleach }}</p>
                     <center>
-                      <p>{{ attacktree.svg_file|safe }}</p>
+                      <p>{{ attacktree.svg_file|safe| bleach }}</p>
                     </center>
                     <hr>
                   {% endfor %}

@@ -239,10 +239,10 @@ REPORTS_MEDIA_ROOT = os.path.join(BASE_DIR, PETEREPORT_TEMPLATES['storage_report
 # BLEACH
 
 # Which HTML tags are allowed
-BLEACH_ALLOWED_TAGS = ['img', 'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'code', 'blockquote', 'ul', 'ol', 'li']
+BLEACH_ALLOWED_TAGS = ['svg', 'g', 'polygon', 'path', 'text', 'title', 'img', 'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'code', 'blockquote', 'ul', 'ol', 'li']
 
 # Which HTML attributes are allowed
-BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'alt', 'src', 'width', 'height']
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'alt', 'src', 'width', 'height', 'viewBox', 'id', 'class', 'transform', 'fill', 'stroke', 'points', 'd', 'text-anchor', 'x', 'y', 'font-size', 'font-family', 'font-weight', 'text-decoration', 'font-variant']
 
 # Which CSS properties are allowed in 'style' attributes (assuming
 # style is an allowed attribute)
