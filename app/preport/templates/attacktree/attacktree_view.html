@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load martortags %}
+{% load bleach_tags %}
 
 {% block title %} Attack Tree Details {% endblock title %}
 
@@ -50,7 +51,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ DB_attacktree.title|safe_markdown }}
+                  {{ DB_attacktree.title| safe_markdown | bleach }}
                 </div>
               </div>
 

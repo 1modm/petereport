@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load martortags %}
+{% load bleach_tags %}
 
 {% block title %} Attack Tree {% endblock title %}
 
@@ -111,7 +112,8 @@
                             </div>
                             <div class="modal-footer justify-content-between">
                               <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                              <a href="/attacktree/delete/{{ attacktree.pk }}"><button type="button" class="btn btn-outline-light">Delete Attack Tree</button></a>
+                              <button type="button" onclick="DeleteID({{attacktree.pk}});" class="btn btn-outline-light">Delete Attack Tree</button>
+
                             </div>
                           </div>
                         </div>
@@ -152,6 +154,23 @@
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#attackt_wrapper .col-md-6:eq(0)');
   });
+</script>
+
+<script>
+  function DeleteID(del_id) {
+        $.ajax({
+            type: 'POST',
+            url: "/attacktree/delete/",
+            headers:{
+              "X-CSRFToken": '{{ csrf_token }}'
+            },
+            data : { 'delete_id': del_id},
+
+            success : function(json) {
+              document.location.href = "/report/attacktree/{{DB_report_query.pk}}"; 
+            }
+        })
+  }
 </script>
 
 {% endblock javascripts %}

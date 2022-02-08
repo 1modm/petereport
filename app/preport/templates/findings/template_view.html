@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load martortags %}
+{% load bleach_tags %}
 
 {% block title %} Template Details {% endblock title %}
 
@@ -20,7 +21,7 @@
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">Home</a></li>
               <li class="breadcrumb-item"><a href="/template/list/">Templates</a></li>
-              <li class="breadcrumb-item active">{{ DB_Template.title}}</li>
+              <li class="breadcrumb-item active">{{ DB_Template.title| safe_markdown | bleach}}</li>
             </ol>
           </div>
         </div>
@@ -42,7 +43,7 @@
                 <div class="card-header">
                   <h3 class="card-title">
                     <i class="far fa-chart-bar"></i>
-                    Summary
+                    <b>Summary</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -68,7 +69,7 @@
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">CWE</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cwe.cwe_id}} - {{DB_Template.cwe.cwe_name }}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cwe.cwe_id }} - {{DB_Template.cwe.cwe_name }}</span>
                           </div>
                         </div>
                       </div>
@@ -129,7 +130,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    Title
+                    <b>Title</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -139,7 +140,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ DB_Template.title|safe_markdown }}
+                  {{ DB_Template.title|safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -154,7 +155,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    Description
+                   <b> Description</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -164,7 +165,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ DB_Template.description|safe_markdown }}
+                  {{ DB_Template.description|safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -180,7 +181,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    Location
+                    <b>Location</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -190,7 +191,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ DB_Template.location|safe_markdown }}
+                  {{ DB_Template.location|safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -204,7 +205,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    Impact
+                    <b>Impact</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -214,7 +215,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ DB_Template.impact|safe_markdown }}
+                  {{ DB_Template.impact|safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -228,7 +229,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    Recommendation
+                    <b>Recommendation</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -238,7 +239,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ DB_Template.recommendation|safe_markdown }}
+                  {{ DB_Template.recommendation|safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -252,7 +253,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    References
+                    <b>References</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -262,7 +263,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ DB_Template.references|safe_markdown }}
+                  {{ DB_Template.references|safe_markdown | bleach}}
                 </div>
               </div>
 

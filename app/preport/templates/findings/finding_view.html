@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load martortags %}
+{% load bleach_tags %}
 
 {% block title %} Finding Details {% endblock title %}
 
@@ -70,7 +71,7 @@
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">Product</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ DB_report.product.name }}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_report.product.name | safe_markdown | bleach}}</span>
                           </div>
                         </div>
                       </div>
@@ -78,7 +79,7 @@
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">Report</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ DB_report.title }}<span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_report.title | safe_markdown | bleach}}<span>
                           </span></span></div>
                         </div>
                       </div>
@@ -100,7 +101,7 @@
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">CVSS Score</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_base_score }}<span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_base_score | safe_markdown | bleach}}<span>
                           </span></span></div>
                         </div>
                       </div>
@@ -113,7 +114,7 @@
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">Status</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.status }}<span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.status | safe_markdown | bleach}}<span>
                           </span></span></div>
                         </div>
                       </div>
@@ -169,7 +170,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ finding.title|safe_markdown }}
+                  {{ finding.title|safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -194,7 +195,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ finding.description|safe_markdown }}
+                  {{ finding.description|safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -220,7 +221,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ finding.location|safe_markdown }}
+                  {{ finding.location|safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -244,7 +245,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ finding.impact|safe_markdown }}
+                  {{ finding.impact|safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -268,7 +269,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ finding.recommendation|safe_markdown }}
+                  {{ finding.recommendation| safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -292,7 +293,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ finding.references|safe_markdown }}
+                  {{ finding.references|safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -319,8 +320,8 @@
                 </div>
                 <div class="card-body">
                   {% for appendix in DB_appendix %}
-                    <p>{{ appendix.title|safe_markdown }}</p>
-                    <p>{{ appendix.description|safe_markdown }}</p>
+                    <p>{{ appendix.title|safe_markdown | bleach }}</p>
+                    <p>{{ appendix.description|safe_markdown | bleach }}</p>
                     <hr>
                   {% endfor %}
                 </div>
@@ -349,7 +350,7 @@
                 </div>
                 <div class="card-body">
                   {% for attacktree in DB_attacktree %}
-                    <p>{{ attacktree.title|safe_markdown }}</p>
+                    <p>{{ attacktree.title|safe_markdown | bleach }}</p>
                     <center>
                       <p>{{ attacktree.svg_file|safe }}</p>
                     </center>

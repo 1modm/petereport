@@ -2,6 +2,8 @@
 
 {% load martortags %}
 
+{% load bleach_tags %}
+
 {% block title %} Product Details {% endblock title %}
 
 {% block stylesheets %}
@@ -109,8 +111,10 @@
                   </div>
                 </div>
                 <div class="card-body">
-                    <p>{{ DB_product_query.description | safe_markdown }}</p>
+                    <p>{{ DB_product_query.description | safe_markdown | bleach }}</p>
                 </div>
+
+
               </div>
         </div>
       </div>
@@ -174,7 +178,8 @@
                               </div>
                               <div class="modal-footer justify-content-between">
                                 <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                                <a href="/report/delete/{{ report.pk }}"><button type="button" class="btn btn-outline-light">Delete Report</button></a>
+
+                                <button type="button" onclick="DeleteID({{report.pk}});" class="btn btn-outline-light">Delete Report</button>
                               </div>
                             </div>
                           </div>
@@ -210,5 +215,21 @@
   });
 </script>
 
+<script>
+  function DeleteID(del_id) {
+        $.ajax({
+            type: 'POST',
+            url: "/report/delete/",
+            headers:{
+              "X-CSRFToken": '{{ csrf_token }}'
+            },
+            data : { 'delete_id': del_id},
+
+            success : function(json) {
+              document.location.href = "/report/list/"; 
+            }
+        })
+  }
+</script>
 
 {% endblock javascripts %}

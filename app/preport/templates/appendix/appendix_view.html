@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load martortags %}
+{% load bleach_tags %}
 
 {% block title %} Appendix Details {% endblock title %}
 
@@ -52,7 +53,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ DB_appendix_query.title|safe_markdown }}
+                  {{ DB_appendix_query.title| safe_markdown | bleach }}
                 </div>
               </div>
 
@@ -75,7 +76,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ DB_appendix_query.description|safe_markdown }}
+                  {{ DB_appendix_query.description| safe_markdown | bleach }}
                 </div>
               </div>
         </div>

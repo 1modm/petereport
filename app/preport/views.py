@@ -11,6 +11,7 @@ from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
+from django.views.decorators.csrf import csrf_protect
 
 # Forms
 from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewAttackTreeForm
@@ -245,12 +246,18 @@ def user_edit(request,pk):
     return render(request, 'configuration/user_add.html', {'form': form})
 
 
+
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def user_delete(request,pk):
-    User.objects.filter(pk=pk).delete()
-    return redirect('user_list')
+def user_delete(request):
 
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        User.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponse('{"status":"fail"}', content_type='application/json')
 
 
 # ----------------------------------------------------------------------
@@ -313,9 +320,16 @@ def product_edit(request,pk):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def product_delete(request,pk):
-    DB_Product.objects.filter(pk=pk).delete()
-    return redirect('product_list')
+def product_delete(request):
+
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_Product.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponse('{"status":"fail"}', content_type='application/json')
+
 
 
 
@@ -390,10 +404,17 @@ def report_add(request):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def report_delete(request,pk):
-    report = get_object_or_404(DB_Report, pk=pk)
-    DB_Report.objects.filter(pk=pk).delete()
-    return redirect('product_view', pk=report.product.pk)
+def report_delete(request):
+
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_Report.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponse('{"status":"fail"}', content_type='application/json')
+
+
 
 
 @login_required
@@ -1134,15 +1155,18 @@ def finding_edit(request,pk):
 
 
 
+
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def finding_delete(request,pk):
+def finding_delete(request):
 
-    finding = get_object_or_404(DB_Finding, pk=pk)
-    report = finding.report
-    DB_Finding.objects.filter(pk=pk).delete()
-    
-    return redirect('reportfindings', pk=report.pk)
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_Finding.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponse('{"status":"fail"}', content_type='application/json')
 
 
 
@@ -1430,18 +1454,20 @@ def appendix_edit(request,pk):
 
 
 
+
+
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def appendix_delete(request,pk):
+def appendix_delete(request):
 
-    appendix = get_object_or_404(DB_Appendix, pk=pk)
-    finding_pk = appendix.finding.first().pk
-    DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
-    report = DB_finding_query.report
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_Appendix.objects.filter(pk=delete_id).delete()
 
-    DB_Appendix.objects.filter(pk=pk).delete()
-    
-    return redirect('reportappendix', pk=report.pk)
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponse('{"status":"fail"}', content_type='application/json')
+
 
 
 @login_required
@@ -1526,12 +1552,17 @@ def template_edit(request, pk):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def template_delete(request,pk):
+def template_delete(request):
 
-    finding_template = get_object_or_404(DB_Finding_Template, pk=pk)
-    DB_Finding_Template.objects.filter(pk=pk).delete()
-    
-    return redirect('template_list')
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_Finding_Template.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponse('{"status":"fail"}', content_type='application/json')
+
+
 
 @login_required
 def template_view(request,pk):
@@ -1597,18 +1628,19 @@ def reportattacktree(request,pk):
     return render(request, 'attacktree/reportattacktree.html', {'DB_report_query': DB_report_query, 'DB_attacktree_query': DB_attacktree_query, 'count_attacktree_query': count_attacktree_query})
 
 
+
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def attacktree_delete(request,pk):
+def attacktree_delete(request):
 
-    attacktree = get_object_or_404(DB_AttackTree, pk=pk)
-    finding_pk = attacktree.finding.first().pk
-    DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
-    report = DB_finding_query.report
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_AttackTree.objects.filter(pk=delete_id).delete()
 
-    DB_AttackTree.objects.filter(pk=pk).delete()
-    
-    return redirect('reportattacktree', pk=report.pk)
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponse('{"status":"fail"}', content_type='application/json')
+
 
 
 

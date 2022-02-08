@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## Version 0.6
+
+### Enhancements and Bugfixes:
+* [#34](https://github.com/1modm/petereport/issues/34) Security Issue - CSRF (Delete user,product,etc) [#35](https://github.com/1modm/petereport/issues/35) Security Issue -Stored XSS (markdown)
+
+
 ## Version 0.5
 
 ### Enhancements and Bugfixes:

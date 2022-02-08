@@ -13,5 +13,6 @@ martor				= "==1.6.3"
 pypandoc			= "==1.6.3"
 termcolor			= "==1.1.0"
 cairosvg			= "==2.5.2"
+django-bleach		= "==1.0.0"
 
 [dev-packages]
