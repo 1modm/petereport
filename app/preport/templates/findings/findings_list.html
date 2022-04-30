@@ -64,7 +64,7 @@
                           {% for finding in DB_finding_query %}
                           <tr>
                                   <td>
-                                      {{ finding.title }}
+                                      {{ finding.title  | bleach }}
                                   </td>
 
                                   <td>
@@ -88,7 +88,7 @@
                                       {{ finding.cvss_score }}
                                   </td>
                                   <td>
-                                    <a href="/report/view/{{finding.report.id}}">{{ finding.report.title }}</a>
+                                    <a href="/report/view/{{finding.report.id}}">{{ finding.report.title  | bleach }}</a>
                                   </td>
                                   <td align="center">
                                       <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-folder"></i> View</button></a>

@@ -940,7 +940,7 @@ def reportdownloadpdf(request,pk):
 
     output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings'])
     #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
-    print(output_pypandoc)
+    #print(output_pypandoc)
 
     if os.path.exists(pdf_file_output):
             with open(pdf_file_output, 'rb') as fh:

@@ -16,7 +16,7 @@ services:
   petereport:
     build:
       context: .
-      dockerfile: ./app/config/Dockerfile
+      dockerfile: ./Dockerfile
     command: bash -c "
       sleep 1 &&
       pipenv install &&

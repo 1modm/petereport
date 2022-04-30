@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## Version 0.8
+
+### Enhancements and Bugfixes:
+* [#39](https://github.com/1modm/petereport/issues/39) The newest version of bleach changed the parameters in the clean method (source: https://bleach.readthedocs.io/en/latest/changes.html#version-5-0-0-april-7th-2022). This causes the error: clean() got an unexpected keyword argument 'styles'. Workaround; to use bleach==4.1.0
+
+Ubuntu 22.xx use python 3.10, in which was moved the library Collections Abstract Base Classes to the collections.abc module. For backwards compatibility, they continue to be visible through Python 3.9. Workaround; Ubuntu 20.04 is set to the correct docker image to pull.
+
+
 ## Version 0.7
 
 ### Enhancements and Bugfixes:

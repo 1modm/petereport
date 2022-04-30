@@ -57,10 +57,10 @@
 
                     <tr>
                       <td>
-                        <a href="https://cwe.mitre.org/data/definitions/{{cwe.cwe_id}}.html" target=”_blank”>{{ cwe.cwe_id }} - {{ cwe.cwe_name }}</a>
+                        <a href="https://cwe.mitre.org/data/definitions/{{cwe.cwe_id}}.html" target=”_blank”>{{ cwe.cwe_id  | bleach}} - {{ cwe.cwe_name  | bleach}}</a>
                       </td>
                       <td>
-                        {{ cwe.cwe_description }}
+                        {{ cwe.cwe_description  | bleach}}
                       </td>
 
 

@@ -17,8 +17,8 @@
         <div class="col-sm-4">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
-            <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+            <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name | bleach}}</a></li>
+            <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title | bleach}}</a></li>
           </ol>
         </div>
       </div>
@@ -59,16 +59,16 @@
                       {% for product in DDproducts %}
                       <tr>
                           <td>
-                              {{ product.id }}
+                              {{ product.id  | bleach }}
                           </td>
                           <td>
-                              {{ product.name }}
+                              {{ product.name  | bleach }}
                           </td>
                           <td>
                               {{ product.findings_count }}
                           </td>
                           <td>
-                              {{ product.description }}
+                              {{ product.description  | bleach}}
                           </td>
 
                           <td align="center">

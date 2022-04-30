@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:20.04
 
 # set environment variables
 ENV PYTHONUNBUFFERED 1
@@ -11,7 +11,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y update
 
 # Make sure locale is set to UTF-8
-RUN apt-get -y update
 RUN apt-get -y upgrade
 RUN apt-get install -y locales locales-all
 ENV LC_ALL en_US.UTF-8
@@ -22,7 +21,8 @@ ENV LANGUAGE en_US.UTF-8
 RUN apt-get -y install python3 python3-dev python3-pip
 
 # install dependencies
-RUN apt-get -y install pipenv texlive-full texlive-latex-extra python3-pypandoc
+RUN apt-get -y install texlive-latex-recommended texlive-fonts-extra texlive-latex-extra p7zip-full texlive-xetex
+RUN apt-get -y install pipenv python3-pypandoc
 RUN apt-get -y install wget
 RUN apt-get -y install libpangocairo-1.0-0
 

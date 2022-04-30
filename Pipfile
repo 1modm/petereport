@@ -4,15 +4,16 @@ url			= "https://pypi.org/simple"
 verify_ssl	= true
 
 [requires]
-python_version		= "3.8"
+python_version			= "3.8"
 
 [packages]
-Django				= "==3.2.5"
-requests			= ">=2.25.1"
-martor				= "==1.6.3"
-pypandoc			= "==1.6.3"
-termcolor			= "==1.1.0"
-cairosvg			= "==2.5.2"
-django-bleach		= "==1.0.0"
+Django					= "==3.2.5"
+requests				= ">=2.25.1"
+martor					= "==1.6.3"
+pypandoc				= "==1.6.3"
+termcolor				= "==1.1.0"
+cairosvg				= "==2.5.2"
+django-bleach			= "==1.0.0"
+bleach					= "==4.1.0"
 
 [dev-packages]
