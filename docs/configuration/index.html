@@ -7,9 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <meta name="author" content="M">
-  <link rel="canonical" href="https://1modm.github.io/petereport/docker/">
+  <link rel="canonical" href="https://1modm.github.io/petereport/configuration/">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Docker - PeTeReport</title>
+  <title>Configuration - PeTeReport</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../css/theme.css" />
@@ -18,9 +18,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Docker";
-    var mkdocs_page_input_path = "docker.md";
-    var mkdocs_page_url = "/petereport/docker/";
+    var mkdocs_page_name = "Configuration";
+    var mkdocs_page_input_path = "configuration.md";
+    var mkdocs_page_url = "/petereport/configuration/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
@@ -52,23 +52,29 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Installation and deployment</span></p>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Docker</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#environment">Environment</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#deployment">Deployment</a>
-    </li>
-    </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../docker/">Docker</a>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../django/">Django</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Configuration</span></p>
-                <ul>
+                <ul class="current">
                     <li class="toctree-l1"><a class="reference internal" href="../default_creds/">Default Credentials</a>
                     </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Configuration</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#application-default-users">Application default users</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#defect-dojo-connector-credentials">Defect Dojo connector credentials</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#django-configuration">Django configuration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#templates-configuration">Templates configuration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#markdown-configuration">Markdown configuration</a>
+    </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">User Guide</span></p>
@@ -107,14 +113,14 @@
     
       
         
-          <li>Installation and deployment &raquo;</li>
+          <li>Configuration &raquo;</li>
         
       
     
-    <li>Docker</li>
+    <li>Configuration</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/1modm/petereport/edit/main/docs/docker.md"> Edit on petereport</a>
+        <a href="https://github.com/1modm/petereport/edit/main/docs/configuration.md"> Edit on petereport</a>
       
     </li>
   </ul>
@@ -125,34 +131,66 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="docker">Docker</h1>
-<h2 id="environment">Environment</h2>
-<pre><code class="language-bash">$ sudo apt install docker.io docker-compose
+                <h1 id="configuration">Configuration</h1>
+<p>It can be possible to customize reports and the application configuration in <code>app/config/petereport_config.py</code></p>
+<h2 id="application-default-users">Application default users</h2>
+<pre><code>PETEREPORT_CONFIG = {
+    'admin_username': 'admin',
+    'admin_password': 'P3t3r3p0rt',
+    'admin_email': 'admin@petereport.pentest',
+    'viewer_username': 'viewer',
+    'viewer_password': 'v13w3r',
+    'viewer_email': 'viewer@petereport.pentest'
+}
 </code></pre>
-<h2 id="deployment">Deployment</h2>
-<ol>
-<li>Clone repository</li>
-</ol>
-<pre><code class="language-bash">$ cd /opt
-$ git clone https://github.com/1modm/petereport
-$ cd petereport
+<h2 id="defect-dojo-connector-credentials">Defect Dojo connector credentials</h2>
+<pre><code>DEFECTDOJO_CONFIG = {
+    'DefectDojoURL': 'https://demo.defectdojo.org',
+    'apiKey': 'Token Key' # Format: Token &lt;api_key&gt;
+}
 </code></pre>
-<ol>
-<li>
-<p>Customize reports and configuration in <code>app/config/petereport_config.py</code></p>
-</li>
-<li>
-<p>Build environment</p>
-</li>
-</ol>
-<pre><code class="language-bash">$ docker-compose up --build
+<h2 id="django-configuration">Django configuration</h2>
+<pre><code>DJANGO_CONFIG = {
+    'secret_key': 'django-insecure-key-CHANGEMEPLEASE-pKj9bd9h7*RMCuU',
+    'debug': False,
+    'admin_module': False,
+    'allowed_hosts': '[\'*\']',
+    'server_host': 'http://127.0.0.1:8000'
+}
 </code></pre>
-<ol>
-<li>Go to <a href="https://127.0.0.1/">https://127.0.0.1/</a></li>
-<li>Login with any of users created <strong>admin/P3t3r3p0rt</strong> (administrator) and <strong>viewer/v13w3r</strong> (viewer) or the user credentials configured in the configuration file</li>
-<li>Try harder</li>
-<li>Create a report</li>
-</ol>
+<h2 id="templates-configuration">Templates configuration</h2>
+<pre><code>PETEREPORT_TEMPLATES = {
+    'templates_root': 'preport/templates/tpl',
+    'storage_reports': 'storage_reports',
+    'html_template': 'bootstrap-4-pandoc-template/template.html',
+    'pdf_latex_template': 'petereport.latex',
+    'report_id_format': 'PEN-DOC-',
+    'report_csv_name': 'PEN-CSV',
+    'report_markdown_name': 'PEN-MD',
+    'report_html_name': 'PEN-HTML',
+    'report_pdf_name': 'PEN-PDF',
+    'report_jupyter_name': 'PEN-JUPYTER',
+    'initial_text': 'TBC',
+    'titlepage-color': &quot;1E90FF&quot;,
+    'titlepage-text-color': &quot;FFFAFA&quot;,
+    'titlepage-rule-color': &quot;FFFAFA&quot;,
+    'titlepage-rule-height': 2
+}
+</code></pre>
+<h2 id="markdown-configuration">Markdown configuration</h2>
+<p>Report information and media host configuration:</p>
+<ul>
+<li><strong>BASE64</strong>: Stores images in Database</li>
+<li><strong>MEDIA</strong>: Stores the images in the server (it is recommended to restrict the access to the server and encrypt the data to mitigate the leak or disclosure of the evidences). The path is not protected, must be set 'debug': True. This is highly insecure and not encouraged for production use. Should be configured the web server (apache, nginx, etc) to serve the media content using a protected link.</li>
+</ul>
+<pre><code>PETEREPORT_MARKDOWN = {
+    'author': 'Pentest company',
+    'subject': 'Pentest Report',
+    'website': 'https://github.com/1modm/petereport',
+    'martor_upload_method': 'BASE64' # BASE64 (stored in DB) or MEDIA (path not protected)
+    'media_host': 'http://127.0.0.1:8000'
+}
+</code></pre>
               
             </div>
           </div>
@@ -160,10 +198,10 @@ $ cd petereport
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../django/" class="btn btn-neutral float-right" title="Django">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../users/" class="btn btn-neutral float-right" title="User management">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href=".." class="btn btn-neutral" title="PeTeReport"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../default_creds/" class="btn btn-neutral" title="Default Credentials"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -189,10 +227,10 @@ $ cd petereport
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../default_creds/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../django/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../users/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

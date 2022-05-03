@@ -41,7 +41,7 @@ from PIL import Image
 from petereport.settings import MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, SERVER_CONF
 
 # PeTeReport config
-from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, PETEREPORT_CONFIG, DEFECTDOJO_CONFIG
+from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, PETEREPORT_CONFIG, DEFECTDOJO_CONFIG, DJANGO_CONFIG
 
 
 # ----------------------------------------------------------------------
@@ -99,7 +99,7 @@ def markdown_uploader(request):
                 def_path = default_storage.save(tmp_file, ContentFile(image.read()))
                 img_url = os.path.join(MEDIA_URL, def_path)
                 # Modified to include server host and port
-                MEDIA_URL_COMPLETE = PETEREPORT_CONFIG['server_host'] + MEDIA_URL
+                MEDIA_URL_COMPLETE = PETEREPORT_MARKDOWN['media_host'] + MEDIA_URL
                 img_url_complete = os.path.join(MEDIA_URL_COMPLETE, def_path)
 
                 data = json.dumps({
@@ -112,6 +112,7 @@ def markdown_uploader(request):
             return HttpResponse(data, content_type='application/json')
         return HttpResponse(_('Invalid request!'))
     return HttpResponse(_('Invalid request!'))
+
 
 
 # ----------------------------------------------------------------------
@@ -773,7 +774,7 @@ def reportdownloadhtml(request,pk):
 
     html_file_output = os.path.join(REPORTS_MEDIA_ROOT, pathfile)
 
-    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained'])
+    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained', '--no-check-certificate'])
 
     if os.path.exists(html_file_output):
             with open(html_file_output, 'rb') as fh:
@@ -938,7 +939,7 @@ def reportdownloadpdf(request,pk):
 
     PETEREPORT_LATEX_FILE = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['pdf_latex_template'])
 
-    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings'])
+    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--no-check-certificate'])
     #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
     #print(output_pypandoc)
 

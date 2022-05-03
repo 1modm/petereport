@@ -1,32 +1,34 @@
 FROM ubuntu:20.04
 
-# set environment variables
+# Set environment variables
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-# no apt prompts
+# No apt prompts
 ARG DEBIAN_FRONTEND=noninteractive
 
-# fetch package list
+# Fetch package list
 RUN apt-get -y update
+RUN apt-get -y upgrade
 
 # Make sure locale is set to UTF-8
-RUN apt-get -y upgrade
 RUN apt-get install -y locales locales-all
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
-# install python
+# Install python
 RUN apt-get -y install python3 python3-dev python3-pip
 
-# install dependencies
+# Install dependencies
 RUN apt-get -y install texlive-latex-recommended texlive-fonts-extra texlive-latex-extra p7zip-full texlive-xetex
 RUN apt-get -y install pipenv python3-pypandoc
 RUN apt-get -y install wget
 RUN apt-get -y install libpangocairo-1.0-0
+RUN wget https://github.com/jgm/pandoc/releases/download/2.18/pandoc-2.18-1-amd64.deb
+RUN dpkg -i pandoc-2.18-1-amd64.deb
 
-# alias "python" to "python3"
+# Alias "python" to "python3"
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN apt-get -y install python3-gunicorn gunicorn
 RUN python3 -m pip install pandoc-latex-environment

@@ -42,5 +42,6 @@ PETEREPORT_MARKDOWN = {
 	'author': 'Pentest company',
 	'subject': 'Pentest Report',
 	'website': 'https://github.com/1modm/petereport',
-	'martor_upload_method': 'BASE64' # BASE64 (stored in DB) or MEDIA (path not protected)
+	'martor_upload_method': 'BASE64', # BASE64 (stored in DB) or MEDIA (path not protected, must be set 'debug': True. This is highly insecure and not encouraged for production use. Should be configured the web server (apache, nginx, etc) to serve the media content using a protected link) 
+	'media_host': 'http://127.0.0.1:8000' # If docker deployment, set https://<HOST IP>, else for django deployment http://<HOST IP>:8000 
 }

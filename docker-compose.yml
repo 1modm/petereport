@@ -7,6 +7,7 @@ services:
       - ./nginx:/opt/petereport/nginx
       - ./nginx/petereport.conf:/etc/nginx/conf.d/petereport.conf
       - ./app/petereport/static:/opt/petereport/app/petereport/static
+      - ./app/media:/opt/petereport/app/media
     ports:
       - 80:80
       - 443:443

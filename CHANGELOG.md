@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## Version 0.9
+
+### Enhancements and Bugfixes:
+* Media images path support
+
 ## Version 0.8
 
 ### Enhancements and Bugfixes:
