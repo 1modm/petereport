@@ -25,8 +25,9 @@ RUN apt-get -y install texlive-latex-recommended texlive-fonts-extra texlive-lat
 RUN apt-get -y install pipenv python3-pypandoc
 RUN apt-get -y install wget
 RUN apt-get -y install libpangocairo-1.0-0
-RUN wget https://github.com/jgm/pandoc/releases/download/2.18/pandoc-2.18-1-amd64.deb
-RUN dpkg -i pandoc-2.18-1-amd64.deb
+ARG TARGETARCH
+RUN wget https://github.com/jgm/pandoc/releases/download/2.18/pandoc-2.18-1-${TARGETARCH}.deb
+RUN dpkg -i pandoc-2.18-1-${TARGETARCH}.deb
 
 # Alias "python" to "python3"
 RUN ln -s /usr/bin/python3 /usr/bin/python
