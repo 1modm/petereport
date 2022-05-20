@@ -27,7 +27,7 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 ## Features
 
 - [x] Customizable reports output
-- [x] Customizable reports templates
+- [x] Customizable reports templates thanks to [Eisvogel](https://github.com/Wandmalfarbe/pandoc-latex-template)
 - [x] Findings template database
 - [x] Possibility to add appendix to findings
 - [x] Possibility to add attack trees [Deciduous](https://www.deciduous.app/) to findings

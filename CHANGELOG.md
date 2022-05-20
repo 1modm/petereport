@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## Version 1.0
+
+### Enhancements and Bugfixes:
+* [#48](https://github.com/1modm/petereport/issues/48)'bleach' causing Internal Error 500
+* Upgraded bleach and django-bleach versions
+
 ## Version 0.9
 
 ### Enhancements and Bugfixes:

@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load app_filters %}
+{% load bleach_tags %}
 
 {% block title %} CWE List {% endblock title %}
 
@@ -57,10 +58,10 @@
 
                     <tr>
                       <td>
-                        <a href="https://cwe.mitre.org/data/definitions/{{cwe.cwe_id}}.html" target=”_blank”>{{ cwe.cwe_id  | bleach}} - {{ cwe.cwe_name  | bleach}}</a>
+                        <a href="https://cwe.mitre.org/data/definitions/{{cwe.cwe_id}}.html" target=”_blank”>{{ cwe.cwe_id }} - {{ cwe.cwe_name | bleach}}</a>
                       </td>
                       <td>
-                        {{ cwe.cwe_description  | bleach}}
+                        {{ cwe.cwe_description | bleach}}
                       </td>
 
 
