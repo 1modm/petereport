@@ -145,7 +145,8 @@ $ cd petereport
 <p>Build environment</p>
 </li>
 </ol>
-<pre><code class="language-bash">$ docker-compose up --build
+<pre><code class="language-bash">$ docker-compose build --build-arg TARGETARCH=amd64
+$ docker-compose up
 </code></pre>
 <ol>
 <li>Go to <a href="https://127.0.0.1/">https://127.0.0.1/</a></li>
