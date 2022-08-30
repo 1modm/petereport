@@ -1,5 +1,8 @@
 {% extends 'home/template.html' %}
 
+{% load martortags %}
+{% load bleach_tags %}
+
 {% block title %} DefectDojo Import {% endblock title %}
 
 {% block stylesheets %}
@@ -59,7 +62,7 @@
                       {% for product in DDproducts %}
                       <tr>
                           <td>
-                              {{ product.id  | bleach }}
+                              {{ product.id }}
                           </td>
                           <td>
                               {{ product.name  | bleach }}
