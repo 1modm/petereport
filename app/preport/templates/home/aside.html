@@ -13,7 +13,7 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item">
             <a href="/" class="nav-link">
-              <i class="nav-icon fas fa-tachometer-alt text-warning"></i>
+              <i class="nav-icon fas fa-tachometer-alt text-light"></i>
               <p>
                 Dashboard
               </p>
@@ -126,12 +126,6 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/cwe/list/" class="nav-link">
-                  <i class="nav-icon fas fa-radiation-alt"></i>
-                  <p>CWE List</p>
-                </a>
-              </li>
-              <li class="nav-item">
                 <a href="/finding/open/" class="nav-link">
                   <i class="nav-icon fas fa-exclamation-triangle"></i>
                   <p>Open Findings</p>
@@ -162,6 +156,33 @@
             </ul>
           </li>
 
+          <li class="nav-item">
+            <a href="/finding/open/" class="nav-link">
+              <i class="nav-icon fas fa-fingerprint text-warning"></i>
+              <p>
+                CWE
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/cwe/list/" class="nav-link">
+                  <i class="nav-icon fas fa-radiation-alt"></i>
+                  <p>CWE List</p>
+                </a>
+              </li>
+
+            {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+              <li class="nav-item">
+                <a href="/cwe/add/" class="nav-link">
+                  <i class="fas fa-edit nav-icon"></i>
+                  <p>Add CWE</p>
+                </a>
+              </li>
+            {% endif %}
+
+            </ul>
+          </li>
 
 
         </ul>

@@ -20,7 +20,8 @@ services:
       dockerfile: ./Dockerfile
     command: bash -c "
       sleep 1 &&
-      pipenv install &&
+      pipenv install --deploy --ignore-pipfile &&
+      pip freeze && 
       pipenv run ./app/manage.py makemigrations &&
       pipenv run ./app/manage.py migrate &&
       pipenv run ./app/manage.py loaddata ./app/config/cwe-list.json &&

@@ -173,3 +173,16 @@ class NewAttackTreeForm(forms.ModelForm):
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Title"}),
             'attacktree': Textarea(attrs={'class': 'form-control', 'rows': "20", 'required': "required", 'placeholder': "Attack Tree"}),
         }
+
+
+class NewCWEForm(forms.ModelForm):
+
+    class Meta:
+        model = DB_CWE
+        fields = ('cwe_id', 'cwe_name', 'cwe_description')
+
+        widgets = {
+            'cwe_id': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "CWE ID"}),
+            'cwe_name': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "CWE Name"}),
+            'cwe_description': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "CWE Description"}),
+        }

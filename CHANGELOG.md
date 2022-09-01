@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## Version 1.2
+
+### Enhancements and Bugfixes:
+* [#28](https://github.com/1modm/petereport/issues/28) Add CWE directly in the web interface
+* [#54](https://github.com/1modm/petereport/issues/54) Server error 500
+* Error check in forms
+* pluralize views
+* Markdown, martor and image tags compatibility issues
+
 ## Version 1.1
 
 ### Enhancements and Bugfixes:

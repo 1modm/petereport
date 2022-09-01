@@ -22,7 +22,7 @@
           <div class="small-box bg-info">
             <div class="inner">
               <h3>{{total_products}}</h3> 
-              <p>Products</p>
+              <p>Product{{ total_products|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fas fa-cube"></i>
@@ -35,7 +35,7 @@
           <div class="small-box bg-green">
             <div class="inner">
               <h3>{{total_reports}}</h3>
-              <p>Reports</p>
+              <p>Report{{ total_reports|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fa fa-file-code"></i>
@@ -48,7 +48,7 @@
           <div class="small-box bg-yellow">
             <div class="inner">
               <h3>{{count_product_findings_total}}</h3>
-              <p>Total Findings</p>
+              <p>Finding{{ count_product_findings_total|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fa fa-bug"></i>
@@ -61,7 +61,7 @@
           <div class="small-box bg-red">
             <div class="inner">
               <h3>{{count_product_findings_critical_high}}</h3>
-              <p>Critical/High Findings</p>
+              <p>Critical/High Finding{{ count_product_findings_critical_high|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fa fa-exclamation-triangle"></i>

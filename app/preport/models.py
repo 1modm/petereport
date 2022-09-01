@@ -8,9 +8,9 @@ from martor.models import MartorField
 # ---------- CWE ------------
 
 class DB_CWE(models.Model):
-	cwe_id = models.IntegerField(blank=False)
+	cwe_id = models.IntegerField(blank=False, unique=True)
 	cwe_name = models.CharField(max_length=255, blank=True)
-	cwe_description = models.CharField(max_length=255, blank=True)
+	cwe_description = models.TextField(blank=True)
 	
 # ---------- Product ------------
 
@@ -22,7 +22,7 @@ class DB_Product(models.Model):
 
 class DB_Report(models.Model):
 	product = models.ForeignKey(DB_Product, on_delete=models.CASCADE)
-	report_id = models.CharField(max_length=255, blank=False)
+	report_id = models.CharField(max_length=255, blank=False, unique=True)
 	title = models.CharField(max_length=255, blank=False)
 	executive_summary_image = models.TextField(blank=True, null=True)
 	categories_summary_image = models.TextField(blank=True, null=True)

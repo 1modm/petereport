@@ -58,10 +58,13 @@ urlpatterns = [
     path('template/edit/<int:pk>', views.template_edit, name='template_edit'),
     # CWE
     path('cwe/list/', views.cwe_list, name='cwe_list'),
+    path('cwe/add/', views.cwe_add, name='cwe_add'),
+    path('cwe/edit/<int:pk>', views.cwe_edit, name='cwe_edit'),
+    path('cwe/delete/', views.cwe_delete, name='cwe_delete'),
     # Attack Tree
     path('report/attacktree/<int:pk>', views.reportattacktree, name='reportattacktree'),
     path('attacktree/add/<int:pk>', views.attacktree_add, name='attacktree_add'),
     path('attacktree/delete/', views.attacktree_delete, name='attacktree_delete'),
     path('attacktree/edit/<int:pk>', views.attacktree_edit, name='attacktree_edit'),
     path('attacktree/view/<int:pk>', views.attacktree_view, name='attacktree_view'),
-] 
+]

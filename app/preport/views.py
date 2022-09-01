@@ -14,7 +14,7 @@ from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_protect
 
 # Forms
-from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewAttackTreeForm
+from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewAttackTreeForm, NewCWEForm
 
 # Model
 from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree
@@ -1611,6 +1611,60 @@ def cwe_list(request):
 
     return render(request, 'cwe/cwe_list.html', {'DB_cwe_query': DB_cwe_query})
 
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def cwe_add(request):
+
+    if request.method == 'POST':
+        form = NewCWEForm(request.POST)
+        if form.is_valid():
+            cwe = form.save(commit=False)
+            cwe.save()
+            return redirect('cwe_list')
+    else:
+        form = NewCWEForm()
+        latest_id = DB_CWE.objects.latest('cwe_id').cwe_id
+        next_id = latest_id+1
+        #form.fields['cwe_id'].initial = next_id
+        #form.fields['cwe_description'].initial = PETEREPORT_TEMPLATES['initial_text']
+
+    return render(request, 'cwe/cwe_add.html', {
+        'form': form
+    })
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def cwe_delete(request):
+
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_CWE.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponse('{"status":"fail"}', content_type='application/json')
+
+
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def cwe_edit(request,pk):
+
+    cwe = get_object_or_404(DB_CWE, pk=pk)
+
+    if request.method == 'POST':
+        form = NewCWEForm(request.POST, instance=cwe)
+        if form.is_valid():
+            form.save()
+            return redirect('cwe_list')
+    else:
+        form = NewCWEForm(instance=cwe)
+    return render(request, 'cwe/cwe_add.html', {
+        'form': form
+    })
 
 
 # ----------------------------------------------------------------------

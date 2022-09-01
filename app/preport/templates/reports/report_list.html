@@ -31,7 +31,7 @@
     <div class="container-fluid">
       <div class="card card-outline card-primary">
         <div class="card-header">
-          <h3 class="card-title">{{ DB_report_query.count }} Reports</h3>
+          <h3 class="card-title">{{ DB_report_query.count }} Report{{ DB_report_query.count|pluralize:"s" }}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -58,7 +58,7 @@
                     <td>{{ report.title }} </td>
                     <td>{{ report.product.name }} </td>
                     <td>
-                      <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> Findings
+                      <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> Finding{{ report.db_finding_set.count|pluralize:"s" }}
                     </td>
                     <td class="text-center">
                         <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> View</button></a>

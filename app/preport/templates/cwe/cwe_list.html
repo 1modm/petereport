@@ -43,12 +43,13 @@
           <table id="cwelist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                      <th style="width: 30%">
+                      <th style="width: 25%">
                           Title
                       </th>
-                      <th style="width: 70%">
+                      <th style="width: 60%">
                           Description
                       </th>
+                      <th style="width: 15%" class="text-center">Actions</th>
 
                   </tr>
               </thead>
@@ -64,9 +65,37 @@
                         {{ cwe.cwe_description | bleach}}
                       </td>
 
+                    <td class="text-center">
+                        {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                          <a href="/cwe/edit/{{ cwe.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{cwe.pk}}"><i class="fas fa-trash"></i> Delete </button>
+                        {% endif %}
+                    </td>
 
                     </tr>
                      
+
+                        <div class="modal modal-danger fade mm-modal-{{cwe.pk}}" id="modal-danger">
+                          <div class="modal-dialog">
+                            <div class="modal-content bg-danger">
+                              <div class="modal-header">
+                                <h4 class="modal-title">Are you sure?</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <p>Delete CWE&hellip;</p>
+                              </div>
+                              <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+                                <button type="button" onclick="DeleteID({{cwe.pk}});" class="btn btn-outline-light">Delete CWE</button>
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                   {% endfor %}
 
 
@@ -99,6 +128,23 @@
   });
 </script>
 
+
+<script>
+  function DeleteID(del_id) {
+        $.ajax({
+            type: 'POST',
+            url: "/cwe/delete/",
+            headers:{
+              "X-CSRFToken": '{{ csrf_token }}'
+            },
+            data : { 'delete_id': del_id},
+
+            success : function(json) {
+              document.location.href = "/cwe/list/"; 
+            }
+        })
+  }
+</script>
 {% endblock javascripts %}
 
 
