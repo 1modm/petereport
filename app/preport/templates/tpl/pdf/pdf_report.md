@@ -2,12 +2,12 @@
 
 ## Description
 
-{{DB_report_query.product.description}}
+{{DB_report_query.product.description | safe}}
 
 \pagebreak
 # Executive Summary
 
-{{DB_report_query.executive_summary}}
+{{DB_report_query.executive_summary | safe}}
 
 ## Summary of Findings Identified
 
@@ -21,21 +21,21 @@
 
 ### In Scope
 
-{{DB_report_query.scope}}
+{{DB_report_query.scope | safe}}
 
 ### Out of Scope
 
-{{DB_report_query.outofscope}}
+{{DB_report_query.outofscope | safe}}
 
 \pagebreak
 ## Methodology
 
-{{DB_report_query.methodology}}
+{{DB_report_query.methodology | safe}}
 
 \pagebreak
 ## Recommendations
 
-{{DB_report_query.recommendation}}
+{{DB_report_query.recommendation | safe}}
 
 \pagebreak
 # Findings and Risk Analysis

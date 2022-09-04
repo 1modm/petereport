@@ -1,4 +1,4 @@
-## {{finding.title}}
+## {{finding.title|safe}}
 
 **Severity:** {{finding.severity|safe}}
 

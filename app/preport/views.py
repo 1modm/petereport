@@ -27,6 +27,7 @@ import datetime
 import textwrap
 import requests
 import base64
+import bleach
 import uuid
 import json
 import csv
@@ -617,7 +618,7 @@ def reportdownloadmarkdown(request,pk):
                     md_appendix = render_to_string('tpl/markdown/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
 
                     template_appendix += ''.join(md_appendix)
-                    template_appendix_in_finding += ''.join(appendix_in_finding.title + "\n")
+                    template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "\n")
 
             # attack trees
             if finding.attacktree_finding.all():
@@ -736,7 +737,7 @@ def reportdownloadhtml(request,pk):
                     html_appendix = render_to_string('tpl/html/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
 
                     template_appendix += ''.join(html_appendix)
-                    template_appendix_in_finding += ''.join(appendix_in_finding.title + "<br>")
+                    template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "<br>")
 
                 template_appendix_in_finding += ''.join("</td>\n")
 
@@ -887,7 +888,7 @@ def reportdownloadpdf(request,pk):
                     pdf_appendix = render_to_string('tpl/pdf/pdf_appendix.md', {'appendix_in_finding': appendix_in_finding})
 
                     template_appendix += ''.join(pdf_appendix)
-                    template_appendix_in_finding += ''.join(appendix_in_finding.title + "\n")
+                    template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "\n")
 
                 template_appendix_in_finding += ''.join("\\pagebreak")
 
@@ -971,7 +972,7 @@ def reportdownloadjupyter(request,pk):
     name_file = PETEREPORT_TEMPLATES['report_jupyter_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.ipynb'
 
     # INIT
-    template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = ""
+    template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = template_attacktree = ""
     counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
     md_author = PETEREPORT_MARKDOWN['author']
     md_subject = PETEREPORT_MARKDOWN['subject']

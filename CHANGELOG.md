@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## Version 1.2.1
+
+### Enhancements and Bugfixes:
+* [#24](https://github.com/1modm/petereport/issues/24) Code is escaped in code box
+* Minor changes in templates
+
 ## Version 1.2
 
 ### Enhancements and Bugfixes:

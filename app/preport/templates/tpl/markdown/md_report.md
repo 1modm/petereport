@@ -12,11 +12,11 @@ website: {{md_website}}
 
 ## Description
 
-{{DB_report_query.product.description}}
+{{DB_report_query.product.description | safe}}
 
 # Executive Summary
 
-{{DB_report_query.executive_summary}}
+{{DB_report_query.executive_summary | safe}}
 
 ## Summary of Findings Identified
 
@@ -30,19 +30,19 @@ website: {{md_website}}
 
 ### In Scope
 
-{{DB_report_query.scope}}
+{{DB_report_query.scope | safe}}
 
 ### Out of Scope
 
-{{DB_report_query.outofscope}}
+{{DB_report_query.outofscope | safe}}
 
 ## Methodology
 
-{{DB_report_query.methodology}}
+{{DB_report_query.methodology | safe}}
 
 ## Recommendations
 
-{{DB_report_query.recommendation}}
+{{DB_report_query.recommendation | safe}}
 
 # Findings and Risk Analysis
 
