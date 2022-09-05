@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## Version 1.2.2
+
+### Enhancements and Bugfixes:
+* [#15](https://github.com/1modm/petereport/issues/15) Screenshots are not added to the appendix in reports
+
 ## Version 1.2.1
 
 ### Enhancements and Bugfixes:

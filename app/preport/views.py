@@ -595,6 +595,8 @@ def reportdownloadmarkdown(request,pk):
         report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
         report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
 
+    # Appendix
+    template_appendix = "# Additional Notes\n\n"
 
     # FINDINGS
     for finding in DB_finding_query:
@@ -611,7 +613,6 @@ def reportdownloadmarkdown(request,pk):
             # appendix
             if finding.appendix_finding.all():
 
-                template_appendix = "# Additional Notes\n\n"
                 template_appendix_in_finding = "**Additional notes**\n"
 
                 for appendix_in_finding in finding.appendix_finding.all():
@@ -693,6 +694,9 @@ def reportdownloadhtml(request,pk):
     # Summary table
     finding_summary_table = render_to_string('tpl/html/html_finding_summary_table.html')
 
+    # Appendix
+    template_appendix = "# Additional Notes\n\n"
+
     # FINDINGS
     for finding in DB_finding_query:
         # Only reporting Critical/High/Medium/Low/Info findings
@@ -727,10 +731,9 @@ def reportdownloadhtml(request,pk):
             finding_summary_table += render_to_string('tpl/html/html_finding_summary.html', {'finding': finding, 'counter_finding': counter_finding, 'color_text_severity': color_text_severity})
             
 
-            # appendix
+            # Appendix
             if finding.appendix_finding.all():
 
-                template_appendix = "# Additional Notes\n\n"
                 template_appendix_in_finding = "<td style=\"width: 15%\">**Additional notes**</td><td>\n"
 
                 for appendix_in_finding in finding.appendix_finding.all():
@@ -819,6 +822,8 @@ def reportdownloadpdf(request,pk):
     md_website = PETEREPORT_MARKDOWN['website']
     counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
     
+    # Appendix
+    template_appendix = "# Additional Notes\n\n"
 
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
@@ -880,7 +885,6 @@ def reportdownloadpdf(request,pk):
             # appendix
             if finding.appendix_finding.all():
 
-                template_appendix = "# Additional Notes\n\n"
                 template_appendix_in_finding = "**Additional notes**\n\n"
 
                 for appendix_in_finding in finding.appendix_finding.all():
@@ -978,6 +982,11 @@ def reportdownloadjupyter(request,pk):
     md_subject = PETEREPORT_MARKDOWN['subject']
     md_website = PETEREPORT_MARKDOWN['website']
 
+    # Appendix
+    template_appendix = render_to_string('tpl/jupyter/additional_notes.ipynb')
+
+    # Attacktree init
+    template_attacktree = render_to_string('tpl/jupyter/attacktrees.ipynb')
     
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
@@ -995,7 +1004,7 @@ def reportdownloadjupyter(request,pk):
             pass
         else:
             counter_finding += 1
-            template_appendix_in_finding = template_attacktree_in_finding = template_attacktree = ''
+            template_appendix_in_finding = template_attacktree_in_finding = ''
 
             if finding.severity == 'Critical':
                 counter_finding_critical += 1 
@@ -1017,8 +1026,6 @@ def reportdownloadjupyter(request,pk):
             # appendix
             if finding.appendix_finding.all():
 
-                template_appendix = render_to_string('tpl/jupyter/additional_notes.ipynb')
-
                 for appendix_in_finding in finding.appendix_finding.all():
                     ipynb_finding += render_to_string('tpl/jupyter/appendix_in_finding.ipynb', {'appendix_in_finding': appendix_in_finding})
 
@@ -1032,8 +1039,6 @@ def reportdownloadjupyter(request,pk):
 
             # attack trees
             if finding.attacktree_finding.all():
-
-                template_attacktree = render_to_string('tpl/jupyter/attacktrees.ipynb')
 
                 for attacktree_in_finding in finding.attacktree_finding.all():
 
