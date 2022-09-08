@@ -164,7 +164,7 @@ def index(request):
     cwe_categories = []
 
     for key_cwe, value_cwe in cwe_cat.items():
-        fixed_key_cwe = '\n'.join(key_cwe[i:i+70] for i in range(0, len(key_cwe), 70))
+        fixed_key_cwe = '\n'.join(key_cwe[i:i+60] for i in range(0, len(key_cwe), 60))
         dict_cwe = {
             "value": value_cwe,
             "name": fixed_key_cwe
@@ -485,7 +485,7 @@ def report_view(request,pk):
     cwe_categories = []
 
     for key_cwe, value_cwe in cwe_cat.items():
-        fixed_key_cwe = '\n'.join(key_cwe[i:i+70] for i in range(0, len(key_cwe), 70))
+        fixed_key_cwe = '\n'.join(key_cwe[i:i+60] for i in range(0, len(key_cwe), 60))
         dict_cwe = {
             "value": value_cwe,
             "name": fixed_key_cwe
