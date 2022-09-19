@@ -9,7 +9,7 @@ PETEREPORT_CONFIG = {
 
 DEFECTDOJO_CONFIG = {
 	'DefectDojoURL': 'https://demo.defectdojo.org',
-	'apiKey': 'Token Key' # Format: Token <api_key>
+	'apiKey': 'Token <Key>' # Format: Token <api_key>
 }
 
 DJANGO_CONFIG = {
@@ -30,11 +30,14 @@ PETEREPORT_TEMPLATES = {
 	'report_markdown_name': 'PEN-MD',
 	'report_html_name': 'PEN-HTML',
 	'report_pdf_name': 'PEN-PDF',
+	'report_pdf_language': "en",
+	'report_pdf_title_background': "title.png", # title.png, blank.png - location: app/preport/templates/tpl/pdf/
+	'report_pdf_pages_background': "title.png", # title.png, blank.png - location: app/preport/templates/tpl/pdf/
 	'report_jupyter_name': 'PEN-JUPYTER',
 	'initial_text': 'TBC',
-	'titlepage-color': "1E90FF",
-	'titlepage-text-color': "FFFAFA",
-	'titlepage-rule-color': "FFFAFA",
+	'titlepage-color': "e6e2e2",
+	'titlepage-text-color': "000000",
+	'titlepage-rule-color': "cc0000",
 	'titlepage-rule-height': 2
 }
 

@@ -5,12 +5,14 @@ author: ["{{md_author}}", "{{md_website}}"]
 date: "{{report_date}}"
 subject: "{{md_subject}}"
 subtitle: "{{DB_report_query.report_id}}"
-lang: "en"
+lang: "{{report_pdf_language}}"
 titlepage: true
 titlepage-color: "{{titlepagecolor}}"
 titlepage-text-color: "{{titlepagetextcolor}}"
 titlepage-rule-color: "{{titlerulecolor}}"
 titlepage-rule-height: "{{titlepageruleheight}}"
+titlepage-background: "{{title_background}}"
+page-background: "{{pages_background}}"
 book: false
 toc-own-page: true
 code-block-font-size: \scriptsize

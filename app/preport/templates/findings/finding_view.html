@@ -24,12 +24,26 @@
 
               <li class="breadcrumb-item"><a href="/">Home</a></li>
               <li class="breadcrumb-item"><a href="/product/view/{{ finding.report.product.pk}}">{{ finding.report.product.name | bleach}}</a></li>
-              <li class="breadcrumb-item"><a href="/report/view/{{ finding.report.pk}}">{{ finding.report.report_id | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="/report/view/{{ finding.report.pk}}">{{ finding.report.title | bleach}}</a></li>
               <li class="breadcrumb-item active">{{ finding.title | bleach}}</li>
 
             </ol>
           </div>
         </div>
+
+         <br>
+
+        <div class="row">
+            <div class="col-md-5">
+                {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                  <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> Edit Finding</button></a>
+                  <a href="/finding/customfields/{{ finding.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> Finding custom fields</button></a>
+                  <a href="/field/add/{{ finding.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-edit"></i> Add custom field</button></a> 
+                {% endif %}
+            </div>
+        </div>
+
+        <br>
 
       </div>
     </section>
@@ -178,7 +192,7 @@
       </div> 
 
 
-
+      {% if finding.description %}
       <div class="row">
         <div class="col-md-12">
 
@@ -201,9 +215,10 @@
 
         </div>
       </div> 
+      {% endif %}
 
 
-
+      {% if finding.location %}
 
       <div class="row">
         <div class="col-md-12">
@@ -221,14 +236,16 @@
 
                 </div>
                 <div class="card-body">
-                  {{ finding.location| safe_markdown | bleach }}
+                  {{ finding.location | safe_markdown | bleach }}
                 </div>
               </div>
 
         </div>
-      </div> 
+      </div>
 
+      {% endif %}
 
+      {% if finding.impact %}
       <div class="row">
         <div class="col-md-12">
 
@@ -245,14 +262,15 @@
 
                 </div>
                 <div class="card-body">
-                  {{ finding.impact| safe_markdown | bleach }}
+                  {{ finding.impact | safe_markdown | bleach }}
                 </div>
               </div>
 
         </div>
-      </div> 
+      </div>
+      {% endif %}
 
-
+      {% if finding.recommendation %}
       <div class="row">
         <div class="col-md-12">
 
@@ -275,8 +293,9 @@
 
         </div>
       </div> 
+      {% endif %}
 
-
+      {% if finding.references %}
       <div class="row">
         <div class="col-md-12">
 
@@ -299,8 +318,38 @@
 
         </div>
       </div> 
+      {% endif %}
 
-                                
+            
+    {% if DB_field %}
+
+    {% for custom_field in DB_field %}
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>{{ custom_field.title|safe_markdown | bleach }}</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                    <p>{{ custom_field.description|safe_markdown | bleach }}</p>
+                </div>
+              </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    {% endif %}
+
+
     {% if DB_appendix %}
 
       <div class="row">
@@ -373,11 +422,3 @@
   {{ block.super }}
 
 {% endblock javascripts %}
-
-
-
-
-
-
-
-

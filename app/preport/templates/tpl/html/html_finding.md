@@ -21,6 +21,7 @@
 <td>{{finding.cwe.cwe_id}} - {{finding.cwe.cwe_name | safe | bleach}}</td>
 </tr>
 
+{% if finding.description %}
 <tr>
 <td style="width: 15%">**Description**</td>
 <td>
@@ -29,26 +30,40 @@
 
 </td>
 </tr>
+{% endif %}
 
+{% if finding.location %}
 <tr>
 <td style="width: 15%">**Location**</td>
 <td>{{finding.location | safe_markdown | bleach}}</td>
 </tr>
+{% endif %}
 
+{% if finding.impact %}
 <tr>
 <td style="width: 15%">**Impact**</td>
 <td>{{finding.impact | safe_markdown | bleach}}</td>
 </tr>
+{% endif %}
 
+{% if finding.recommendation %}
 <tr>
 <td style="width: 15%">**Recommendation**</td>
 <td>{{finding.recommendation | safe_markdown | bleach}}</td>
 </tr>
+{% endif %}
 
+{% if finding.references %}
 <tr>
 <td style="width: 15%">**References**</td>
 <td>{{finding.references | safe_markdown | bleach}}</td>
 </tr>
+{% endif %}
+
+{% if template_custom_fields %}
+{{template_custom_fields | safe}}
+{% endif %}
+
 
 {% if template_appendix_in_finding %}
 <tr>

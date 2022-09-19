@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## Version 1.3.0
+
+### Enhancements and Bugfixes:
+* Background logo image added to pdf reports
+* Output templates improvements
+* Custom fields
+
 ## Version 1.2.2
 
 ### Enhancements and Bugfixes:

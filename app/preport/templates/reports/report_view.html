@@ -17,13 +17,13 @@
         <div class="row mb-2">
 
           <div class="col-sm-6">
-            <h4>{{ DB_report_query.title }} Report</h4>
+            <h4>{{ DB_report_query.title | bleach}} - {{ DB_report_query.report_id | bleach}}</h4>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">Home</a></li>
               <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name | bleach}}</a></li>
-              <li class="breadcrumb-item active">{{ DB_report_query.report_id | bleach}}</li>
+              <li class="breadcrumb-item active">{{ DB_report_query.title | bleach}}</li>
             </ol>
           </div>
         </div>
@@ -847,6 +847,9 @@
             yAxis: {
               type: 'value',
               interval: 1,
+              axisLabel:{
+               fontSize: 12
+              }
             },
 
             series: [{

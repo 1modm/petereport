@@ -1,8 +1,9 @@
 from django import forms
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, PasswordInput, EmailField, BooleanField
-from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree
+from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree, DB_Custom_field
 from martor.fields import MartorFormField
 
 import datetime
@@ -185,4 +186,15 @@ class NewCWEForm(forms.ModelForm):
             'cwe_id': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "CWE ID"}),
             'cwe_name': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "CWE Name"}),
             'cwe_description': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "CWE Description"}),
+        }
+
+
+class NewFieldForm(forms.ModelForm):
+
+    class Meta:
+        model = DB_Custom_field
+        fields = ('title', 'description')
+
+        widgets = {
+            'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Title"}),
         }

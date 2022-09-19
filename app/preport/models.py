@@ -45,11 +45,11 @@ class DB_Finding(models.Model):
 	severity = models.CharField(blank=True, max_length=200)
 	cvss_base_score = models.CharField(blank=True, max_length=200)
 	cvss_score = models.DecimalField(max_digits=3, decimal_places=1, default=0)
-	description = MartorField()
-	location = MartorField()
-	impact = MartorField()
-	recommendation = MartorField()
-	references = MartorField()
+	description = MartorField(blank=True)
+	location = MartorField(blank=True)
+	impact = MartorField(blank=True)
+	recommendation = MartorField(blank=True)
+	references = MartorField(blank=True)
 	cwe = models.ForeignKey(DB_CWE, on_delete=models.CASCADE)
 
 # ---------- Finding templates ------------
@@ -60,11 +60,11 @@ class DB_Finding_Template(models.Model):
 	severity = models.CharField(blank=True, max_length=200)
 	cvss_base_score = models.CharField(blank=True, max_length=200)
 	cvss_score = models.DecimalField(max_digits=3, decimal_places=1, default=0)
-	description = MartorField()
-	location = MartorField()
-	impact = MartorField()
-	recommendation = MartorField()
-	references = MartorField()
+	description = MartorField(blank=True)
+	location = MartorField(blank=True)
+	impact = MartorField(blank=True)
+	recommendation = MartorField(blank=True)
+	references = MartorField(blank=True)
 	cwe = models.ForeignKey(DB_CWE, on_delete=models.CASCADE)
 
 # ---------- Appendix ------------
@@ -82,3 +82,11 @@ class DB_AttackTree(models.Model):
 	title = models.CharField(blank=False, max_length=200)
 	attacktree = models.TextField(blank=True, null=True)
 	svg_file = models.TextField(blank=True, null=True)
+
+# ---------- Custom Field ------------
+
+class DB_Custom_field(models.Model):
+	#finding = models.ManyToManyField(DB_Finding, related_name='custom_field_finding', blank=True)
+	finding = models.ForeignKey(DB_Finding, related_name='custom_field_finding', blank=True, on_delete=models.CASCADE)
+	title = models.CharField(blank=False, max_length=200)
+	description = MartorField(blank=True, null=True)

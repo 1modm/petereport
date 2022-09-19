@@ -14,10 +14,10 @@ from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_protect
 
 # Forms
-from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewAttackTreeForm, NewCWEForm
+from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewAttackTreeForm, NewCWEForm, NewFieldForm
 
 # Model
-from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree
+from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree, DB_Custom_field
 
 # Decorators
 from .decorators import allowed_users
@@ -600,6 +600,10 @@ def reportdownloadmarkdown(request,pk):
 
     # FINDINGS
     for finding in DB_finding_query:
+
+        # Custom fields
+        template_custom_fields = ""
+
         # Only reporting Critical/High/Medium/Low/Info findings
         if finding.severity == 'None':
             pass
@@ -609,6 +613,15 @@ def reportdownloadmarkdown(request,pk):
 
             # Summary table
             md_finding_summary += render_to_string('tpl/markdown/md_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding})
+
+            # Custom fields
+            if finding.custom_field_finding.all():
+
+                for field_in_finding in finding.custom_field_finding.all():
+                    md_custom_fields = f"**{bleach.clean(field_in_finding.title)}**\n\n{bleach.clean(field_in_finding.description)}\n\n"
+
+                    template_custom_fields += ''.join(md_custom_fields)
+
 
             # appendix
             if finding.appendix_finding.all():
@@ -632,7 +645,7 @@ def reportdownloadmarkdown(request,pk):
                     template_attacktree_in_finding += ''.join(md_attacktree + "\n")
 
             # finding
-            md_finding = render_to_string('tpl/markdown/md_finding.md', {'finding': finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
+            md_finding = render_to_string('tpl/markdown/md_finding.md', {'finding': finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding, 'template_custom_fields': template_custom_fields})
 
             template_findings += ''.join(md_finding)
 
@@ -699,6 +712,10 @@ def reportdownloadhtml(request,pk):
 
     # FINDINGS
     for finding in DB_finding_query:
+        
+        # Custom fields
+        template_custom_fields = ""
+
         # Only reporting Critical/High/Medium/Low/Info findings
         if finding.severity == 'None':
             pass
@@ -730,6 +747,14 @@ def reportdownloadhtml(request,pk):
             # Summary table
             finding_summary_table += render_to_string('tpl/html/html_finding_summary.html', {'finding': finding, 'counter_finding': counter_finding, 'color_text_severity': color_text_severity})
             
+            # Custom fields
+            if finding.custom_field_finding.all():
+
+                for field_in_finding in finding.custom_field_finding.all():
+                    html_custom_fields = f"<tr><td style=\"width: 15%\">**{bleach.clean(field_in_finding.title)}**</td><td>{bleach.clean(field_in_finding.description)}</td></tr>\n\n"
+
+                    template_custom_fields += ''.join(html_custom_fields)
+
 
             # Appendix
             if finding.appendix_finding.all():
@@ -761,7 +786,7 @@ def reportdownloadhtml(request,pk):
 
 
             # finding
-            html_finding = render_to_string('tpl/html/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
+            html_finding = render_to_string('tpl/html/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding, 'template_custom_fields': template_custom_fields})
 
             template_findings += ''.join(html_finding)
 
@@ -821,7 +846,9 @@ def reportdownloadpdf(request,pk):
     md_subject = PETEREPORT_MARKDOWN['subject']
     md_website = PETEREPORT_MARKDOWN['website']
     counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
-    
+    title_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_title_background']}"
+    pages_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_pages_background']}"
+
     # Appendix
     template_appendix = "# Additional Notes\n\n"
 
@@ -834,6 +861,9 @@ def reportdownloadpdf(request,pk):
         report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
 
     for finding in DB_finding_query:
+        # Custom fields
+        template_custom_fields = ""
+
         # Only reporting Critical/High/Medium/Low/Info findings
         if finding.severity == 'None':
             pass
@@ -881,7 +911,15 @@ def reportdownloadpdf(request,pk):
             pdf_finding_summary += render_to_string('tpl/pdf/pdf_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding, 'severity_box': severity_box})
             
             severity_color_finding = "\\textcolor{" + f"{severity_color}" +"}{" + f"{finding.severity}" + "}"
-                    
+
+            # Custom fields
+            if finding.custom_field_finding.all():
+
+                for field_in_finding in finding.custom_field_finding.all():
+                    md_custom_fields = f"**{bleach.clean(field_in_finding.title)}**\n\n{bleach.clean(field_in_finding.description)}\n\n"
+
+                    template_custom_fields += ''.join(md_custom_fields)
+
             # appendix
             if finding.appendix_finding.all():
 
@@ -924,12 +962,12 @@ def reportdownloadpdf(request,pk):
                 template_attacktree_in_finding += ''.join("\\pagebreak")
 
             # finding
-            pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding})
+            pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding, 'template_custom_fields': template_custom_fields})
 
             template_findings += ''.join(pdf_finding)
 
 
-    pdf_markdown_report = render_to_string('tpl/pdf/pdf_header.yaml', {'DB_report_query': DB_report_query, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'titlepagecolor': PETEREPORT_TEMPLATES['titlepage-color'], 'titlepagetextcolor': PETEREPORT_TEMPLATES['titlepage-text-color'], 'titlerulecolor': PETEREPORT_TEMPLATES['titlepage-rule-color'], 'titlepageruleheight': PETEREPORT_TEMPLATES['titlepage-rule-height'] })
+    pdf_markdown_report = render_to_string('tpl/pdf/pdf_header.yaml', {'DB_report_query': DB_report_query, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_pdf_language': PETEREPORT_TEMPLATES['report_pdf_language'], 'titlepagecolor': PETEREPORT_TEMPLATES['titlepage-color'], 'titlepagetextcolor': PETEREPORT_TEMPLATES['titlepage-text-color'], 'titlerulecolor': PETEREPORT_TEMPLATES['titlepage-rule-color'], 'titlepageruleheight': PETEREPORT_TEMPLATES['titlepage-rule-height'], 'title_background': title_background_image, 'pages_background': pages_background_image })
 
     pdf_markdown_report += render_to_string('tpl/pdf/pdf_report.md', {'DB_report_query': DB_report_query, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image, 'pdf_finding_summary': pdf_finding_summary, 'template_findings': template_findings, 'template_appendix': template_appendix})
 
@@ -1183,8 +1221,9 @@ def finding_view(request,pk):
     DB_finding_query = DB_Finding.objects.filter(pk=pk).order_by('cvss_score').reverse()
     DB_appendix = DB_Appendix.objects.filter(finding__in=DB_finding_query)
     DB_attacktree = DB_AttackTree.objects.filter(finding__in=DB_finding_query)
+    DB_field = DB_Custom_field.objects.filter(finding__in=DB_finding_query)
 
-    return render(request, 'findings/finding_view.html', {'DB_report': finding.report, 'finding': finding, 'DB_appendix': DB_appendix, 'DB_attacktree': DB_attacktree})
+    return render(request, 'findings/finding_view.html', {'DB_report': finding.report, 'finding': finding, 'DB_appendix': DB_appendix, 'DB_attacktree': DB_attacktree, 'DB_field': DB_field})
 
 
 
@@ -1489,7 +1528,79 @@ def appendix_view(request,pk):
 
 
 
+# ----------------------------------------------------------------------
+#                           Custom Fields 
+# ----------------------------------------------------------------------
 
+@login_required
+def fields(request,pk):
+
+    DB_finding_query = get_object_or_404(DB_Finding, pk=pk)
+    DB_custom_query = DB_Custom_field.objects.filter(finding_id=pk)
+
+    count_custom_query = DB_custom_query.count()
+
+    return render(request, 'findings/custom_fields.html', {'DB_custom_query': DB_custom_query, 'DB_finding_query': DB_finding_query, 'count_custom_query': count_custom_query})
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def field_add(request,pk):
+
+    DB_finding_query = get_object_or_404(DB_Finding, pk=pk)
+
+    if request.method == 'POST':
+        form = NewFieldForm(request.POST)
+        if form.is_valid():
+            custom_field = form.save(commit=False)
+            custom_field.finding = DB_finding_query
+            custom_field.save()
+
+            if '_finish' in request.POST:
+                return redirect('finding_view', pk=pk)
+            elif '_next' in request.POST:
+                return redirect('field_add', pk=pk)
+    else:
+        form = NewFieldForm()
+        form.fields['description'].initial = 'TBD'
+
+
+    return render(request, 'findings/custom_field_add.html', {
+        'form': form, 'DB_finding_query': DB_finding_query
+    })
+
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def field_edit(request,pk):
+
+    field = get_object_or_404(DB_Custom_field, pk=pk)
+    finding_pk = field.finding.pk
+
+    if request.method == 'POST':
+        form = NewFieldForm(request.POST, instance=field)
+        if form.is_valid():
+            form.save()
+            return redirect('finding_view', pk=finding_pk)
+    else:
+        form = NewFieldForm(instance=field)
+    return render(request, 'findings/custom_field_add.html', {
+        'form': form, 'DB_finding_query': field.finding
+    })
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def field_delete(request):
+
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_Custom_field.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponse('{"status":"fail"}', content_type='application/json')
 
 # ----------------------------------------------------------------------
 #                           Templates 

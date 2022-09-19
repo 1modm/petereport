@@ -42,6 +42,11 @@ urlpatterns = [
     path('findings/upload/<int:pk>', views.upload_csv_findings, name='upload_csv_findings'),
     path('findings/defectdojo/products/<int:pk>', views.defectdojo_products, name='defectdojo_products'),
     path('findings/defectdojo/import/<int:pk>/<int:ddpk>', views.defectdojo_import, name='defectdojo_import'),
+    # Custom Fields
+    path('field/add/<int:pk>', views.field_add, name='field_add'),
+    path('finding/customfields/<int:pk>', views.fields, name='fields'),
+    path('field/delete/', views.field_delete, name='field_delete'),
+    path('field/edit/<int:pk>', views.field_edit, name='field_edit'),
     # Appendix
     path('report/appendix/<int:pk>', views.reportappendix, name='reportappendix'),
     path('appendix/add/<int:pk>', views.appendix_add, name='appendix_add'),
