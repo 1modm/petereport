@@ -26,8 +26,8 @@ RUN apt-get -y install pipenv python3-pypandoc
 RUN apt-get -y install wget
 RUN apt-get -y install libpangocairo-1.0-0
 ARG TARGETARCH
-RUN wget https://github.com/jgm/pandoc/releases/download/2.18/pandoc-2.18-1-${TARGETARCH}.deb
-RUN dpkg -i pandoc-2.18-1-${TARGETARCH}.deb
+RUN wget https://github.com/jgm/pandoc/releases/download/2.19.2/pandoc-2.19-2-1-${TARGETARCH}.deb
+RUN dpkg -i pandoc-2.19-2-1-${TARGETARCH}.deb
 
 # Alias "python" to "python3"
 RUN ln -s /usr/bin/python3 /usr/bin/python

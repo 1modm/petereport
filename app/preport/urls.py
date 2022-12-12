@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.urls import path
 
 from . import views
@@ -66,10 +66,12 @@ urlpatterns = [
     path('cwe/add/', views.cwe_add, name='cwe_add'),
     path('cwe/edit/<int:pk>', views.cwe_edit, name='cwe_edit'),
     path('cwe/delete/', views.cwe_delete, name='cwe_delete'),
-    # Attack Tree
-    path('report/attacktree/<int:pk>', views.reportattacktree, name='reportattacktree'),
-    path('attacktree/add/<int:pk>', views.attacktree_add, name='attacktree_add'),
-    path('attacktree/delete/', views.attacktree_delete, name='attacktree_delete'),
-    path('attacktree/edit/<int:pk>', views.attacktree_edit, name='attacktree_edit'),
-    path('attacktree/view/<int:pk>', views.attacktree_view, name='attacktree_view'),
+    # Attack Flows
+    path('report/attackflow/<int:pk>', views.reportattackflow, name='reportattackflow'),
+    path('attackflow/add/<int:pk>', views.attackflow_add, name='attackflow_add'),
+    path('attackflow/add_flow/<int:pk>/<int:finding_pk>', views.attackflow_add_flow, name='attackflow_add_flow'),
+    path('attackflow/edit/<int:pk>', views.attackflow_edit_flow, name='attackflow_edit_flow'),
+    path('attackflow/add_afb/<int:pk>/<int:finding_pk>', views.attackflow_add_afb, name='attackflow_add_afb'),
+    path('attackflow/edit_afb/<int:pk>', views.attackflow_edit_afb, name='attackflow_edit_afb'),
+    path('attackflow/delete/', views.attackflow_delete, name='attackflow_delete'),
 ]

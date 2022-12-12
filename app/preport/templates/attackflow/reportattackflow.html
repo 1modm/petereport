@@ -1,0 +1,183 @@
+{% extends 'home/template.html' %}
+
+{% load martortags %}
+{% load bleach_tags %}
+
+{% block title %} Attack Flow {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+
+    <style>
+      img {
+        border: 1px solid #C0C0C0;
+        padding: 3px;
+      }
+    </style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+  
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+
+          <div class="col-sm-6">
+            <h1>{{DB_report_query.title}} Attack Flow</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
+              <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+            </ol>
+          </div>
+        </div>
+
+      <br>
+
+        {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+          <a href="/attackflow/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> Add New Attack Flow</button></a> 
+        {% endif %}
+
+      </div>
+    </section>
+
+
+  <section class="content">
+    <div class="container-fluid">
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    {{ count_attackflow_query }} Attack Flow
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+            
+                  <table id="attack_flow" class="table table-bordered table-hover"> 
+                    <thead>
+                      <tr>
+                        <th style="width: 20%">Attack Flow</th>
+                        <th style="width: 40%">Attack Flow</th>
+                        <th style="width: 20%">Finding</th>
+                        <th style="width: 20%"class="text-center"> Actions</th>
+                      </tr>
+                    </thead>
+
+
+                    <tbody>
+                      {% for attackflow in DB_attackflow_query %}
+                      <tr>
+
+                        <td>
+                            {{attackflow.title}}
+                        </td>
+
+                        <td style="text-align: center; vertical-align: middle;">
+                            <img src="{{attackflow.attackflow_png | bleach}}" alt="Attack Flow" style="max-height:500px;max-width:500px;height:auto;width:auto;" />
+                        </td>
+
+                        <td>
+                            {% for finding in attackflow.finding.all %}
+                              {{finding.title}}
+                            {% endfor %}
+                        </td>
+
+                        <td align="center">
+                            {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                              <a href="/attackflow/edit/{{ attackflow.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
+                              <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{attackflow.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                            {% endif %}
+
+                        </td>
+
+                      </tr>
+
+                      <div class="modal modal-danger fade mm-modal-{{attackflow.pk}}" id="modal-danger">
+                        <div class="modal-dialog">
+                          <div class="modal-content bg-danger">
+                            <div class="modal-header">
+                              <h4 class="modal-title">Are you sure?</h4>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <p>Delete Attack Flow {{attackflow.title}}&hellip;</p>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+                              <button type="button" onclick="DeleteID({{attackflow.pk}});" class="btn btn-outline-light">Delete Attack Flow</button>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      {% endfor %}
+
+                    </tbody>
+                  </table>
+            
+
+                </div>
+              </div>
+
+        </div>
+      </div> 
+
+
+
+      </div>
+    </section>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+<script>
+  $(function () {
+    $("#attack_flow").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true, 
+      "lengthChange": false, 
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#attack_flow_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+<script>
+  function DeleteID(del_id) {
+        $.ajax({
+            type: 'POST',
+            url: "/attackflow/delete/",
+            headers:{
+              "X-CSRFToken": '{{ csrf_token }}'
+            },
+            data : { 'delete_id': del_id},
+
+            success : function(json) {
+              document.location.href = "/report/attackflow/{{DB_report_query.pk}}"; 
+            }
+        })
+  }
+</script>
+
+{% endblock javascripts %}

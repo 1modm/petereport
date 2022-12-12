@@ -34,7 +34,7 @@
          <br>
 
         <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-7">
                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
                   <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> Edit Finding</button></a>
                   <a href="/finding/customfields/{{ finding.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> Finding custom fields</button></a>
@@ -77,7 +77,7 @@
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">Finding ID</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.finding_id }}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.finding_id | safe_markdown | bleach}}</span>
                           </div>
                         </div>
                       </div>
@@ -106,7 +106,7 @@
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">CWE</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cwe.cwe_id}} - {{finding.cwe.cwe_name }}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cwe.cwe_id |safe| bleach}} - {{finding.cwe.cwe_name |safe| bleach}}</span>
                           </div>
                         </div>
                       </div>
@@ -115,7 +115,7 @@
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">CVSS Score</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_base_score | safe_markdown | bleach}}<span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_base_score | safe | bleach}}<span>
                           </span></span></div>
                         </div>
                       </div>
@@ -139,15 +139,15 @@
                             <span class="info-box-number text-center text-muted">Severity</span>
                             <span class="info-box-text text-center text-muted mb-0">
                                 {% if finding.severity == "Critical" %}
-                                      <span><b><font color="#cc0000">{{finding.severity}}</font></b></span>
+                                      <span><b><font color="#cc0000">{{finding.severity| safe_markdown | bleach}}</font></b></span>
                                   {% elif finding.severity == "High" %}
-                                      <span><b><font color="#ff403d">{{finding.severity}}</font></b></span>
+                                      <span><b><font color="#ff403d">{{finding.severity| safe_markdown | bleach}}</font></b></span>
                                   {% elif finding.severity == "Medium" %}
-                                      <span><b><font color="#fc7f03">{{finding.severity}}</font></b></span>
+                                      <span><b><font color="#fc7f03">{{finding.severity| safe_markdown | bleach}}</font></b></span>
                                   {% elif finding.severity == "Low" %}
-                                      <span><b><font color="#05b04f">{{finding.severity}}</font></b></span>
+                                      <span><b><font color="#05b04f">{{finding.severity| safe_markdown | bleach}}</font></b></span>
                                   {% elif finding.severity == "Info" %}
-                                      <span><b><font color="#45a7f7">{{finding.severity}}</font></b></span>
+                                      <span><b><font color="#45a7f7">{{finding.severity| safe_markdown | bleach}}</font></b></span>
                                   {% else %}
                                       <span><b>{{finding.severity}}</b></span> (will not appear in the report)
                                 {% endif %}
@@ -380,7 +380,7 @@
     {% endif %}
 
 
-    {% if DB_attacktree %}
+    {% if DB_attackflow %}
 
       <div class="row">
         <div class="col-md-12">
@@ -388,7 +388,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Attack Tree</b>
+                    <b>Attack Flow</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -398,10 +398,10 @@
 
                 </div>
                 <div class="card-body">
-                  {% for attacktree in DB_attacktree %}
-                    <p>{{ attacktree.title | safe_markdown | bleach }}</p>
+                  {% for attackflow in DB_attackflow %}
+                    <p>{{ attackflow.title | safe_markdown | bleach }}</p>
                     <center>
-                      <p>{{ attacktree.svg_file|safe| bleach }}</p>
+                      <p><img src="{{attackflow.attackflow_png | bleach}}" alt="Attack Flow" height="300" /></p>
                     </center>
                     <hr>
                   {% endfor %}

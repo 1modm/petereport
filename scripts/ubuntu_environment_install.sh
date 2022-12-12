@@ -12,13 +12,14 @@ sudo apt-get upgrade -y
 echo '[+] Installing the environment pre-requisites'
 while read -r p ; do sudo apt-get install -y $p ; done < <(cat << "EOF"
     pipenv
-    texlive-full
     pandoc
     python3-pypandoc
     cairosvg 
     python3-cairosvg
     libcairo2
     libcairo2-dev
+    libpangocairo-1.0-0
+    wget
 EOF
 )
 

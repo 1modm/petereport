@@ -17,7 +17,8 @@ DJANGO_CONFIG = {
 	'debug': False,
 	'admin_module': False,
 	'allowed_hosts': '[\'*\']',
-	'server_host': 'http://127.0.0.1:8000'
+	'server_host': 'http://127.0.0.1:8000',
+	'upload_memory_size': 10485760 # 10MB
 }
 
 PETEREPORT_TEMPLATES = {

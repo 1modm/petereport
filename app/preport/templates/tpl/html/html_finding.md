@@ -65,15 +65,9 @@
 {% endif %}
 
 
-{% if template_appendix_in_finding %}
+{% if template_attackflow_in_finding %}
 <tr>
-{{template_appendix_in_finding | safe }}
-</tr> 
-{% endif %}
-
-{% if template_attacktree_in_finding %}
-<tr>
-{{template_attacktree_in_finding | safe }}
+{{template_attackflow_in_finding | safe }}
 </tr> 
 {% endif %}
 

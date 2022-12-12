@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound, HttpResponseServerError
 from django.utils.html import strip_tags
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -14,10 +14,10 @@ from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_protect
 
 # Forms
-from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewAttackTreeForm, NewCWEForm, NewFieldForm
+from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm
 
 # Model
-from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree, DB_Custom_field
+from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_Custom_field, DB_AttackFlow
 
 # Decorators
 from .decorators import allowed_users
@@ -113,7 +113,6 @@ def markdown_uploader(request):
             return HttpResponse(data, content_type='application/json')
         return HttpResponse(_('Invalid request!'))
     return HttpResponse(_('Invalid request!'))
-
 
 
 # ----------------------------------------------------------------------
@@ -259,7 +258,7 @@ def user_delete(request):
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
-        return HttpResponse('{"status":"fail"}', content_type='application/json')
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 # ----------------------------------------------------------------------
@@ -330,7 +329,7 @@ def product_delete(request):
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
-        return HttpResponse('{"status":"fail"}', content_type='application/json')
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 
@@ -414,7 +413,7 @@ def report_delete(request):
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
-        return HttpResponse('{"status":"fail"}', content_type='application/json')
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 
@@ -447,8 +446,8 @@ def report_view(request,pk):
     DB_appendix_query = DB_Appendix.objects.filter(finding__in=DB_finding_query)
     count_appendix_query = DB_appendix_query.count()
 
-    DB_attacktree_query = DB_AttackTree.objects.filter(finding__in=DB_finding_query)
-    count_attacktree_query = DB_attacktree_query.count()
+    DB_attackflow_query = DB_AttackFlow.objects.filter(finding__in=DB_finding_query)
+    count_attackflow_query = DB_attackflow_query.count()
 
     count_findings_critical = 0
     count_findings_high = 0
@@ -493,7 +492,7 @@ def report_view(request,pk):
         cwe_categories.append(dict_cwe)
 
 
-    return render(request, 'reports/report_view.html', {'DB_appendix_query': DB_appendix_query, 'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_appendix_query': count_appendix_query, 'count_finding_query': count_finding_query, 'count_findings_critical': count_findings_critical, 'count_findings_high': count_findings_high, 'count_findings_medium': count_findings_medium, 'count_findings_low': count_findings_low, 'count_findings_info': count_findings_info, 'count_findings_none': count_findings_none, 'cwe_categories': cwe_categories, 'DB_attacktree_query': DB_attacktree_query, 'count_attacktree_query': count_attacktree_query})
+    return render(request, 'reports/report_view.html', {'DB_appendix_query': DB_appendix_query, 'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_appendix_query': count_appendix_query, 'count_finding_query': count_finding_query, 'count_findings_critical': count_findings_critical, 'count_findings_high': count_findings_high, 'count_findings_medium': count_findings_medium, 'count_findings_low': count_findings_low, 'count_findings_info': count_findings_info, 'count_findings_none': count_findings_none, 'cwe_categories': cwe_categories, 'DB_attackflow_query': DB_attackflow_query, 'count_attackflow_query': count_attackflow_query})
 
 
 
@@ -559,7 +558,7 @@ def uploadsummaryfindings(request,pk):
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
-        return HttpResponse('{"status":"fail"}', content_type='application/json')
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 
@@ -609,7 +608,7 @@ def reportdownloadmarkdown(request,pk):
             pass
         else:
             counter_finding += 1
-            template_appendix_in_finding = template_attacktree_in_finding = None
+            template_appendix_in_finding = template_attackflow_in_finding = None
 
             # Summary table
             md_finding_summary += render_to_string('tpl/markdown/md_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding})
@@ -634,18 +633,19 @@ def reportdownloadmarkdown(request,pk):
                     template_appendix += ''.join(md_appendix)
                     template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "\n")
 
-            # attack trees
-            if finding.attacktree_finding.all():
 
-                template_attacktree_in_finding = "**Attack tree**\n"
+            # attack flows
+            if finding.attackflow_finding.all():
 
-                for attacktree_in_finding in finding.attacktree_finding.all():
-                    md_attacktree = render_to_string('tpl/markdown/md_attacktree.md', {'attacktree_in_finding': attacktree_in_finding})
+                template_attackflow_in_finding = "**Attack Flow**\n"
 
-                    template_attacktree_in_finding += ''.join(md_attacktree + "\n")
+                for attackflow_in_finding in finding.attackflow_finding.all():
+                    md_attackflow = render_to_string('tpl/markdown/md_attackflow.md', {'attackflow_in_finding': attackflow_in_finding})
+
+                    template_attackflow_in_finding += ''.join(md_attackflow + "\n")
 
             # finding
-            md_finding = render_to_string('tpl/markdown/md_finding.md', {'finding': finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding, 'template_custom_fields': template_custom_fields})
+            md_finding = render_to_string('tpl/markdown/md_finding.md', {'finding': finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding, 'template_custom_fields': template_custom_fields})
 
             template_findings += ''.join(md_finding)
 
@@ -721,7 +721,7 @@ def reportdownloadhtml(request,pk):
             pass
         else:
             counter_finding += 1
-            template_appendix_in_finding = template_attacktree_in_finding = None
+            template_appendix_in_finding = template_attackflow_in_finding = None
 
             if finding.severity == 'Critical':
                 color_cell_bg = CRITICAL
@@ -770,23 +770,21 @@ def reportdownloadhtml(request,pk):
                 template_appendix_in_finding += ''.join("</td>\n")
 
             
-            # attack trees
-            if finding.attacktree_finding.all():
+            # attack flow
+            if finding.attackflow_finding.all():
 
-                template_attacktree_in_finding = "<td style=\"width: 15%\">**Attack tree**</td><td>\n"
+                template_attackflow_in_finding = "<td style=\"width: 15%\">**Attack Flow**</td><td>\n"
 
-                for attacktree_in_finding in finding.attacktree_finding.all():
-                    html_attacktree = render_to_string('tpl/html/md_attacktree.md', {'attacktree_in_finding': attacktree_in_finding})
+                for attackflow_in_finding in finding.attackflow_finding.all():
+                    html_attackflow = render_to_string('tpl/html/md_attackflow.md', {'attackflow_in_finding': attackflow_in_finding})
+
+                    template_attackflow_in_finding += ''.join(html_attackflow + "<br>")
                     
-                    html_attacktree_svg = (html_attacktree.replace("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"", "")).replace("\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">", "")
-
-                    template_attacktree_in_finding += ''.join(html_attacktree_svg + "<br>")
-                    
-                template_attacktree_in_finding += ''.join("</td>\n")
+                template_attackflow_in_finding += ''.join("</td>\n")
 
 
             # finding
-            html_finding = render_to_string('tpl/html/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding, 'template_custom_fields': template_custom_fields})
+            html_finding = render_to_string('tpl/html/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding, 'template_custom_fields': template_custom_fields})
 
             template_findings += ''.join(html_finding)
 
@@ -803,7 +801,7 @@ def reportdownloadhtml(request,pk):
 
     html_file_output = os.path.join(REPORTS_MEDIA_ROOT, pathfile)
 
-    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained', '--no-check-certificate'])
+    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained'])
 
     if os.path.exists(html_file_output):
             with open(html_file_output, 'rb') as fh:
@@ -869,7 +867,7 @@ def reportdownloadpdf(request,pk):
             pass
         else:
             counter_finding += 1
-            template_appendix_in_finding = template_attacktree_in_finding = ''
+            template_appendix_in_finding = template_attackflow_in_finding = ''
 
             if finding.severity == 'Critical':
                 color_cell_bg = CRITICAL
@@ -937,32 +935,26 @@ def reportdownloadpdf(request,pk):
             else:
                 template_appendix_in_finding += ''.join("\\pagebreak")
 
-            # attack trees
-            if finding.attacktree_finding.all():
+            # attack flow
+            if finding.attackflow_finding.all():
 
-                template_attacktree_in_finding = "**Attack tree**\n\n"
+                template_attackflow_in_finding = "**Attack Flow**\n\n"
 
-                for attacktree_in_finding in finding.attacktree_finding.all():
+                for attackflow_in_finding in finding.attackflow_finding.all():
 
-                    img = cairosvg.svg2png(bytestring=attacktree_in_finding.svg_file)
-                    byte_io = io.BytesIO()
-                    img = Image.open(io.BytesIO(img))
-
-                    img.save(byte_io,format="PNG") 
-                    image_content_base64 = base64.b64encode(byte_io.getbuffer()).decode('utf-8')
-                    image_content_base64_final = 'data:image/png;base64,' + image_content_base64
-
-                    pdf_attacktree = render_to_string('tpl/pdf/pdf_attacktree.md', {'attacktree_in_finding': attacktree_in_finding, 'image_content_base64': image_content_base64_final})
+                    pdf_attackflow = render_to_string('tpl/pdf/pdf_attackflow.md', {'attackflow_in_finding': attackflow_in_finding})
             
-                    template_attacktree_in_finding += ''.join(pdf_attacktree + "\n")
+                    template_attackflow_in_finding += ''.join(pdf_attackflow + "\n")
 
-                template_attacktree_in_finding += ''.join("\\pagebreak")
+                template_attackflow_in_finding += ''.join("\\pagebreak")
 
             else:
-                template_attacktree_in_finding += ''.join("\\pagebreak")
+                template_attackflow_in_finding += ''.join("\\pagebreak")
+
+
 
             # finding
-            pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attacktree_in_finding': template_attacktree_in_finding, 'template_custom_fields': template_custom_fields})
+            pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding, 'template_custom_fields': template_custom_fields})
 
             template_findings += ''.join(pdf_finding)
 
@@ -982,9 +974,8 @@ def reportdownloadpdf(request,pk):
 
     PETEREPORT_LATEX_FILE = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['pdf_latex_template'])
 
-    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--no-check-certificate'])
+    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings'])
     #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
-    #print(output_pypandoc)
 
     if os.path.exists(pdf_file_output):
             with open(pdf_file_output, 'rb') as fh:
@@ -1014,7 +1005,7 @@ def reportdownloadjupyter(request,pk):
     name_file = PETEREPORT_TEMPLATES['report_jupyter_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.ipynb'
 
     # INIT
-    template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = template_attacktree = ""
+    template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = ""
     counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
     md_author = PETEREPORT_MARKDOWN['author']
     md_subject = PETEREPORT_MARKDOWN['subject']
@@ -1023,8 +1014,8 @@ def reportdownloadjupyter(request,pk):
     # Appendix
     template_appendix = render_to_string('tpl/jupyter/additional_notes.ipynb')
 
-    # Attacktree init
-    template_attacktree = render_to_string('tpl/jupyter/attacktrees.ipynb')
+    # Attackflow init
+    template_attackflow = render_to_string('tpl/jupyter/attackflows.ipynb')
     
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
@@ -1042,7 +1033,7 @@ def reportdownloadjupyter(request,pk):
             pass
         else:
             counter_finding += 1
-            template_appendix_in_finding = template_attacktree_in_finding = ''
+            template_appendix_in_finding = ''
 
             if finding.severity == 'Critical':
                 counter_finding_critical += 1 
@@ -1075,29 +1066,21 @@ def reportdownloadjupyter(request,pk):
                 ipynb_finding += render_to_string('tpl/jupyter/NA.ipynb')
 
 
-            # attack trees
-            if finding.attacktree_finding.all():
+            # attack flow
+            if finding.attackflow_finding.all():
 
-                for attacktree_in_finding in finding.attacktree_finding.all():
+                for attackflow_in_finding in finding.attackflow_finding.all():
 
-                    img = cairosvg.svg2png(bytestring=attacktree_in_finding.svg_file)
-                    byte_io = io.BytesIO()
-                    img = Image.open(io.BytesIO(img))
+                    ipynb_finding += render_to_string('tpl/jupyter/attackflow_in_finding.ipynb', {'attackflow_in_finding': attackflow_in_finding})
 
-                    img.save(byte_io,format="PNG") 
-                    image_content_base64 = base64.b64encode(byte_io.getbuffer()).decode('utf-8')
-                    image_content_base64_final = 'data:image/png;base64,' + image_content_base64
+                    ipynb_attackflow = render_to_string('tpl/jupyter/attackflow.ipynb', {'attackflow_in_finding': attackflow_in_finding})
 
-                    ipynb_finding += render_to_string('tpl/jupyter/attacktree_in_finding.ipynb', {'attacktree_in_finding': attacktree_in_finding})
-
-                    ipynb_attacktree = render_to_string('tpl/jupyter/attacktree.ipynb', {'attacktree_in_finding': attacktree_in_finding, 'image_content_base64': image_content_base64_final})
-
-                    template_attacktree += ''.join(ipynb_attacktree)
+                    template_attackflow += ''.join(ipynb_attackflow)
                     
             
             template_findings += ''.join(ipynb_finding)
 
-    render_jupyter = render_to_string('tpl/jupyter/report.ipynb', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'template_attacktree': template_attacktree, 'finding_summary': ipynb_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
+    render_jupyter = render_to_string('tpl/jupyter/report.ipynb', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'template_attackflow': template_attackflow, 'finding_summary': ipynb_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
 
     final_markdown = textwrap.dedent(render_jupyter)
     final_markdown_output = mark_safe(final_markdown)
@@ -1211,7 +1194,7 @@ def finding_delete(request):
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
-        return HttpResponse('{"status":"fail"}', content_type='application/json')
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 
@@ -1220,10 +1203,10 @@ def finding_view(request,pk):
     finding = get_object_or_404(DB_Finding, pk=pk)
     DB_finding_query = DB_Finding.objects.filter(pk=pk).order_by('cvss_score').reverse()
     DB_appendix = DB_Appendix.objects.filter(finding__in=DB_finding_query)
-    DB_attacktree = DB_AttackTree.objects.filter(finding__in=DB_finding_query)
+    DB_attackflow = DB_AttackFlow.objects.filter(finding__in=DB_finding_query)
     DB_field = DB_Custom_field.objects.filter(finding__in=DB_finding_query)
 
-    return render(request, 'findings/finding_view.html', {'DB_report': finding.report, 'finding': finding, 'DB_appendix': DB_appendix, 'DB_attacktree': DB_attacktree, 'DB_field': DB_field})
+    return render(request, 'findings/finding_view.html', {'DB_report': finding.report, 'finding': finding, 'DB_appendix': DB_appendix, 'DB_attackflow': DB_attackflow, 'DB_field': DB_field})
 
 
 
@@ -1324,7 +1307,7 @@ def upload_csv_findings(request,pk):
             
             List.append([fid,ftitle,fstatus,fseverity,fcvss_score,fcvss,fcwe,fdescription,flocation,fimpact,frecommendation,freferences,fappendix,fappendixdescription])
 
-            DB_cwe = get_object_or_404(DB_CWE, pk=fcwe)
+            DB_cwe = get_object_or_404(DB_CWE, cwe_id=fcwe)
 
             # Save finding
             finding_to_DB = DB_Finding(report=DB_report_query, finding_id=fid, title=ftitle, status=fstatus, severity=fseverity, cvss_base_score=fcvss_score, cvss_score=fcvss, description=fdescription, location=flocation, impact=fimpact, recommendation=frecommendation, references=freferences, cwe=DB_cwe)
@@ -1512,7 +1495,7 @@ def appendix_delete(request):
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
-        return HttpResponse('{"status":"fail"}', content_type='application/json')
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 
@@ -1600,7 +1583,7 @@ def field_delete(request):
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
-        return HttpResponse('{"status":"fail"}', content_type='application/json')
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 # ----------------------------------------------------------------------
 #                           Templates 
@@ -1678,7 +1661,7 @@ def template_delete(request):
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
-        return HttpResponse('{"status":"fail"}', content_type='application/json')
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 
@@ -1761,7 +1744,7 @@ def cwe_delete(request):
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
-        return HttpResponse('{"status":"fail"}', content_type='application/json')
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 
@@ -1785,138 +1768,121 @@ def cwe_edit(request,pk):
 
 
 # ----------------------------------------------------------------------
-#                           Attack Tree 
+#                           Attack Flow 
 # ----------------------------------------------------------------------
 
 
 @login_required
-def reportattacktree(request,pk):
+def reportattackflow(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
-    DB_attacktree_query = DB_AttackTree.objects.filter(finding__in=DB_finding_query)
+    DB_attackflow_query = DB_AttackFlow.objects.filter(finding__in=DB_finding_query)
 
-    count_attacktree_query = DB_attacktree_query.count()
+    count_attackflowquery = DB_attackflow_query.count()
 
-    return render(request, 'attacktree/reportattacktree.html', {'DB_report_query': DB_report_query, 'DB_attacktree_query': DB_attacktree_query, 'count_attacktree_query': count_attacktree_query})
+    return render(request, 'attackflow/reportattackflow.html', {'DB_report_query': DB_report_query, 'DB_attackflow_query': DB_attackflow_query, 'count_attackflowquery': count_attackflowquery})
 
+
+@login_required
+def attackflow_add(request,pk):
+    DB_report_query = get_object_or_404(DB_Report, pk=pk)
+    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+    count_finding_query = DB_finding_query.count()
+
+    return render(request, 'attackflow/reportfindings.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def attacktree_delete(request):
-
-    if request.method == 'POST':
-        delete_id = request.POST['delete_id']
-        DB_AttackTree.objects.filter(pk=delete_id).delete()
-
-        return HttpResponse('{"status":"success"}', content_type='application/json')
-    else:
-        return HttpResponse('{"status":"fail"}', content_type='application/json')
-
-
-
-
-@login_required
-@allowed_users(allowed_roles=['administrator'])
-def attacktree_add(request,pk):
+def attackflow_add_flow(request,pk,finding_pk):
 
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
 
-    initial_attack_tree = '''facts:
-- asset1: Asset 1
-  from:
-  - attack1
-- asset2: Asset 2
-  from:
-  - attack2
-
-attacks:
-- attack1: Attack 1
-  from:
-  - mitigation1
-- attack2: Attack 2
-  from:
-  - mitigation2
-- attack3: Attack 3
-  from:
-  - mitigation2
-
-mitigations:
-- mitigation1: Mitigation 1
-  from:
-  - reality
-- mitigation2: Mitigation 2
-  from:
-  - reality
-
-goals:
-- asset_compromised: Asset Compromised
-  from:
-  - asset1
-  - asset2
-  - attack3
-    '''
-
-    if request.method == 'POST':
-        form = NewAttackTreeForm(request.POST, reportpk=pk)
-        if form.is_valid():
-            attacktree = form.save(commit=False)            
-            finding_pk = form['finding'].value()
-            DB_finding_m2m = get_object_or_404(DB_Finding, pk=finding_pk)
-            attacktree.save()
-            attacktree.finding.add(finding_pk)
-
-            if '_finish' in request.POST:
-                return redirect('reportattacktree', pk=pk)
-            elif '_next' in request.POST:
-                return redirect('attacktree_add', pk=pk)
-    else:
-        form = NewAttackTreeForm(reportpk=pk)
-        form.fields['title'].initial = 'TBD'
-        form.fields['attacktree'].initial = initial_attack_tree
-
-    return render(request, 'attacktree/attacktree_add.html', {
-        'form': form, 'DB_report_query': DB_report_query
+    return render(request, 'attackflow/attackflow_add.html', {
+        'DB_report_query': DB_report_query, 'report_pk': pk, 'finding_pk': finding_pk
     })
 
 
-
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def attacktree_edit(request,pk):
+def attackflow_edit_flow(request,pk):
 
-    attacktree_db = get_object_or_404(DB_AttackTree, pk=pk)
-    finding_pk = attacktree_db.finding.first().pk
+    DB_attackflow_query = get_object_or_404(DB_AttackFlow, pk=pk)
+    attackflow_afb = DB_attackflow_query.attackflow_afb
+
+    finding_pk = DB_attackflow_query.finding.first().pk
     DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
 
     report = DB_finding_query.report
     DB_report_query = get_object_or_404(DB_Report, pk=report.pk)
 
-    if request.method == 'POST':
-        form = NewAttackTreeForm(request.POST, instance=attacktree_db, reportpk=report.pk)
-        if form.is_valid():
-            attacktree = form.save(commit=False)
-            new_finding_pk = form['finding'].value()
-            New_DB_finding = DB_Finding.objects.filter(pk=new_finding_pk)
-            attacktree.save()
-            attacktree.finding.set(New_DB_finding, clear=True)
-
-            if '_finish' in request.POST:
-                return redirect('reportattacktree', pk=report.pk)
-            elif '_next' in request.POST:
-                return redirect('attacktree_add', pk=report.pk)
-    else:
-        form = NewAttackTreeForm(reportpk=report.pk, instance=attacktree_db, initial={'finding': finding_pk})
-
-    return render(request, 'attacktree/attacktree_add.html', {
-        'form': form, 'DB_report_query': DB_report_query
+    return render(request, 'attackflow/attackflow_edit.html', {
+        'report_pk': report.pk, 'attackflow_pk': pk, 'finding_pk': finding_pk, 'attackflow_afb': attackflow_afb
     })
 
 
 @login_required
-def attacktree_view(request,pk):
-    attacktree = get_object_or_404(DB_AttackTree, pk=pk)
-    finding_pk = attacktree.finding.first().pk
+@allowed_users(allowed_roles=['administrator'])
+def attackflow_add_afb(request,pk,finding_pk):
+    
+    DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
 
-    return render(request, 'attacktree/attacktree_view.html', {'DB_finding_query': DB_finding_query, 'DB_attacktree': attacktree})
+    if request.method == 'POST':
+
+        # data received from mitre attack flow
+        data = json.loads(request.body)
+        title_file = data['title']
+        extension = data['extension']
+        afb_content = data['afb_content']
+        afb_image = data['afb_image']
+
+        # Save attack flow
+        attackflow_to_DB = DB_AttackFlow(title=title_file, attackflow_afb=afb_content, attackflow_png=afb_image)
+        
+        attackflow_to_DB.save()
+        attackflow_to_DB.finding.add(finding_pk)
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def attackflow_edit_afb(request,pk):
+    
+    DB_attackflow_query = get_object_or_404(DB_AttackFlow, pk=pk)
+
+    if request.method == 'POST':
+
+        # data received from mitre attack flow
+        data = json.loads(request.body)
+        title_file = data['title']
+        extension = data['extension']
+        afb_content = data['afb_content']
+        afb_image = data['afb_image']
+
+        # Save attack flow
+        DB_attackflow_query.title = title_file
+        DB_attackflow_query.attackflow_afb = afb_content
+        DB_attackflow_query.attackflow_png = afb_image
+        DB_attackflow_query.save()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def attackflow_delete(request):
+
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_AttackFlow.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+

@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## Version 1.3.1
+
+### Enhancements and Bugfixes:
+* CSV import enhancement
+* Mitre [Attack Flow](https://github.com/center-for-threat-informed-defense/attack-flow) integration
+
 ## Version 1.3.0
 
 ### Enhancements and Bugfixes:

@@ -35,7 +35,8 @@
             <div class="col-md-5">
               <a href="/report/findings/{{ DB_report_query.pk }}"><button type="button" class="btn btn-danger"><i class="fa fa-bug"></i> Findings</button></a>
               <a href="/report/appendix/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> Appendix</button></a>
-              <a href="/report/attacktree/{{ DB_report_query.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-sitemap"></i> Attack Trees</button></a>
+              <a href="/report/attackflow/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-sitemap"></i> Attack Flows</button></a>
+
             </div>
 
             <div class="col-md-7 text-right">
@@ -161,7 +162,7 @@
                       <div class="info-box bg-light">
                         <div class="info-box-content">
                           <span class="info-box-number text-center text-muted">Creation date</span>
-                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.creation_date|date:"Y-m-d H:i:s" }}</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.creation_date|date:"Y-m-d H:i:s" | safe| bleach}}</span>
                         </div>
                       </div>
                     </div>
@@ -169,7 +170,7 @@
                       <div class="info-box bg-light">
                         <div class="info-box-content">
                           <span class="info-box-number text-center text-muted">Report date</span>
-                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_date|date:"d-m-Y" }}</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_date|date:"d-m-Y" | safe | bleach}}</span>
                         </div>
                       </div>
                     </div>
@@ -177,7 +178,7 @@
                       <div class="info-box bg-light">
                         <div class="info-box-content">
                           <span class="info-box-number text-center text-muted">Product</span>
-                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.product.name | safe_markdown | bleach}}<span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.product.name | safe | bleach}}<span>
                         </span></span></div>
                       </div>
                     </div>
@@ -189,7 +190,7 @@
                       <div class="info-box bg-light">
                         <div class="info-box-content">
                           <span class="info-box-number text-center text-muted">Report</span>
-                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.title | safe_markdown | bleach}}</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.title | safe | bleach}}</span>
                         </div>
                       </div>
                     </div>
@@ -197,7 +198,7 @@
                       <div class="info-box bg-light">
                         <div class="info-box-content">
                           <span class="info-box-number text-center text-muted">Findings</span>
-                          <span class="info-box-text text-center text-muted mb-0">{{ count_finding_query }}</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ count_finding_query | safe | bleach}}</span>
                         </div>
                       </div>
                     </div>
@@ -205,7 +206,7 @@
                       <div class="info-box bg-light">
                         <div class="info-box-content">
                           <span class="info-box-number text-center text-muted">Report ID</span>
-                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_id | safe_markdown | bleach}}<span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_id | safe | bleach}}<span>
                         </span></span></div>
                       </div>
                     </div>
@@ -613,7 +614,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>{{ DB_attacktree_query.count }} Attack Trees</b>
+                    <b>{{ DB_attackflow_query.count }} Attack Flows</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -629,9 +630,9 @@
                   <div class="row">
                     <div class="col-md-12">
 
-                      {% if count_attacktree_query == 0 %}
+                      {% if count_attackflow_query == 0 %}
 
-                        <a href="/attacktree/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">Add Attack Tree</button></a>
+                        <a href="/attackflow/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">Add Attack Flow</button></a>
 
                       {% else %}
 
@@ -647,33 +648,31 @@
 
 
                         <tbody>
-                          {% for attacktree in DB_attacktree_query %}
+                          {% for attackflow in DB_attackflow_query %}
                           <tr>
 
                             <td>
-                                {{attacktree.title| safe_markdown | bleach}}
+                                {{attackflow.title| safe_markdown | bleach}}
                             </td>
 
 
                             <td>
-                                {% for finding in attacktree.finding.all %}
+                                {% for finding in attackflow.finding.all %}
                                   {{finding.title| safe_markdown | bleach}}
                                 {% endfor %}
                             </td>
 
                             <td align="center">
-                                <a href="/attacktree/view/{{ attacktree.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> View</button></a>
-
                                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                  <a href="/attacktree/edit/{{ attacktree.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-attacktree-modal-{{attacktree.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                                  <a href="/attackflow/edit/{{ attackflow.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
+                                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-attackflow-modal-{{attackflow.pk}}"><i class="fas fa-trash"></i> Delete</button>
                                 {% endif %}
                                 
                             </td>
 
                           </tr>
 
-                          <div class="modal modal-danger fade mm-attacktree-modal-{{attacktree.pk}}" id="modal-danger">
+                          <div class="modal modal-danger fade mm-attackflow-modal-{{attackflow.pk}}" id="modal-danger">
                             <div class="modal-dialog">
                               <div class="modal-content bg-danger">
                                 <div class="modal-header">
@@ -683,11 +682,11 @@
                                   </button>
                                 </div>
                                 <div class="modal-body">
-                                  <p>Delete Attack Tree&hellip;</p>
+                                  <p>Delete Attack Flow&hellip;</p>
                                 </div>
                                 <div class="modal-footer justify-content-between">
                                   <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                                  <button type="button" onclick="DeleteID_AT({{attacktree.pk}});" class="btn btn-outline-light">Delete Attack Tree</button>
+                                  <button type="button" onclick="DeleteID_AT({{attackflow.pk}});" class="btn btn-outline-light">Delete Attack Flow</button>
 
                                 </div>
                               </div>
@@ -1026,7 +1025,7 @@
   function DeleteID_AT(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/attacktree/delete/",
+            url: "/attackflow/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },

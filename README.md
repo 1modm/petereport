@@ -4,7 +4,7 @@ PeTeReport (**Pe**n**Te**st **Report**) is an open-source application vulnerabil
 
 Focused in product security, the tool help security researchers and pentesters to provide detailed findings, appendix, attack paths and manage a finding template database to avoid wasting time spent in the reporting phase.
 
-PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with the aim to help pentesters to manage a finding repository, write reports (in Markdown) and generate reports in different formats (HTML, CSV, PDF, Jupyter and Markdown).
+PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with the aim to help pentesters and security researchers to manage a finding repository, write reports (in Markdown) and generate reports in different formats (HTML, CSV, PDF, Jupyter and Markdown).
 
 <h4 align="center">Pentesting content management and reporting tool</h4>
 
@@ -19,7 +19,7 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 
 [Documentation](https://1modm.github.io/petereport/)
 
-## Installation and deployment
+### Installation and deployment
 
 - [Docker](https://1modm.github.io/petereport/docker/)
 - [Django](https://1modm.github.io/petereport/django/)
@@ -30,7 +30,7 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 - [x] Customizable reports templates thanks to [Eisvogel](https://github.com/Wandmalfarbe/pandoc-latex-template)
 - [x] Findings template database
 - [x] Possibility to add appendix to findings
-- [x] Possibility to add attack trees [Deciduous](https://www.deciduous.app/) to findings
+- [x] Possibility to add [Attack Flow](https://github.com/center-for-threat-informed-defense/attack-flow) to findings. This project is created and maintained by the MITRE Engenuity Center for Threat-Informed Defense
 - [x] HTML Output format
 - [x] CSV Output format
 - [x] PDF Output format
@@ -46,18 +46,20 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 
 - [ ] More Output formats
 - [ ] API
+- [ ] Multilingual Lang files
 
 ## Demo
 
 [Demo](http://1modm.pythonanywhere.com/) **admin/P3t3r3p0rt**
 
-![Demo](images/demo.gif "Demo")
+![Demo](images/demo.webm "Demo")
 
 
 ## Sample Reports
 
-- [PDF Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-PDF_Offensive_Security_Network_202108181118.pdf "PDF Sample")
-- [HTML Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-HTML_Offensive_Security_Network_202108181117.html "HTML Sample")
-- [MD Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-MD_Offensive_Security_Network_202108181118.md "MD Sample")
-- [CSV Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-CSV_Offensive_Security_Network_202108181118.csv "CSV Sample")
+- [PDF Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-PDF_Offensive_Security_network.pdf "PDF Sample")
+- [HTML Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-HTML_Offensive_Security_network.html "HTML Sample")
+- [MD Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-MD_Offensive_Security_network.md "MD Sample")
+- [CSV Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-CSV_Offensive_Security_network.csv "CSV Sample")
+- [Jupyter Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-JUPYTER_Offensive_Security_network.ipynb "Jupyter Sample")
 

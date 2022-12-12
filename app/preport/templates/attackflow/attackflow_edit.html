@@ -1,0 +1,48 @@
+{% extends 'home/template_attack_flow.html' %}
+
+{% block title %} Attack Flow {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+<style type="text/css">
+
+#app {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    display: block;
+}
+
+html, body {
+    height: 100%;
+}
+
+.fill { 
+    min-height: 100%;
+    height: 100%;
+}
+</style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<input type="hidden" id="report_pk" value="{{report_pk}}">
+<input type="hidden" id="finding_pk" value="{{finding_pk}}">
+<input type="hidden" id="attackflow_pk" value="{{attackflow_pk}}">
+<input type="hidden" id="attackflow_afb" value="{{attackflow_afb}}">
+<input type="hidden" id="csrf_token" value="{{csrf_token}}">
+
+<section class="container fill">
+    <div class="row container fill">
+        <div class="card-body container fill">
+            <div id="app"></div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super}}
+{% endblock javascripts %}

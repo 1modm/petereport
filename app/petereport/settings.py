@@ -34,6 +34,7 @@ ADMIN_ENABLED = DJANGO_CONFIG['admin_module']
 
 ALLOWED_HOSTS = DJANGO_CONFIG['allowed_hosts']
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = DJANGO_CONFIG['upload_memory_size'] 
 
 # Application definition
 
@@ -236,13 +237,41 @@ TEMPLATES_ROOT = os.path.join(BASE_DIR, PETEREPORT_TEMPLATES['templates_root'])
 REPORTS_MEDIA_ROOT = os.path.join(BASE_DIR, PETEREPORT_TEMPLATES['storage_reports'])
 
 
+# URL schemes that are allowed within links
+ALLOWED_URL_SCHEMES = [
+    "file", "http", "https", "data"
+]
+
+# https://gist.github.com/mrmrs/7650266
+ALLOWED_HTML_TAGS = [
+    "a", "abbr", "b", "blockquote", "br", "cite", "code", "command",
+    "dd", "del", "dl", "dt", "em", "fieldset", "h1", "h2", "h3", "h4", "h5", "h6",
+    "hr", "i", "iframe", "img", "input", "ins", "kbd", "label", "legend",
+    "li", "ol", "optgroup", "option", "p", "pre", "small", "span", "strong",
+    "sub", "sup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "u", "ul"
+]
+
+# https://github.com/decal/werdlists/blob/master/html-words/html-attributes-list.txt
+ALLOWED_HTML_ATTRIBUTES = [
+    "alt", "class", "color", "colspan", "datetime",  "data",
+    "height", "href", "id", "name", "reversed", "rowspan",
+    "scope", "src", "style", "title", "type", "width"
+]
+
+
 # BLEACH
 
 # Which HTML tags are allowed
-BLEACH_ALLOWED_TAGS = ['svg', 'g', 'polygon', 'path', 'text', 'title', 'img', 'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre', 'code', 'blockquote', 'ul', 'ol', 'li', 'figcaption', 'td', 'tr']
+BLEACH_ALLOWED_TAGS = ['svg', 'g', 'polygon', 'path', 'text', 'title', 'img', 'p', 'b',
+                    'i', 'u', 'em', 'strong', 'a', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'pre',
+                    'code', 'blockquote', 'ul', 'ol', 'li', 'figcaption', 'table', 'td', 'tr',
+                    'th', 'thead', 'br']
 
 # Which HTML attributes are allowed
-BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'alt', 'src', 'width', 'height', 'viewBox', 'id', 'class', 'transform', 'fill', 'stroke', 'points', 'd', 'text-anchor', 'x', 'y', 'font-size', 'font-family', 'font-weight', 'text-decoration', 'font-variant']
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'alt', 'src', 'width', 'height',
+                            'viewBox', 'id', 'class', 'transform', 'fill', 'stroke', 'points',
+                            'd', 'text-anchor', 'x', 'y', 'font-size', 'font-family', 'font-weight',
+                            'text-decoration', 'font-variant']
 
 # Which CSS properties are allowed in 'style' attributes (assuming
 # style is an allowed attribute)

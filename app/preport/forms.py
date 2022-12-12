@@ -35,7 +35,7 @@ class NewReportForm(forms.ModelForm):
 
         widgets = {
             'report_id': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required"}),
-            'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required"}),
+            'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': "Report Name"}),
             'report_date': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'yyyy-mm-dd'", 'data-mask':'', 'required': "required"}),
         }
 

@@ -33,9 +33,8 @@
       <link rel="stylesheet" href="/static/dist/css/highlighter.css">
       <link rel="stylesheet" href="/static/dist/css/adminlte.min.css">
 
-      <!-- markdown -->
+      <!-- Martor -->
       <link href="/static/martor/plugins/css/ace.min.css" type="text/css" media="all" rel="stylesheet" />
-      <!--<link href="/static/pluginsMartor/css/semantic.min-modif.css" type="text/css" media="all" rel="stylesheet" />-->
       <link href="/static/martor/plugins/css/resizable.min.css" type="text/css" media="all" rel="stylesheet" />
       <link href="/static/martor/css/martor.bootstrap.min.css" type="text/css" media="all" rel="stylesheet" />
 
@@ -107,6 +106,10 @@
 <script src="/static/dist/js/adminlte.min.js"></script>
 
 <!-- MARTOR -->
+
+<!-- <script type="text/javascript" src=/static/martor/plugins/js/jquery.min.js></script> -->
+<script type="text/javascript" src=/static/martor/plugins/js/bootstrap.min.js></script>
+
 <script type="text/javascript" src="/static/martor/plugins/js/ace.js"></script>
 <script type="text/javascript" src="/static/martor/plugins/js/mode-markdown.js"></script>
 <script type="text/javascript" src="/static/martor/plugins/js/ext-language_tools.js"></script>
@@ -117,6 +120,19 @@
 <script type="text/javascript" src="/static/martor/plugins/js/resizable.min.js"></script>
 <script type="text/javascript" src="/static/martor/plugins/js/emojis.min.js"></script>
 <script type="text/javascript" src="/static/martor/js/martor.bootstrap.min.js"></script>
+
+  <script>
+    $('form [name="title"]').attr({
+      'class': 'form-control',
+      'placeholder': 'Post Title'
+    });
+  </script>
+
+    <script>
+    $('.martor-preview pre').each(function(i, block){
+        hljs.highlightBlock(block);
+    });
+  </script>
 
 <!-- jQuery Knob -->
 <script src="/static/plugins/jquery-knob/jquery.knob.min.js"></script>

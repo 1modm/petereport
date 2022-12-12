@@ -90,3 +90,11 @@ class DB_Custom_field(models.Model):
 	finding = models.ForeignKey(DB_Finding, related_name='custom_field_finding', blank=True, on_delete=models.CASCADE)
 	title = models.CharField(blank=False, max_length=200)
 	description = MartorField(blank=True, null=True)
+
+# ---------- Attack Flow ------------
+
+class DB_AttackFlow(models.Model):
+	finding = models.ManyToManyField(DB_Finding, related_name='attackflow_finding', blank=True)
+	title = models.CharField(blank=False, max_length=200)
+	attackflow_afb = models.TextField(blank=True, null=True)
+	attackflow_png = models.TextField(blank=True, null=True)

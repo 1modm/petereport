@@ -1,0 +1,132 @@
+{% extends 'home/template.html' %}
+
+{% block title %} Attack Flow {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+  
+
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>{{DB_report_query.title}} Findings</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
+            <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+          </ol>
+        </div>
+      </div>
+
+  </section>
+
+
+  <section class="content">
+
+    <div class="container-fluid">
+      <div class="card card-outline card-danger">
+        <div class="card-header">
+          <h3 class="card-title">{{ count_finding_query }} Findings</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <div class="row">
+            <div class="col-md-12">
+
+                  <table id="findinglist" class="table table-bordered table-hover"> 
+
+                        <thead>
+                          <tr>
+                            <th style="width: 40%">Title</th>
+                            <th style="width: 5%">Severity</th>
+                            <th style="width: 10%">CVSS Score</th>
+                            <th style="width: 5%">CWE</th>
+                            <th style="width: 20%"class="text-center"> Actions</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {% for finding in DB_finding_query %}
+                          <tr>
+                                  <td>
+                                      {{ finding.title }}
+                                  </td>
+
+                                  <td>
+                                                                      
+                                        {% if finding.severity == "Critical" %}
+                                            <b><font color="#CC0000">{{ finding.severity }}</font></b>
+                                        {% elif finding.severity == "High" %}
+                                            <b><font color="#F20000">{{ finding.severity }}</font></b>
+                                        {% elif finding.severity == "Medium" %}
+                                            <b><font color="#FC7F03">{{ finding.severity }}</font></b>
+                                        {% elif finding.severity == "Low" %}
+                                            <b><font color="#05B04F">{{ finding.severity }}</font></b>
+                                        {% elif finding.severity == "Info" %}
+                                            <b><font color="#45A7F7">{{ finding.severity }}</font></b>
+                                        {% else %}
+                                            <b>{{ finding.severity }}</b> (will not appear in the report)
+                                        {% endif %}
+
+                                  </td>
+                                  <td>
+                                      {{ finding.cvss_score }}
+                                  </td>
+                                  <td>
+                                      <a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{ finding.cwe.cwe_id }}</a>
+                                  </td>
+                                  <td align="center">
+                                      <a href="/attackflow/add_flow/{{DB_report_query.pk}}/{{ finding.pk }}"><button type="button" class="btn btn-warning btn-sm"><i class="fa fa-sitemap"></i> Attach Attack Flow</button></a>
+
+                                      
+                                  </td>
+
+                          </tr>
+
+
+                        {% endfor %}
+
+                      </tbody>
+                    </table>
+
+                </div>
+               </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+<script>
+  $(function () {
+    $("#findinglist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true, 
+      "lengthChange": false, 
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#findinglist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+{% endblock javascripts %}
