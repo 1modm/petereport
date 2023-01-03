@@ -1,9 +1,10 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load martortags %}
 {% load bleach_tags %}
 
-{% block title %} Custom fields {% endblock title %}
+{% block title %} {% translate "Custom fields" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -16,11 +17,11 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>{{DB_finding_query.title}} Finding</h1>
+        <h1>{{DB_finding_query.title}} {% translate "Finding" %}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
           <li class="breadcrumb-item"><a href="/product/view/{{ DB_finding_query.report.product.pk}}">{{ DB_finding_query.report.product.name | bleach}}</a></li>
           <li class="breadcrumb-item"><a href="/report/view/{{ DB_finding_query.report.pk}}">{{ DB_finding_query.report.title}}</a></li>
           <li class="breadcrumb-item active"><a href="/finding/view/{{ DB_finding_query.pk}}">{{ DB_finding_query.title}}</a></li>
@@ -41,7 +42,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    {{ count_custom_query }} Custom fields
+                    {{ count_custom_query }} {% translate "Custom fields" %}
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -55,8 +56,8 @@
                   <table id="fieldlist" class="table table-bordered table-hover"> 
                     <thead>
                       <tr>
-                        <th style="width: 55%">Custom Field</th>
-                        <th style="width: 20%"class="text-center"> Actions</th>
+                        <th style="width: 55%">{% translate "Custom Field" %}</th>
+                        <th style="width: 20%"class="text-center"> {% translate "Actions" %}</th>
                       </tr>
                     </thead>
 
@@ -71,8 +72,8 @@
 
                         <td align="center">
                             {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                              <a href="/field/edit/{{ field.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                              <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{field.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                              <a href="/field/edit/{{ field.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                              <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{field.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                             {% endif %}
                         </td>
 
@@ -82,17 +83,17 @@
                         <div class="modal-dialog">
                           <div class="modal-content bg-danger">
                             <div class="modal-header">
-                              <h4 class="modal-title">Are you sure?</h4>
+                              <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                               </button>
                             </div>
                             <div class="modal-body">
-                              <p>Delete custom field&hellip;</p>
+                              <p>{% translate "Delete custom field" %}&hellip;</p>
                             </div>
                             <div class="modal-footer justify-content-between">
-                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                              <button type="button" onclick="DeleteID({{field.pk}});" class="btn btn-outline-light">Delete Custom Field</button>
+                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                              <button type="button" onclick="DeleteID({{field.pk}});" class="btn btn-outline-light">{% translate "Delete Custom Field" %}</button>
 
                             </div>
                           </div>
@@ -141,7 +142,7 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/field/delete/",
+            url: "/en/field/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
@@ -155,4 +156,3 @@
 </script>
 
 {% endblock javascripts %}
-

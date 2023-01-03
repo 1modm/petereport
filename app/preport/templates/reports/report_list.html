@@ -1,8 +1,9 @@
 {% extends 'home/template.html' %}
+{% load i18n %}
 
 {% load app_filters %}
 
-{% block title %} Report List {% endblock title %}
+{% block title %} {% translate "Report List" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -14,12 +15,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Report List</h1>
+            <h1>{% translate "Report List" %}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
-              <li class="breadcrumb-item active">Reports</li>
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+              <li class="breadcrumb-item active">{% translate "Reports" %}</li>
             </ol>
           </div>
         </div>
@@ -43,11 +44,11 @@
           <table id="reportlist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                    <th style="width: 18%">ID</th>
-                    <th style="width: 33%">Report</th>
-                    <th style="width: 12%">Product</th>
-                    <th style="width: 12%">Findings</th>
-                    <th style="width: 25%" class="text-center">Actions</th>
+                    <th style="width: 18%">{% translate "ID" %}</th>
+                    <th style="width: 33%">{% translate "Report" %}</th>
+                    <th style="width: 12%">{% translate "Product" %}</th>
+                    <th style="width: 12%">{% translate "Findings" %}</th>
+                    <th style="width: 25%" class="text-center">{% translate "Actions" %}</th>
                   </tr>
               </thead>
               <tbody>
@@ -58,14 +59,14 @@
                     <td>{{ report.title }} </td>
                     <td>{{ report.product.name }} </td>
                     <td>
-                      <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> Finding{{ report.db_finding_set.count|pluralize:"s" }}
+                      <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
                     </td>
                     <td class="text-center">
-                        <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> View</button></a>
+                        <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
                         
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                          <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> Delete </button>
+                          <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
                     </td>
                   </tr>
@@ -75,17 +76,17 @@
                           <div class="modal-dialog">
                             <div class="modal-content bg-danger">
                               <div class="modal-header">
-                                <h4 class="modal-title">Are you sure?</h4>
+                                <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                   <span aria-hidden="true">&times;</span>
                                 </button>
                               </div>
                               <div class="modal-body">
-                                <p>Delete Report&hellip;</p>
+                                <p>{% translate "Delete Report" %}&hellip;</p>
                               </div>
                               <div class="modal-footer justify-content-between">
-                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                                <button type="button" onclick="DeleteID({{report.pk}});" class="btn btn-outline-light">Delete Report</button>
+                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                <button type="button" onclick="DeleteID({{report.pk}});" class="btn btn-outline-light">{% translate "Delete Report" %}</button>
 
                               </div>
                             </div>
@@ -127,7 +128,7 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/report/delete/",
+            url: "/en/report/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
@@ -141,6 +142,3 @@
 </script>
 
 {% endblock javascripts %}
-
-
-

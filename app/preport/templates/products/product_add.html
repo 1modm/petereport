@@ -1,6 +1,8 @@
 {% extends 'home/template.html' %}
 
-{% block title %} Products {% endblock title %}
+{% load i18n %}
+
+{% block title %} {% translate "Products" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -13,13 +15,13 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>Product</h1>
+        <h1>{% translate "Product" %}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
-          <li class="breadcrumb-item"><a href="/product/list/">Products</a></li>
-          <li class="breadcrumb-item active">Add or Edit product</li>
+          <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+          <li class="breadcrumb-item"><a href="/product/list/">{% translate "Products" %}</a></li>
+          <li class="breadcrumb-item active">{% translate "Add or Edit product" %}</li>
         </ol>
       </div>
     </div>
@@ -34,20 +36,20 @@
 
             <div class="card card-outline card-primary">
               <div class="card-header">
-                <h3 class="card-title">Product details</h3>
+                <h3 class="card-title">{% translate "Product details" %}</h3>
               </div>
               
               <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card-body">
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Product Name</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Product Name" %}</label>
                       <div class="col-md-10 col-sm-10 col-xs-12">
                         {{ form.name }}
                       </div>
                   </div>
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Product Description</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Product Description" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.description }}
                     </div>
@@ -72,7 +74,7 @@
                 {% endif %}
                 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">Save Product</button>
+                  <button type="submit" class="btn btn-primary">{% translate "Save Product" %}</button>
                 </div>
               </form>
             </div>

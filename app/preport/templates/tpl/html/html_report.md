@@ -1,5 +1,6 @@
 {% load martortags %}
 {% load bleach_tags %}
+{% load i18n %}
 ---
 title: "{{DB_report_query.title| safe | bleach}}"
 product: "{{DB_report_query.product.name| safe | bleach}}"
@@ -17,17 +18,17 @@ lang: "en"
 colorlinks: true
 ---
 
-# Project Overview
+# {% translate "Project Overview" %}
 
-## Description
+## {% translate "Description" %}
 
 {{DB_report_query.product.description | safe_markdown | bleach}}
 
-# Executive Summary
+# {% translate "Executive Summary" %}
 
 {{DB_report_query.executive_summary | safe_markdown | bleach}}
 
-## Summary of Findings Identified
+## {% translate "Summary of Findings Identified" %}
 
 <div class="chart">
 <center>
@@ -37,25 +38,25 @@ colorlinks: true
 
 {{finding_summary_table}}
 
-## Scope
+## {% translate "Scope" %}
 
-### In Scope
+### {% translate "In Scope" %}
 
 {{DB_report_query.scope | safe_markdown | bleach}}
 
-### Out of Scope
+### {% translate "Out of Scope" %}
 
 {{DB_report_query.outofscope | safe_markdown | bleach}}
 
-## Methodology
+## {% translate "Methodology" %}
 
 {{DB_report_query.methodology | safe_markdown | bleach}}
 
-## Recommendations
+## {% translate "Recommendations" %}
 
 {{DB_report_query.recommendation | safe_markdown | bleach}}
 
-# Findings and Risk Analysis
+# {% translate "Findings and Risk Analysis" %}
 
 {{template_findings}}
 

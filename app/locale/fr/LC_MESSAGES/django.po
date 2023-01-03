@@ -1,0 +1,1170 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-01-03 22:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: petereport/settings.py:134
+msgid "English"
+msgstr "Anglais"
+
+#: petereport/settings.py:135
+msgid "Spanish"
+msgstr "Espagnol"
+
+#: petereport/settings.py:136
+msgid "French"
+msgstr "Français"
+
+#: preport/forms.py:19 preport/templates/findings/defectdojo_products.html:55
+#: preport/templates/products/product_add.html:46
+msgid "Product Name"
+msgstr "Nom du produit"
+
+#: preport/forms.py:29
+msgid "(Select a product)"
+msgstr "(Sélectionnez un produit)"
+
+#: preport/forms.py:41
+msgid "Report Name"
+msgstr "Nom du rapport"
+
+#: preport/forms.py:53 preport/forms.py:86
+msgid "(Select severity)"
+msgstr "(Sélectionnez la gravité)"
+
+#: preport/forms.py:54 preport/forms.py:87
+#: preport/templates/reports/report_view.html:93
+#: preport/templates/tpl/jupyter/report.ipynb:41
+msgid "Critical"
+msgstr "Critique"
+
+#: preport/forms.py:55 preport/forms.py:88
+#: preport/templates/reports/report_view.html:105
+#: preport/templates/tpl/jupyter/report.ipynb:41
+msgid "High"
+msgstr "Haut"
+
+#: preport/forms.py:56 preport/forms.py:89
+#: preport/templates/reports/report_view.html:117
+#: preport/templates/tpl/jupyter/report.ipynb:41
+msgid "Medium"
+msgstr "Moyen"
+
+#: preport/forms.py:57 preport/forms.py:90
+#: preport/templates/reports/report_view.html:128
+#: preport/templates/tpl/jupyter/report.ipynb:41
+msgid "Low"
+msgstr "Faible"
+
+#: preport/forms.py:58 preport/forms.py:91
+#: preport/templates/reports/report_view.html:140
+msgid "Info"
+msgstr "Info"
+
+#: preport/forms.py:59 preport/forms.py:92
+#: preport/templates/reports/report_view.html:151
+msgid "None"
+msgstr "Aucun"
+
+#: preport/forms.py:63
+msgid "(Select status)"
+msgstr ""
+
+#: preport/forms.py:64
+msgid "Open"
+msgstr ""
+
+#: preport/forms.py:65
+msgid "Closed"
+msgstr ""
+
+#: preport/forms.py:68 preport/forms.py:97
+msgid "Critical/High/Medium/Low/Info/None"
+msgstr ""
+
+#: preport/forms.py:69
+msgid "Open/Close"
+msgstr ""
+
+#: preport/forms.py:70 preport/forms.py:98
+msgid "(Select a CWE)"
+msgstr ""
+
+#: preport/forms.py:77 preport/forms.py:105
+#: preport/templates/findings/template_list.html:48
+#: preport/templates/findings/templateaddfinding.html:55
+msgid "Finding title"
+msgstr ""
+
+#: preport/forms.py:78 preport/forms.py:106
+msgid "CVSS Base Score"
+msgstr ""
+
+#: preport/forms.py:125
+msgid "(Select a finding)"
+msgstr ""
+
+#: preport/forms.py:132 preport/forms.py:178 preport/forms.py:203
+#: preport/templates/appendix/appendix_view.html:47
+#: preport/templates/attackflow/reportfindings.html:53
+#: preport/templates/cwe/cwe_list.html:48
+#: preport/templates/findings/finding_add.html:47
+#: preport/templates/findings/finding_view.html:178
+#: preport/templates/findings/findings_list.html:58
+#: preport/templates/findings/findings_list.html:62
+#: preport/templates/findings/reportfindings.html:79
+#: preport/templates/findings/template_add.html:48
+#: preport/templates/findings/template_view.html:134
+#: preport/templates/reports/report_view.html:412
+#: preport/templates/reports/report_view.html:535
+#: preport/templates/reports/report_view.html:644
+msgid "Title"
+msgstr ""
+
+#: preport/forms.py:140
+msgid "(Select a group)"
+msgstr ""
+
+#: preport/forms.py:143
+msgid "E-mail address"
+msgstr ""
+
+#: preport/forms.py:151 preport/forms.py:157
+msgid "Username"
+msgstr ""
+
+#: preport/forms.py:179
+msgid "Attack Tree"
+msgstr ""
+
+#: preport/forms.py:191 preport/templates/cwe/cwe_add.html:56
+msgid "CWE Name"
+msgstr ""
+
+#: preport/forms.py:192 preport/templates/cwe/cwe_add.html:63
+msgid "CWE Description"
+msgstr ""
+
+#: preport/templates/appendix/appendix_add.html:5
+#: preport/templates/appendix/appendix_add.html:40
+#: preport/templates/appendix/reportappendix.html:7
+#: preport/templates/appendix/reportappendix.html:55
+#: preport/templates/appendix/reportappendix.html:69
+#: preport/templates/reports/report_view.html:38
+#: preport/templates/reports/report_view.html:509
+msgid "Appendix"
+msgstr ""
+
+#: preport/templates/appendix/appendix_add.html:18
+#: preport/templates/findings/finding_add.html:17
+#: preport/templates/findings/finding_view.html:96
+#: preport/templates/findings/findings_list.html:61
+#: preport/templates/home/index.html:40 preport/templates/home/index.html:125
+#: preport/templates/products/product_list.html:70
+#: preport/templates/products/product_view.html:46
+#: preport/templates/products/product_view.html:140
+#: preport/templates/reports/report_list.html:48
+#: preport/templates/reports/report_view.html:193
+msgid "Report"
+msgstr ""
+
+#: preport/templates/appendix/appendix_add.html:22
+#: preport/templates/appendix/appendix_view.html:24
+#: preport/templates/appendix/reportappendix.html:25
+#: preport/templates/attackflow/reportattackflow.html:32
+#: preport/templates/attackflow/reportfindings.html:21
+#: preport/templates/configuration/user_add.html:16
+#: preport/templates/configuration/user_list.html:22
+#: preport/templates/cwe/cwe_add.html:24 preport/templates/cwe/cwe_list.html:23
+#: preport/templates/findings/custom_field_add.html:22
+#: preport/templates/findings/custom_fields.html:24
+#: preport/templates/findings/defectdojo_products.html:23
+#: preport/templates/findings/finding_add.html:21
+#: preport/templates/findings/finding_view.html:26
+#: preport/templates/findings/findings_list.html:24
+#: preport/templates/findings/reportfindings.html:23
+#: preport/templates/findings/template_add.html:22
+#: preport/templates/findings/template_list.html:23
+#: preport/templates/findings/template_view.html:23
+#: preport/templates/findings/templateaddfinding.html:20
+#: preport/templates/findings/uploadfindings.html:23
+#: preport/templates/products/product_add.html:22
+#: preport/templates/products/product_list.html:22
+#: preport/templates/products/product_view.html:25
+#: preport/templates/reports/report_add.html:21
+#: preport/templates/reports/report_list.html:22
+#: preport/templates/reports/report_view.html:25
+msgid "Home"
+msgstr ""
+
+#: preport/templates/appendix/appendix_add.html:48
+#: preport/templates/appendix/reportappendix.html:70
+#: preport/templates/attackflow/reportattackflow.html:75
+#: preport/templates/findings/custom_field_add.html:18
+#: preport/templates/findings/custom_fields.html:20
+#: preport/templates/findings/finding_add.html:4
+#: preport/templates/findings/finding_add.html:38
+#: preport/templates/home/index.html:53 preport/templates/home/index.html:126
+#: preport/templates/products/product_list.html:73
+#: preport/templates/products/product_view.html:60
+#: preport/templates/products/product_view.html:154
+#: preport/templates/reports/report_list.html:62
+#: preport/templates/reports/report_view.html:388
+#: preport/templates/reports/report_view.html:536
+#: preport/templates/reports/report_view.html:645
+#: preport/templates/tpl/html/html_finding_summary_table.html:6
+msgid "Finding"
+msgstr ""
+
+#: preport/templates/appendix/appendix_add.html:55
+msgid "Appendix Title"
+msgstr ""
+
+#: preport/templates/appendix/appendix_add.html:62
+msgid "Appendix Description"
+msgstr ""
+
+#: preport/templates/appendix/appendix_add.html:87
+#: preport/templates/findings/custom_field_add.html:86
+msgid "Save and finish"
+msgstr ""
+
+#: preport/templates/appendix/appendix_add.html:88
+msgid "Save and add a new appendix"
+msgstr ""
+
+#: preport/templates/appendix/appendix_view.html:7
+#: preport/templates/appendix/appendix_view.html:20
+msgid "Appendix Details"
+msgstr ""
+
+#: preport/templates/appendix/appendix_view.html:70
+#: preport/templates/cwe/cwe_list.html:51
+#: preport/templates/findings/defectdojo_products.html:57
+#: preport/templates/findings/finding_view.html:203
+#: preport/templates/findings/template_view.html:159
+#: preport/templates/products/product_view.html:105
+#: preport/templates/tpl/html/html_finding.md:27
+#: preport/templates/tpl/html/html_report.md:23
+#: preport/templates/tpl/jupyter/finding.ipynb:13
+#: preport/templates/tpl/jupyter/report.ipynb:11
+#: preport/templates/tpl/markdown/md_finding.md:13
+#: preport/templates/tpl/markdown/md_report.md:14
+#: preport/templates/tpl/pdf/pdf_finding.md:18
+#: preport/templates/tpl/pdf/pdf_report.md:4
+msgid "Description"
+msgstr ""
+
+#: preport/templates/appendix/reportappendix.html:35
+#: preport/templates/reports/report_view.html:527
+msgid "Add Appendix"
+msgstr ""
+
+#: preport/templates/appendix/reportappendix.html:71
+#: preport/templates/attackflow/reportattackflow.html:76
+#: preport/templates/attackflow/reportfindings.html:57
+#: preport/templates/configuration/user_list.html:62
+#: preport/templates/cwe/cwe_list.html:53
+#: preport/templates/findings/custom_fields.html:60
+#: preport/templates/findings/defectdojo_products.html:58
+#: preport/templates/findings/reportfindings.html:83
+#: preport/templates/findings/template_list.html:51
+#: preport/templates/findings/templateaddfinding.html:58
+#: preport/templates/products/product_list.html:57
+#: preport/templates/products/product_view.html:143
+#: preport/templates/reports/report_list.html:51
+#: preport/templates/reports/report_view.html:416
+#: preport/templates/reports/report_view.html:537
+#: preport/templates/reports/report_view.html:646
+msgid "Actions"
+msgstr ""
+
+#: preport/templates/appendix/reportappendix.html:91
+#: preport/templates/configuration/user_list.html:100
+#: preport/templates/findings/findings_list.html:97
+#: preport/templates/findings/reportfindings.html:118
+#: preport/templates/findings/template_list.html:83
+#: preport/templates/products/product_list.html:78
+#: preport/templates/products/product_view.html:157
+#: preport/templates/reports/report_list.html:65
+#: preport/templates/reports/report_view.html:451
+#: preport/templates/reports/report_view.html:557
+msgid "View"
+msgstr ""
+
+#: preport/templates/appendix/reportappendix.html:94
+#: preport/templates/attackflow/reportattackflow.html:101
+#: preport/templates/configuration/user_list.html:104
+#: preport/templates/cwe/cwe_list.html:71
+#: preport/templates/findings/custom_fields.html:75
+#: preport/templates/findings/findings_list.html:100
+#: preport/templates/findings/reportfindings.html:121
+#: preport/templates/findings/template_list.html:86
+#: preport/templates/products/product_list.html:85
+#: preport/templates/products/product_view.html:160
+#: preport/templates/reports/report_list.html:68
+#: preport/templates/reports/report_view.html:454
+#: preport/templates/reports/report_view.html:560
+#: preport/templates/reports/report_view.html:668
+msgid "Edit"
+msgstr ""
+
+#: preport/templates/appendix/reportappendix.html:95
+#: preport/templates/attackflow/reportattackflow.html:102
+#: preport/templates/configuration/user_list.html:109
+#: preport/templates/cwe/cwe_list.html:72
+#: preport/templates/findings/custom_fields.html:76
+#: preport/templates/findings/findings_list.html:101
+#: preport/templates/findings/reportfindings.html:122
+#: preport/templates/findings/template_list.html:87
+#: preport/templates/products/product_list.html:90
+#: preport/templates/products/product_view.html:161
+#: preport/templates/reports/report_list.html:69
+#: preport/templates/reports/report_view.html:455
+#: preport/templates/reports/report_view.html:561
+#: preport/templates/reports/report_view.html:669
+msgid "Delete"
+msgstr ""
+
+#: preport/templates/appendix/reportappendix.html:106
+#: preport/templates/attackflow/reportattackflow.html:113
+#: preport/templates/configuration/user_list.html:120
+#: preport/templates/cwe/cwe_list.html:83
+#: preport/templates/findings/custom_fields.html:86
+#: preport/templates/findings/findings_list.html:112
+#: preport/templates/findings/reportfindings.html:133
+#: preport/templates/findings/template_list.html:99
+#: preport/templates/products/product_list.html:103
+#: preport/templates/products/product_view.html:171
+#: preport/templates/reports/report_list.html:79
+#: preport/templates/reports/report_view.html:466
+#: preport/templates/reports/report_view.html:572
+#: preport/templates/reports/report_view.html:680
+msgid "Are you sure?"
+msgstr ""
+
+#: preport/templates/appendix/reportappendix.html:112
+#: preport/templates/reports/report_view.html:578
+msgid "Delete appendix"
+msgstr ""
+
+#: preport/templates/appendix/reportappendix.html:115
+#: preport/templates/attackflow/reportattackflow.html:122
+#: preport/templates/configuration/user_list.html:129
+#: preport/templates/cwe/cwe_list.html:92
+#: preport/templates/findings/custom_fields.html:95
+#: preport/templates/findings/findings_list.html:121
+#: preport/templates/findings/reportfindings.html:142
+#: preport/templates/findings/template_list.html:108
+#: preport/templates/products/product_list.html:112
+#: preport/templates/products/product_view.html:180
+#: preport/templates/reports/report_list.html:88
+#: preport/templates/reports/report_view.html:475
+#: preport/templates/reports/report_view.html:581
+#: preport/templates/reports/report_view.html:689
+msgid "Close"
+msgstr ""
+
+#: preport/templates/appendix/reportappendix.html:116
+#: preport/templates/reports/report_view.html:582
+msgid "Delete Appendix"
+msgstr ""
+
+#: preport/templates/attackflow/attackflow_add.html:5
+#: preport/templates/attackflow/attackflow_edit.html:5
+#: preport/templates/attackflow/reportattackflow.html:7
+#: preport/templates/attackflow/reportattackflow.html:28
+#: preport/templates/attackflow/reportattackflow.html:59
+#: preport/templates/attackflow/reportattackflow.html:74
+#: preport/templates/attackflow/reportfindings.html:4
+#: preport/templates/findings/finding_view.html:392
+msgid "Attack Flow"
+msgstr ""
+
+#: preport/templates/attackflow/reportattackflow.html:42
+msgid "Add New Attack Flow"
+msgstr ""
+
+#: preport/templates/attackflow/reportattackflow.html:73
+msgid "Attack Flow Title"
+msgstr ""
+
+#: preport/templates/attackflow/reportattackflow.html:119
+#: preport/templates/attackflow/reportattackflow.html:123
+#: preport/templates/reports/report_view.html:686
+#: preport/templates/reports/report_view.html:690
+msgid "Delete Attack Flow"
+msgstr ""
+
+#: preport/templates/attackflow/reportfindings.html:17
+#: preport/templates/attackflow/reportfindings.html:36
+#: preport/templates/findings/defectdojo_products.html:56
+#: preport/templates/findings/findings_list.html:6
+#: preport/templates/findings/reportfindings.html:5
+#: preport/templates/findings/reportfindings.html:19
+#: preport/templates/findings/reportfindings.html:55
+#: preport/templates/home/aside.html:123
+#: preport/templates/products/product_list.html:54
+#: preport/templates/products/product_view.html:142
+#: preport/templates/reports/report_list.html:50
+#: preport/templates/reports/report_view.html:37
+#: preport/templates/reports/report_view.html:201
+msgid "Findings"
+msgstr ""
+
+#: preport/templates/attackflow/reportfindings.html:54
+#: preport/templates/findings/finding_add.html:62
+#: preport/templates/findings/finding_view.html:140
+#: preport/templates/findings/findings_list.html:59
+#: preport/templates/findings/reportfindings.html:80
+#: preport/templates/findings/template_add.html:56
+#: preport/templates/findings/template_list.html:49
+#: preport/templates/findings/template_view.html:96
+#: preport/templates/findings/templateaddfinding.html:56
+#: preport/templates/reports/report_view.html:413
+#: preport/templates/tpl/html/html_finding.md:11
+#: preport/templates/tpl/html/html_finding_summary_table.html:7
+#: preport/templates/tpl/jupyter/finding.ipynb:9
+#: preport/templates/tpl/markdown/md_finding.md:4
+#: preport/templates/tpl/pdf/pdf_finding.md:6
+msgid "Severity"
+msgstr ""
+
+#: preport/templates/attackflow/reportfindings.html:55
+#: preport/templates/findings/finding_add.html:69
+#: preport/templates/findings/finding_view.html:118
+#: preport/templates/findings/reportfindings.html:81
+#: preport/templates/findings/template_add.html:63
+#: preport/templates/findings/template_list.html:50
+#: preport/templates/findings/template_view.html:87
+#: preport/templates/findings/templateaddfinding.html:57
+#: preport/templates/reports/report_view.html:414
+#: preport/templates/tpl/html/html_finding.md:16
+#: preport/templates/tpl/jupyter/finding.ipynb:10
+#: preport/templates/tpl/markdown/md_finding.md:7
+#: preport/templates/tpl/pdf/pdf_finding.md:9
+msgid "CVSS Score"
+msgstr ""
+
+#: preport/templates/attackflow/reportfindings.html:56
+#: preport/templates/cwe/cwe_add.html:20
+#: preport/templates/findings/finding_view.html:109
+#: preport/templates/findings/reportfindings.html:82
+#: preport/templates/findings/template_view.html:72
+#: preport/templates/home/aside.html:163 preport/templates/home/index.html:127
+#: preport/templates/reports/report_view.html:415
+#: preport/templates/tpl/jupyter/finding.ipynb:11
+#: preport/templates/tpl/markdown/md_finding.md:10
+#: preport/templates/tpl/pdf/pdf_finding.md:13
+msgid "CWE"
+msgstr ""
+
+#: preport/templates/attackflow/reportfindings.html:81
+#: preport/templates/findings/finding_view.html:153
+#: preport/templates/findings/reportfindings.html:107
+#: preport/templates/reports/report_view.html:440
+msgid "will not appear in the report"
+msgstr ""
+
+#: preport/templates/attackflow/reportfindings.html:92
+msgid "Attach Attack Flow"
+msgstr ""
+
+#: preport/templates/configuration/user_add.html:4
+msgid "User Add"
+msgstr ""
+
+#: preport/templates/configuration/user_add.html:12
+#: preport/templates/home/aside.html:47
+msgid "Add User"
+msgstr ""
+
+#: preport/templates/configuration/user_add.html:31
+msgid "User details"
+msgstr ""
+
+#: preport/templates/configuration/user_add.html:62
+msgid "Save User"
+msgstr ""
+
+#: preport/templates/configuration/user_list.html:6
+msgid "User List"
+msgstr ""
+
+#: preport/templates/configuration/user_list.html:34
+#: preport/templates/home/aside.html:38
+msgid "Users"
+msgstr ""
+
+#: preport/templates/configuration/user_list.html:47
+msgid "User"
+msgstr ""
+
+#: preport/templates/configuration/user_list.html:50
+msgid "Email"
+msgstr ""
+
+#: preport/templates/configuration/user_list.html:53
+msgid "Active"
+msgstr ""
+
+#: preport/templates/configuration/user_list.html:56
+msgid "Group"
+msgstr ""
+
+#: preport/templates/configuration/user_list.html:59
+msgid "Admin"
+msgstr ""
+
+#: preport/templates/configuration/user_list.html:126
+msgid "Delete User"
+msgstr ""
+
+#: preport/templates/configuration/user_list.html:130
+msgid "Delete user"
+msgstr ""
+
+#: preport/templates/cwe/cwe_add.html:7 preport/templates/home/aside.html:179
+msgid "Add CWE"
+msgstr ""
+
+#: preport/templates/cwe/cwe_add.html:25 preport/templates/cwe/cwe_list.html:7
+#: preport/templates/cwe/cwe_list.html:19 preport/templates/home/aside.html:171
+msgid "CWE List"
+msgstr ""
+
+#: preport/templates/cwe/cwe_add.html:26
+msgid "Add or Edit CWE"
+msgstr ""
+
+#: preport/templates/cwe/cwe_add.html:41
+msgid "CWE details"
+msgstr ""
+
+#: preport/templates/cwe/cwe_add.html:78
+#: preport/templates/findings/custom_field_add.html:76
+msgid "Error"
+msgstr ""
+
+#: preport/templates/cwe/cwe_add.html:88
+msgid "Save CWE"
+msgstr ""
+
+#: preport/templates/cwe/cwe_list.html:35
+msgid "CWEs"
+msgstr ""
+
+#: preport/templates/cwe/cwe_list.html:89
+#: preport/templates/cwe/cwe_list.html:93
+msgid "Delete CWE"
+msgstr ""
+
+#: preport/templates/findings/custom_field_add.html:5
+msgid "Custom Fields"
+msgstr ""
+
+#: preport/templates/findings/custom_field_add.html:40
+#: preport/templates/findings/custom_fields.html:59
+msgid "Custom Field"
+msgstr ""
+
+#: preport/templates/findings/custom_field_add.html:54
+msgid "Custom Field Title"
+msgstr ""
+
+#: preport/templates/findings/custom_field_add.html:61
+msgid "Custom Field Description"
+msgstr ""
+
+#: preport/templates/findings/custom_field_add.html:87
+msgid "Save and add a new custom field"
+msgstr ""
+
+#: preport/templates/findings/custom_fields.html:7
+#: preport/templates/findings/custom_fields.html:45
+msgid "Custom fields"
+msgstr ""
+
+#: preport/templates/findings/custom_fields.html:92
+msgid "Delete custom field"
+msgstr ""
+
+#: preport/templates/findings/custom_fields.html:96
+msgid "Delete Custom Field"
+msgstr ""
+
+#: preport/templates/findings/defectdojo_products.html:7
+msgid "DefectDojo Import"
+msgstr ""
+
+#: preport/templates/findings/defectdojo_products.html:19
+msgid "Import DefectDojo Findings into"
+msgstr ""
+
+#: preport/templates/findings/defectdojo_products.html:37
+msgid "DefectDojo Products"
+msgstr ""
+
+#: preport/templates/findings/defectdojo_products.html:54
+#: preport/templates/products/product_view.html:139
+#: preport/templates/reports/report_list.html:47
+msgid "ID"
+msgstr ""
+
+#: preport/templates/findings/defectdojo_products.html:79
+msgid "Import Findings"
+msgstr ""
+
+#: preport/templates/findings/finding_add.html:54
+#: preport/templates/findings/finding_view.html:131
+msgid "Status"
+msgstr ""
+
+#: preport/templates/findings/finding_add.html:74
+#: preport/templates/findings/template_add.html:68
+msgid "Help"
+msgstr ""
+
+#: preport/templates/findings/finding_add.html:79
+#: preport/templates/findings/template_add.html:73
+msgid "CVSS Calculator"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:7
+#: preport/templates/findings/finding_view.html:21
+msgid "Finding Details"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:40
+msgid "Edit Finding"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:41
+msgid "Finding custom fields"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:42
+msgid "Add custom field"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:64
+#: preport/templates/findings/template_view.html:47
+msgid "Summary"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:80
+#: preport/templates/findings/template_view.html:64
+msgid "Finding ID"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:88
+#: preport/templates/home/index.html:27 preport/templates/home/index.html:124
+#: preport/templates/products/product_add.html:18
+#: preport/templates/products/product_list.html:35
+#: preport/templates/products/product_list.html:48
+#: preport/templates/products/product_view.html:21
+#: preport/templates/reports/report_add.html:44
+#: preport/templates/reports/report_list.html:49
+#: preport/templates/reports/report_view.html:181
+msgid "Product"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:230
+#: preport/templates/findings/template_view.html:186
+#: preport/templates/tpl/html/html_finding.md:38
+#: preport/templates/tpl/jupyter/finding.ipynb:17
+#: preport/templates/tpl/markdown/md_finding.md:19
+#: preport/templates/tpl/pdf/pdf_finding.md:24
+msgid "Location"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:256
+#: preport/templates/findings/template_view.html:211
+#: preport/templates/tpl/html/html_finding.md:45
+#: preport/templates/tpl/jupyter/finding.ipynb:21
+#: preport/templates/tpl/markdown/md_finding.md:25
+#: preport/templates/tpl/pdf/pdf_finding.md:30
+msgid "Impact"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:281
+#: preport/templates/findings/template_view.html:236
+#: preport/templates/reports/report_add.html:92
+#: preport/templates/reports/report_view.html:360
+#: preport/templates/tpl/html/html_finding.md:52
+#: preport/templates/tpl/jupyter/finding.ipynb:25
+#: preport/templates/tpl/markdown/md_finding.md:31
+#: preport/templates/tpl/pdf/pdf_finding.md:36
+msgid "Recommendation"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:306
+#: preport/templates/findings/template_view.html:261
+#: preport/templates/tpl/html/html_finding.md:59
+#: preport/templates/tpl/jupyter/finding.ipynb:29
+#: preport/templates/tpl/markdown/md_finding.md:37
+#: preport/templates/tpl/pdf/pdf_finding.md:42
+msgid "References"
+msgstr ""
+
+#: preport/templates/findings/finding_view.html:362
+#: preport/templates/tpl/jupyter/additional_notes.ipynb:6
+msgid "Additional Notes"
+msgstr ""
+
+#: preport/templates/findings/findings_list.html:20
+#: preport/templates/findings/findings_list.html:25
+#: preport/templates/findings/findings_list.html:38
+#: preport/templates/home/aside.html:131
+msgid "Open Findings"
+msgstr ""
+
+#: preport/templates/findings/findings_list.html:60
+msgid "CVSS"
+msgstr ""
+
+#: preport/templates/findings/findings_list.html:118
+#: preport/templates/findings/findings_list.html:122
+#: preport/templates/findings/reportfindings.html:139
+#: preport/templates/findings/reportfindings.html:144
+#: preport/templates/reports/report_view.html:472
+#: preport/templates/reports/report_view.html:476
+msgid "Delete Finding"
+msgstr ""
+
+#: preport/templates/findings/reportfindings.html:37
+msgid "Add Finding"
+msgstr ""
+
+#: preport/templates/findings/reportfindings.html:38
+msgid "Add Finding from template"
+msgstr ""
+
+#: preport/templates/findings/reportfindings.html:39
+#: preport/templates/findings/uploadfindings.html:5
+#: preport/templates/findings/uploadfindings.html:19
+#: preport/templates/findings/uploadfindings.html:25
+msgid "Upload Findings"
+msgstr ""
+
+#: preport/templates/findings/reportfindings.html:40
+msgid "Import Findings from DefectDojo"
+msgstr ""
+
+#: preport/templates/findings/reportfindings.html:71
+#: preport/templates/reports/report_view.html:404
+msgid "Add Findings"
+msgstr ""
+
+#: preport/templates/findings/template_add.html:5
+msgid "Finding Templates"
+msgstr ""
+
+#: preport/templates/findings/template_add.html:23
+#: preport/templates/findings/template_list.html:24
+#: preport/templates/findings/template_list.html:36
+#: preport/templates/findings/template_view.html:24
+#: preport/templates/findings/templateaddfinding.html:4
+#: preport/templates/findings/templateaddfinding.html:38
+msgid "Templates"
+msgstr ""
+
+#: preport/templates/findings/template_add.html:24
+msgid "Add Template"
+msgstr ""
+
+#: preport/templates/findings/template_add.html:39
+msgid "Finding Template"
+msgstr ""
+
+#: preport/templates/findings/template_list.html:6
+msgid "Template List"
+msgstr ""
+
+#: preport/templates/findings/template_list.html:19
+msgid "Finding Templates list"
+msgstr ""
+
+#: preport/templates/findings/template_list.html:105
+#: preport/templates/findings/template_list.html:109
+msgid "Delete Template"
+msgstr ""
+
+#: preport/templates/findings/template_view.html:7
+#: preport/templates/findings/template_view.html:19
+msgid "Template Details"
+msgstr ""
+
+#: preport/templates/findings/templateaddfinding.html:23
+msgid "Add finding from template"
+msgstr ""
+
+#: preport/templates/findings/templateaddfinding.html:91
+msgid "Add Finding to Report"
+msgstr ""
+
+#: preport/templates/findings/uploadfindings.html:42
+msgid "Findings CSV Document"
+msgstr ""
+
+#: preport/templates/findings/uploadfindings.html:64
+msgid "Comma-separated values (CSV) file format"
+msgstr ""
+
+#: preport/templates/findings/uploadfindings.html:91
+msgid "Upload"
+msgstr ""
+
+#: preport/templates/home/aside.html:18 preport/templates/home/index.html:6
+msgid "Dashboard"
+msgstr ""
+
+#: preport/templates/home/aside.html:29
+msgid "Configuration"
+msgstr ""
+
+#: preport/templates/home/aside.html:59
+#: preport/templates/products/product_add.html:5
+#: preport/templates/products/product_add.html:23
+#: preport/templates/products/product_list.html:23
+#: preport/templates/products/product_view.html:26
+msgid "Products"
+msgstr ""
+
+#: preport/templates/home/aside.html:68
+msgid "All Products"
+msgstr ""
+
+#: preport/templates/home/aside.html:78
+msgid "Add Product"
+msgstr ""
+
+#: preport/templates/home/aside.html:91
+#: preport/templates/products/product_list.html:51
+#: preport/templates/products/product_view.html:127
+#: preport/templates/reports/report_add.html:4
+#: preport/templates/reports/report_add.html:17
+#: preport/templates/reports/report_list.html:23
+msgid "Reports"
+msgstr ""
+
+#: preport/templates/home/aside.html:100
+msgid "All Reports"
+msgstr ""
+
+#: preport/templates/home/aside.html:110
+msgid "Add Report"
+msgstr ""
+
+#: preport/templates/home/aside.html:137
+msgid "Closed Findings"
+msgstr ""
+
+#: preport/templates/home/aside.html:143
+msgid "Finding templates"
+msgstr ""
+
+#: preport/templates/home/aside.html:151
+msgid "Add Finding template"
+msgstr ""
+
+#: preport/templates/home/footer.html:6
+msgid "All rights reserved."
+msgstr ""
+
+#: preport/templates/home/index.html:66
+msgid "Critical/High Finding"
+msgstr ""
+
+#: preport/templates/home/index.html:84
+msgid "Overall Breakdown by Categories"
+msgstr ""
+
+#: preport/templates/home/index.html:109
+msgid "Top 10 risk findings"
+msgstr ""
+
+#: preport/templates/home/index.html:128
+msgid "Risk Score"
+msgstr ""
+
+#: preport/templates/home/top_navigation.html:24
+msgid "Language"
+msgstr ""
+
+#: preport/templates/home/top_navigation.html:28
+msgid "Current Language"
+msgstr ""
+
+#: preport/templates/home/top_navigation.html:49
+msgid "Logout"
+msgstr ""
+
+#: preport/templates/home/top_navigation.html:49
+msgid "session"
+msgstr ""
+
+#: preport/templates/products/product_add.html:24
+msgid "Add or Edit product"
+msgstr ""
+
+#: preport/templates/products/product_add.html:39
+msgid "Product details"
+msgstr ""
+
+#: preport/templates/products/product_add.html:52
+msgid "Product Description"
+msgstr ""
+
+#: preport/templates/products/product_add.html:77
+msgid "Save Product"
+msgstr ""
+
+#: preport/templates/products/product_list.html:6
+#: preport/templates/products/product_list.html:18
+msgid "Product List"
+msgstr ""
+
+#: preport/templates/products/product_list.html:109
+#: preport/templates/products/product_list.html:113
+msgid "Delete product"
+msgstr ""
+
+#: preport/templates/products/product_view.html:7
+msgid "Product Details"
+msgstr ""
+
+#: preport/templates/products/product_view.html:74
+msgid "Medium Severity Finding"
+msgstr ""
+
+#: preport/templates/products/product_view.html:88
+msgid "Critical/High Severity Finding"
+msgstr ""
+
+#: preport/templates/products/product_view.html:141
+msgid "Date"
+msgstr ""
+
+#: preport/templates/products/product_view.html:177
+#: preport/templates/products/product_view.html:182
+#: preport/templates/reports/report_list.html:85
+#: preport/templates/reports/report_list.html:89
+msgid "Delete Report"
+msgstr ""
+
+#: preport/templates/registration/logged_out.html:5
+msgid "Click here to login again."
+msgstr ""
+
+#: preport/templates/registration/login.html:4
+msgid "Login"
+msgstr ""
+
+#: preport/templates/registration/login.html:22
+msgid "Sign in to start your session"
+msgstr ""
+
+#: preport/templates/registration/login.html:49
+msgid "Sign In"
+msgstr ""
+
+#: preport/templates/reports/report_add.html:22
+msgid "Add or Edit Report"
+msgstr ""
+
+#: preport/templates/reports/report_add.html:37
+msgid "Report details"
+msgstr ""
+
+#: preport/templates/reports/report_add.html:50
+#: preport/templates/reports/report_view.html:209
+msgid "Report ID"
+msgstr ""
+
+#: preport/templates/reports/report_add.html:57
+msgid "Report Title"
+msgstr ""
+
+#: preport/templates/reports/report_add.html:64
+msgid "Executive summary"
+msgstr ""
+
+#: preport/templates/reports/report_add.html:71
+#: preport/templates/reports/report_view.html:306
+#: preport/templates/tpl/html/html_report.md:41
+#: preport/templates/tpl/jupyter/report.ipynb:62
+#: preport/templates/tpl/markdown/md_report.md:30
+#: preport/templates/tpl/pdf/pdf_report.md:21
+msgid "Scope"
+msgstr ""
+
+#: preport/templates/reports/report_add.html:78
+msgid "Out of scope"
+msgstr ""
+
+#: preport/templates/reports/report_add.html:85
+#: preport/templates/reports/report_view.html:333
+#: preport/templates/tpl/html/html_report.md:51
+#: preport/templates/tpl/jupyter/report.ipynb:75
+#: preport/templates/tpl/markdown/md_report.md:40
+#: preport/templates/tpl/pdf/pdf_report.md:32
+msgid "Methodology"
+msgstr ""
+
+#: preport/templates/reports/report_add.html:99
+#: preport/templates/reports/report_view.html:173
+msgid "Report date"
+msgstr ""
+
+#: preport/templates/reports/report_add.html:125
+msgid "Save Report"
+msgstr ""
+
+#: preport/templates/reports/report_list.html:6
+#: preport/templates/reports/report_list.html:18
+msgid "Report List"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:7
+msgid "Report Details"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:39
+#: preport/templates/reports/report_view.html:618
+msgid "Attack Flows"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:44
+msgid "Markdown"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:45
+msgid "PDF"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:46
+msgid "HTML"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:47
+msgid "CSV"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:48
+msgid "Jupyter"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:71
+#: preport/templates/tpl/html/html_report.md:27
+#: preport/templates/tpl/jupyter/report.ipynb:21
+#: preport/templates/tpl/markdown/md_report.md:18
+#: preport/templates/tpl/pdf/pdf_report.md:9
+msgid "Executive Summary"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:165
+msgid "Creation date"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:246
+#: preport/templates/tpl/jupyter/report.ipynb:44
+msgid "Breakdown by Severity"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:276
+msgid "Breakdown by Categories"
+msgstr ""
+
+#: preport/templates/reports/report_view.html:636
+msgid "Add Attack Flow"
+msgstr ""
+
+#: preport/templates/tpl/html/html_report.md:21
+#: preport/templates/tpl/jupyter/report.ipynb:10
+#: preport/templates/tpl/markdown/md_report.md:12
+#: preport/templates/tpl/pdf/pdf_report.md:2
+msgid "Project Overview"
+msgstr ""
+
+#: preport/templates/tpl/html/html_report.md:31
+#: preport/templates/tpl/jupyter/report.ipynb:23
+#: preport/templates/tpl/markdown/md_report.md:22
+#: preport/templates/tpl/pdf/pdf_report.md:13
+msgid "Summary of Findings Identified"
+msgstr ""
+
+#: preport/templates/tpl/html/html_report.md:43
+#: preport/templates/tpl/jupyter/report.ipynb:63
+#: preport/templates/tpl/markdown/md_report.md:32
+#: preport/templates/tpl/pdf/pdf_report.md:23
+msgid "In Scope"
+msgstr ""
+
+#: preport/templates/tpl/html/html_report.md:47
+#: preport/templates/tpl/jupyter/report.ipynb:65
+#: preport/templates/tpl/markdown/md_report.md:36
+#: preport/templates/tpl/pdf/pdf_report.md:27
+msgid "Out of Scope"
+msgstr ""
+
+#: preport/templates/tpl/html/html_report.md:55
+#: preport/templates/tpl/jupyter/report.ipynb:85
+#: preport/templates/tpl/markdown/md_report.md:44
+#: preport/templates/tpl/pdf/pdf_report.md:37
+msgid "Recommendations"
+msgstr ""
+
+#: preport/templates/tpl/html/html_report.md:59
+#: preport/templates/tpl/jupyter/report.ipynb:95
+#: preport/templates/tpl/markdown/md_report.md:48
+#: preport/templates/tpl/pdf/pdf_report.md:42
+msgid "Findings and Risk Analysis"
+msgstr ""
+
+#: preport/templates/tpl/jupyter/finding.ipynb:38
+msgid "Additional notes"
+msgstr ""
+
+#: preport/templates/tpl/jupyter/report.ipynb:41
+msgid "Informational"
+msgstr ""
+
+#: preport/views.py:69
+msgid "Bad image format."
+msgstr ""
+
+#: preport/views.py:80
+msgid "Maximum image file is %(size) MB."
+msgstr ""
+
+#: preport/views.py:115 preport/views.py:116
+msgid "Invalid request!"
+msgstr ""
+
+#: preport/views.py:599 preport/views.py:712 preport/views.py:852
+msgid "# Additional Notes"
+msgstr ""
+
+#: preport/views.py:629 preport/views.py:763 preport/views.py:925
+msgid "**Additional notes**"
+msgstr ""
+
+#: preport/views.py:641 preport/views.py:777 preport/views.py:942
+msgid "**Attack Flow**"
+msgstr ""

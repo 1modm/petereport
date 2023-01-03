@@ -1,6 +1,8 @@
 {% extends 'home/template.html' %}
 
-{% block title %} Custom Field {% endblock title %}
+{% load i18n %}
+
+{% block title %} {% translate "Custom Fields" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -13,11 +15,11 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>{{DB_finding_query.title}} Finding</h1>
+        <h1>{{DB_finding_query.title}} {% translate "Finding" %}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
           <li class="breadcrumb-item"><a href="/report/view/{{ DB_finding_query.report.pk}}">{{ DB_finding_query.report.title}}</a></li>
           <li class="breadcrumb-item active"><a href="/finding/view/{{ DB_finding_query.pk}}">{{ DB_finding_query.title}}</a></li>
         </ol>
@@ -35,7 +37,7 @@
 
             <div class="card card-outline card-danger">
               <div class="card-header">
-                <h3 class="card-title">Custom Field</h3>
+                <h3 class="card-title">{% translate "Custom Field" %}</h3>
               </div>
               
               <form role="form" method="post" enctype="multipart/form-data">
@@ -49,14 +51,14 @@
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Custom Field Title</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Custom Field Title" %}</label>
                       <div class="col-md-10 col-sm-10 col-xs-12">
                         {{ form.title }}
                       </div>
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Custom Field Description</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Custom Field Description" %}</label>
                       <div class="col-md-10 col-sm-10 col-xs-12">
                         {{ form.description }}
                       </div>
@@ -71,7 +73,7 @@
                             <div class="col-md-12 col-sm-12 col-xs-12">
                               <div class="alert alert-danger alert-dismissible ">
                               <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                              <h5><i class="icon fas fa-ban"></i> Error</h5>
+                              <h5><i class="icon fas fa-ban"></i> {% translate "Error" %}</h5>
                               {{ field.name }}: {{ error|escape }}
                               </div>
                             </div>
@@ -81,8 +83,8 @@
                 {% endif %}
                 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-danger" value="Save" name="_finish">Save and finish</button>
-                  <button type="submit" class="btn btn-primary" value="Next" name="_next">Save and add a new custom field</button>
+                  <button type="submit" class="btn btn-danger" value="Save" name="_finish">{% translate "Save and finish" %}</button>
+                  <button type="submit" class="btn btn-primary" value="Next" name="_next">{% translate "Save and add a new custom field" %}</button>
                 </div>
               </form>
             </div>
@@ -99,9 +101,4 @@
 
 {% block javascripts %}
   {{ block.super}}
-
 {% endblock javascripts %}
-
-
-
-

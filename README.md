@@ -52,7 +52,8 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 
 [Demo](http://1modm.pythonanywhere.com/) **admin/P3t3r3p0rt**
 
-![Demo](images/demo.webm "Demo")
+<video src="https://raw.githubusercontent.com/1modm/petereport/main/images/demo.webm" controls></video>
+
 
 
 ## Sample Reports

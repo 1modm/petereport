@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
+{% load i18n %}
 
-{% block title %} Finding {% endblock title %}
+{% block title %} {% translate "Finding" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -13,11 +14,11 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>Report: {{DB_report.title}}</h1>
+        <h1>{% translate "Report" %}: {{DB_report.title}}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
           <li class="breadcrumb-item"><a href="/product/view/{{ DB_report.product.pk}}">{{ DB_report.product.name }}</a></li>
           <li class="breadcrumb-item active">{{ DB_report.report_id }}</li>
         </ol>
@@ -34,7 +35,7 @@
 
             <div class="card card-outline card-danger">
               <div class="card-header">
-                <h3 class="card-title">Finding</h3>
+                <h3 class="card-title">{% translate "Finding" %}</h3>
               </div>
               
 
@@ -43,14 +44,14 @@
                 <div class="card-body">
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Title</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Title" %}</label>
                       <div class="col-md-10 col-sm-10 col-xs-12">
                         {{ form.title }}
                       </div>
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Status</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Status" %}</label>
                       <div class="col-md-10 col-sm-10 col-xs-12">
                         {{ form.status }}
                       </div>
@@ -58,24 +59,24 @@
 
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Severity</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Severity" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.severity }}
                     </div>
                   </div>
    
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">CVSS Score</label>
+                    <label class="col-sm-2 col-form-label">{% translate "CVSS Score" %}</label>
                     <div class="col-md-8 col-sm-8 col-xs-10">
                       {{ form.cvss_base_score }}
                     </div>
 
-                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#cvssModal">Help</button>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#cvssModal">{% translate "Help" %}</button>
                     <div class="modal fade" id="cvssModal" role="dialog">
                       <div class="modal-dialog">
                           <div class="alert alert-success alert-dismissible">
                               <a  class="close" data-dismiss="modal" aria-label="close">&times;</a>
-                              <strong> CVSS Calculator </strong> <a href="https://www.first.org/cvss/calculator/3.0">Common Vulnerability Scoring System Version 3.0 Calculator</a>
+                              <strong> {% translate "CVSS Calculator" %} </strong> <a href="https://www.first.org/cvss/calculator/3.0">Common Vulnerability Scoring System Version 3.0 Calculator</a>
 
                             </div>
                       </div>

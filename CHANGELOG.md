@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## Version 1.3.2
+
+### Enhancements and Bugfixes:
+* Multilingual and Internationalization support
+* Spanish and French lang files
+
 ## Version 1.3.1
 
 ### Enhancements and Bugfixes:

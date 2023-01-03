@@ -1,6 +1,8 @@
 {% extends 'home/template.html' %}
 
-{% block title %} Findings {% endblock title %}
+{% load i18n %}
+
+{% block title %} {% translate "Findings" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -14,11 +16,11 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>{{DB_report_query.title}} Findings</h1>
+          <h1>{{DB_report_query.title}} {% translate "Findings" %}</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
             <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
             <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
           </ol>
@@ -32,10 +34,10 @@
         <div class="col-md-12">
 
           {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-            <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-danger"><i class="fa fa-edit"></i> Add Finding</button></a> 
-            <a href="/template/add/finding/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> Add Finding from template</button></a> 
-            <a href="/findings/upload/{{ DB_report_query.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-upload"></i> Upload Findings</button></a>
-            <a href="/findings/defectdojo/products/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-upload"></i> Import Findings from DefectDojo</button></a>
+            <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-danger"><i class="fa fa-edit"></i> {% translate "Add Finding" %}</button></a> 
+            <a href="/template/add/finding/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Add Finding from template" %}</button></a> 
+            <a href="/findings/upload/{{ DB_report_query.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-upload"></i> {% translate "Upload Findings" %}</button></a>
+            <a href="/findings/defectdojo/products/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-upload"></i> {% translate "Import Findings from DefectDojo" %}</button></a>
           {% endif %}
 
         </div>
@@ -50,7 +52,7 @@
     <div class="container-fluid">
       <div class="card card-outline card-danger">
         <div class="card-header">
-          <h3 class="card-title">{{ count_finding_query }} Findings</h3>
+          <h3 class="card-title">{{ count_finding_query }} {% translate "Findings" %}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -66,7 +68,7 @@
 
             {% if count_finding_query == 0 %}
 
-              <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">Add Findings</button></a>
+              <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">{% translate "Add Findings" %}</button></a>
 
             {% else %}
 
@@ -74,11 +76,11 @@
 
                         <thead>
                           <tr>
-                            <th style="width: 40%">Title</th>
-                            <th style="width: 5%">Severity</th>
-                            <th style="width: 10%">CVSS Score</th>
-                            <th style="width: 5%">CWE</th>
-                            <th style="width: 20%"class="text-center"> Actions</th>
+                            <th style="width: 40%">{% translate "Title" %}</th>
+                            <th style="width: 5%">{% translate "Severity" %}</th>
+                            <th style="width: 10%">{% translate "CVSS Score" %}</th>
+                            <th style="width: 5%">{% translate "CWE" %}</th>
+                            <th style="width: 20%"class="text-center">{% translate "Actions" %}</th>
                           </tr>
                         </thead>
 
@@ -102,7 +104,7 @@
                                         {% elif finding.severity == "Info" %}
                                             <b><font color="#45A7F7">{{ finding.severity }}</font></b>
                                         {% else %}
-                                            <b>{{ finding.severity }}</b> (will not appear in the report)
+                                            <b>{{ finding.severity }}</b> ({% translate "will not appear in the report" %})
                                         {% endif %}
 
                                   </td>
@@ -113,11 +115,11 @@
                                       <a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{ finding.cwe.cwe_id }}</a>
                                   </td>
                                   <td align="center">
-                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> View</button></a>
+                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                        <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                                        <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                       {% endif %}
                                       
                                   </td>
@@ -128,18 +130,18 @@
                             <div class="modal-dialog">
                               <div class="modal-content bg-danger">
                                 <div class="modal-header">
-                                  <h4 class="modal-title">Are you sure?</h4>
+                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                   </button>
                                 </div>
                                 <div class="modal-body">
-                                  <p>Delete Finding&hellip;</p>
+                                  <p>{% translate "Delete Finding" %}&hellip;</p>
                                 </div>
                                 <div class="modal-footer justify-content-between">
-                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
 
-                                  <button type="button" onclick="DeleteID({{finding.pk}});" class="btn btn-outline-light">Delete Finding</button>
+                                  <button type="button" onclick="DeleteID({{finding.pk}});" class="btn btn-outline-light">{% translate "Delete Finding" %}</button>
 
                                 </div>
                               </div>
@@ -184,7 +186,7 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/finding/delete/",
+            url: "/en/finding/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },

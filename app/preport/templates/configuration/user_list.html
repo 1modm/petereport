@@ -1,8 +1,9 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load app_filters %}
 
-{% block title %} User List {% endblock title %}
+{% block title %} {% translate "User List" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -18,7 +19,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
             </ol>
           </div>
         </div>
@@ -30,7 +31,7 @@
     <div class="container-fluid">
       <div class="card card-outline card-primary">
         <div class="card-header">
-          <h3 class="card-title">{{ userList.count }} Users</h3>
+          <h3 class="card-title">{{ userList.count }} {% translate "Users" %}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -43,22 +44,22 @@
               <thead>
                   <tr>
                       <th style="width: 15%">
-                          User
+                          {% translate "User" %}
                       </th>
                       <th style="width: 20%">
-                          Email
+                          {% translate "Email" %}
                       </th>
                       <th style="width: 5%">
-                          Active
+                          {% translate "Active" %}
                       </th>
                       <th style="width: 10%">
-                          Group
+                          {% translate "Group" %}
                       </th>
                       <th style="width: 5%">
-                          Admin
+                          {% translate "Admin" %}
                       </th>
                       <th style="width: 20%" class="text-center">
-                          Actions
+                          {% translate "Actions" %}
                       </th>
                   </tr>
               </thead>
@@ -96,16 +97,16 @@
                       <td class="project-actions text-center">
                           <a class="btn btn-primary btn-sm" href="/admin/auth/user/">
                               <i class="fas fa-folder"></i>
-                              View
+                              {% translate "View" %}
                           </a>
                           <a class="btn btn-info btn-sm" href="/configuration/user/edit/{{ user.pk }}">
                               <i class="fas fa-pencil-alt"></i>
-                              Edit
+                              {% translate "Edit" %}
                           </a>
 
                           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{user.pk}}">
                             <i class="fas fa-trash"></i>
-                              Delete
+                              {% translate "Delete" %}
                           </button>
 
                       </td>
@@ -116,17 +117,17 @@
                         <div class="modal-dialog">
                           <div class="modal-content bg-danger">
                             <div class="modal-header">
-                              <h4 class="modal-title">Are you sure?</h4>
+                              <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                               </button>
                             </div>
                             <div class="modal-body">
-                              <p>Delete User&hellip;</p>
+                              <p>{% translate "Delete User" %}&hellip;</p>
                             </div>
                             <div class="modal-footer justify-content-between">
-                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                              <button type="button" onclick="DeleteID({{user.pk}});" class="btn btn-outline-light">Delete user</button>
+                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                              <button type="button" onclick="DeleteID({{user.pk}});" class="btn btn-outline-light">{% translate "Delete user" %}</button>
                             </div>
                           </div>
                         </div>
@@ -168,13 +169,11 @@
 </script>
 
 
-
-
 <script>
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/configuration/user/delete/",
+            url: "/en/configuration/user/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
@@ -188,6 +187,3 @@
 </script>
 
 {% endblock javascripts %}
-
-
-

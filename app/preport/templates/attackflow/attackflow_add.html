@@ -1,6 +1,8 @@
 {% extends 'home/template_attack_flow.html' %}
 
-{% block title %} Attack Flow {% endblock title %}
+{% load i18n %}
+
+{% block title %} {% translate "Attack Flow" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}

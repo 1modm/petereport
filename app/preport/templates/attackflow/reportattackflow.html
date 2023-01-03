@@ -1,9 +1,10 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load martortags %}
 {% load bleach_tags %}
 
-{% block title %} Attack Flow {% endblock title %}
+{% block title %} {% translate "Attack Flow" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -24,11 +25,11 @@
         <div class="row mb-2">
 
           <div class="col-sm-6">
-            <h1>{{DB_report_query.title}} Attack Flow</h1>
+            <h1>{{DB_report_query.title}} {% translate "Attack Flow" %}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
               <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
               <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
             </ol>
@@ -38,7 +39,7 @@
       <br>
 
         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-          <a href="/attackflow/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> Add New Attack Flow</button></a> 
+          <a href="/attackflow/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Add New Attack Flow" %}</button></a> 
         {% endif %}
 
       </div>
@@ -55,7 +56,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    {{ count_attackflow_query }} Attack Flow
+                    {{ count_attackflow_query }} {% translate "Attack Flow" %}
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -69,10 +70,10 @@
                   <table id="attack_flow" class="table table-bordered table-hover"> 
                     <thead>
                       <tr>
-                        <th style="width: 20%">Attack Flow</th>
-                        <th style="width: 40%">Attack Flow</th>
-                        <th style="width: 20%">Finding</th>
-                        <th style="width: 20%"class="text-center"> Actions</th>
+                        <th style="width: 20%" class="text-center">{% translate "Attack Flow Title" %}</th>
+                        <th style="width: 40%" class="text-center">{% translate "Attack Flow" %}</th>
+                        <th style="width: 20%" class="text-center">{% translate "Finding" %}</th>
+                        <th style="width: 20%" class="text-center">{% translate "Actions" %}</th>
                       </tr>
                     </thead>
 
@@ -97,8 +98,8 @@
 
                         <td align="center">
                             {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                              <a href="/attackflow/edit/{{ attackflow.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                              <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{attackflow.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                              <a href="/attackflow/edit/{{ attackflow.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                              <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{attackflow.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                             {% endif %}
 
                         </td>
@@ -109,17 +110,17 @@
                         <div class="modal-dialog">
                           <div class="modal-content bg-danger">
                             <div class="modal-header">
-                              <h4 class="modal-title">Are you sure?</h4>
+                              <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                               </button>
                             </div>
                             <div class="modal-body">
-                              <p>Delete Attack Flow {{attackflow.title}}&hellip;</p>
+                              <p>{% translate "Delete Attack Flow" %} {{attackflow.title}}&hellip;</p>
                             </div>
                             <div class="modal-footer justify-content-between">
-                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                              <button type="button" onclick="DeleteID({{attackflow.pk}});" class="btn btn-outline-light">Delete Attack Flow</button>
+                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate 'Close' %}</button>
+                              <button type="button" onclick="DeleteID({{attackflow.pk}});" class="btn btn-outline-light">{% translate "Delete Attack Flow" %}</button>
 
                             </div>
                           </div>
@@ -167,7 +168,7 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/attackflow/delete/",
+            url: "/en/attackflow/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },

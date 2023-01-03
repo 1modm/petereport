@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
+{% load i18n %}
 
-{% block title %} Reports {% endblock title %}
+{% block title %} {% translate "Reports" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -13,12 +14,12 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>Reports</h1>
+        <h1>{% translate "Reports" %}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
-          <li class="breadcrumb-item active">Add or Edit Report</li>
+          <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+          <li class="breadcrumb-item active">{% translate "Add or Edit Report" %}</li>
         </ol>
       </div>
     </div>
@@ -33,69 +34,69 @@
 
             <div class="card card-outline card-success">
               <div class="card-header">
-                <h3 class="card-title">Report details</h3>
+                <h3 class="card-title">{% translate "Report details" %}</h3>
               </div>
               
               <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card-body">
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Product</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Product" %}</label>
                       <div class="col-md-10 col-sm-10 col-xs-12">
                         {{ form.product }}
                       </div>
                   </div>
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Report ID</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Report ID" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.report_id }}
                     </div>
                   </div>
    
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Report Title</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Report Title" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.title }}
                     </div>
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Executive summary</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Executive summary" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.executive_summary }}
                     </div>
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Scope</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Scope" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.scope }}
                     </div>
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Out of scope</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Out of scope" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.outofscope }}
                     </div>
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Methodology</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Methodology" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.methodology }}
                     </div>
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Recommendation</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Recommendation" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.recommendation }}
                     </div>
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Report date</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Report date" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.report_date }}
                     </div>
@@ -121,7 +122,7 @@
                 {% endif %}
                 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-success">Save Report</button>
+                  <button type="submit" class="btn btn-success">{% translate "Save Report" %}</button>
                 </div>
               </form>
             </div>
@@ -131,8 +132,6 @@
       </div>
     </div>
 </section>
-
-
 
 
 {% endblock content %}

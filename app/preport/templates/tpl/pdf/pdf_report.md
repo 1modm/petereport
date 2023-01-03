@@ -1,15 +1,16 @@
-# Project Overview
+{% load i18n %}
+# {% translate "Project Overview" %}
 
-## Description
+## {% translate "Description" %}
 
 {{DB_report_query.product.description | safe}}
 
 \pagebreak
-# Executive Summary
+# {% translate "Executive Summary" %}
 
 {{DB_report_query.executive_summary | safe}}
 
-## Summary of Findings Identified
+## {% translate "Summary of Findings Identified" %}
 
 ![Executive Summary]({{report_executive_summary_image}})
 
@@ -17,28 +18,28 @@
 
 {{pdf_finding_summary}}
 
-## Scope
+## {% translate "Scope" %}
 
-### In Scope
+### {% translate "In Scope" %}
 
 {{DB_report_query.scope | safe}}
 
-### Out of Scope
+### {% translate "Out of Scope" %}
 
 {{DB_report_query.outofscope | safe}}
 
 \pagebreak
-## Methodology
+## {% translate "Methodology" %}
 
 {{DB_report_query.methodology | safe}}
 
 \pagebreak
-## Recommendations
+## {% translate "Recommendations" %}
 
 {{DB_report_query.recommendation | safe}}
 
 \pagebreak
-# Findings and Risk Analysis
+# {% translate "Findings and Risk Analysis" %}
 
 {{template_findings}}
 

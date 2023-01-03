@@ -1,8 +1,9 @@
 {% extends "home/template.html" %}
 
+{% load i18n%}
 {% load martortags %}
 
-{% block title %} Dashboard {% endblock title %}
+{% block title %} {% translate "Dashboard" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -10,6 +11,7 @@
 
 
 {% block content %}
+
 
     <br>
 
@@ -22,7 +24,7 @@
           <div class="small-box bg-info">
             <div class="inner">
               <h3>{{total_products}}</h3> 
-              <p>Product{{ total_products|pluralize:"s" }}</p>
+              <p>{% translate "Product" %}{{ total_products|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fas fa-cube"></i>
@@ -35,7 +37,7 @@
           <div class="small-box bg-green">
             <div class="inner">
               <h3>{{total_reports}}</h3>
-              <p>Report{{ total_reports|pluralize:"s" }}</p>
+              <p>{% translate "Report" %}{{ total_reports|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fa fa-file-code"></i>
@@ -48,7 +50,7 @@
           <div class="small-box bg-yellow">
             <div class="inner">
               <h3>{{count_product_findings_total}}</h3>
-              <p>Finding{{ count_product_findings_total|pluralize:"s" }}</p>
+              <p>{% translate "Finding" %}{{ count_product_findings_total|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fa fa-bug"></i>
@@ -61,7 +63,7 @@
           <div class="small-box bg-red">
             <div class="inner">
               <h3>{{count_product_findings_critical_high}}</h3>
-              <p>Critical/High Finding{{ count_product_findings_critical_high|pluralize:"s" }}</p>
+              <p>{% translate "Critical/High Finding" %}{{ count_product_findings_critical_high|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fa fa-exclamation-triangle"></i>
@@ -79,7 +81,7 @@
             <div class="card card-outline card-success">
                 <div class="card-header">
                   <h3 class="card-title">
-                    Overall Breakdown by Categories
+                    {% translate "Overall Breakdown by Categories" %}
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -104,7 +106,7 @@
         <div class="card-header">
           <h3 class="card-title">
             <i class="far fa-list-alt"></i>
-            Top 10 risk findings
+            {% translate "Top 10 risk findings" %}
           </h3>
 
           <div class="card-tools">
@@ -119,11 +121,11 @@
             <table class="table">
                   <thead>
                     <tr>
-                      <th class="text-center" style="width: 10%">Product</th>
-                      <th class="text-center" style="width: 25%">Report</th>
-                      <th class="text-center" style="width: 40%">Finding</th>
-                      <th class="text-center" style="width: 10%">CWE</th>
-                      <th class="text-center" style="width: 10%">Risk Score</th>
+                      <th class="text-center" style="width: 10%">{% translate "Product" %}</th>
+                      <th class="text-center" style="width: 25%">{% translate "Report" %}</th>
+                      <th class="text-center" style="width: 40%">{% translate "Finding" %}</th>
+                      <th class="text-center" style="width: 10%">{% translate "CWE" %}</th>
+                      <th class="text-center" style="width: 10%">{% translate "Risk Score" %}</th>
                     </tr>
                   </thead>
 
@@ -168,8 +170,6 @@
 
       </div>
     </section>
-
-
 
 
 

@@ -1,7 +1,7 @@
-
 {% extends 'home/template_login.html' %}
+{% load i18n %}
 
-{% block title %} Login {% endblock title %}
+{% block title %} {% translate "Login" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -19,7 +19,7 @@
 
   <div class="card">
     <div class="card-body login-card-body">
-      <p class="login-box-msg">Sign in to start your session</p>
+      <p class="login-box-msg">{% translate "Sign in to start your session" %}</p>
 
       <form method="post" action="{% url 'login' %}">
 
@@ -46,7 +46,7 @@
 
         <div class="row">
           <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <button type="submit" class="btn btn-primary btn-block">{% translate "Sign In" %}</button>
           </div>
 
         </div>
@@ -62,7 +62,4 @@
 </div>
 
 
-
 {% endblock body %}
-
-

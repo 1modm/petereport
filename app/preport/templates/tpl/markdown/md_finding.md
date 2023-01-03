@@ -1,39 +1,40 @@
+{% load i18n %}
 ## {{finding.title|safe}}
 
-**Severity:** {{finding.severity|safe}}
+**{% translate "Severity" %}:** {{finding.severity|safe}}
 
 {% if finding.cvss_base_score != "0" %}
-**CVSS Score:** {{finding.cvss_base_score|safe}}
+**{% translate "CVSS Score" %}:** {{finding.cvss_base_score|safe}}
 {% endif %}
 
-**CWE:** {{finding.cwe.cwe_id|safe}} - {{finding.cwe.cwe_name|safe}}
+**{% translate "CWE" %}:** {{finding.cwe.cwe_id|safe}} - {{finding.cwe.cwe_name|safe}}
 
 {% if finding.description %}
-**Description**
+**{% translate "Description" %}**
 
 {{finding.description|safe}}
 {% endif %}
 
 {% if finding.location %}
-**Location**
+**{% translate "Location" %}**
 
 {{finding.location|safe}}
 {% endif %}
 
 {% if finding.impact %}
-**Impact**
+**{% translate "Impact" %}**
 
 {{finding.impact|safe}}
 {% endif %}
 
 {% if finding.recommendation %}
-**Recommendation**
+**{% translate "Recommendation" %}**
 
 {{finding.recommendation|safe}}
 {% endif %}
 
 {% if finding.references %}
-**References**
+**{% translate "References" %}**
 
 {{finding.references|safe}}
 {% endif %}

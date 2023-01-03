@@ -1,8 +1,9 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load bleach_tags %}
 
-{% block title %} Findings {% endblock title %}
+{% block title %} {% translate "Findings" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -16,12 +17,12 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>Open Findings</h1>
+          <h1>{% translate "Open Findings" %}</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item active">Open Findings</a></li>
+            <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+            <li class="breadcrumb-item active">{% translate "Open Findings" %}</a></li>
           </ol>
         </div>
       </div>
@@ -34,7 +35,7 @@
     <div class="container-fluid">
       <div class="card card-outline card-danger">
         <div class="card-header">
-          <h3 class="card-title">{{ count_finding_query }} Open Findings</h3>
+          <h3 class="card-title">{{ count_finding_query }} {% translate "Open Findings" %}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -54,11 +55,11 @@
 
                         <thead>
                           <tr>
-                            <th style="width: 40%">Title</th>
-                            <th style="width: 5%">Severity</th>
-                            <th style="width: 5%">CVSS</th>
-                            <th style="width: 20%">Report</th>
-                            <th style="width: 25%" class="text-center"> Actions</th>
+                            <th style="width: 40%">{% translate "Title" %}</th>
+                            <th style="width: 5%">{% translate "Severity" %}</th>
+                            <th style="width: 5%">{% translate "CVSS" %}</th>
+                            <th style="width: 20%">{% translate "Report" %}</th>
+                            <th style="width: 25%" class="text-center"> Actions{% translate "Title" %}</th>
                           </tr>
                         </thead>
 
@@ -93,11 +94,11 @@
                                     <a href="/report/view/{{finding.report.id}}">{{ finding.report.title  | bleach }}</a>
                                   </td>
                                   <td align="center">
-                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-folder"></i> View</button></a>
+                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                        <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                                        <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                       {% endif %}
                                       
                                   </td>
@@ -108,17 +109,17 @@
                             <div class="modal-dialog">
                               <div class="modal-content bg-danger">
                                 <div class="modal-header">
-                                  <h4 class="modal-title">Are you sure?</h4>
+                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                   </button>
                                 </div>
                                 <div class="modal-body">
-                                  <p>Delete Finding&hellip;</p>
+                                  <p>{% translate "Delete Finding" %}&hellip;</p>
                                 </div>
                                 <div class="modal-footer justify-content-between">
-                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                                  <button type="button" onclick="DeleteID({{finding.pk}});" class="btn btn-outline-light">Delete Finding</button>
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                  <button type="button" onclick="DeleteID({{finding.pk}});" class="btn btn-outline-light">{% translate "Delete Finding" %}</button>
                                 </div>
                               </div>
                             </div>
@@ -161,7 +162,7 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/finding/delete/",
+            url: "/en/finding/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },

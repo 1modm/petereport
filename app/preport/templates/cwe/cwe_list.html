@@ -1,9 +1,10 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load app_filters %}
 {% load bleach_tags %}
 
-{% block title %} CWE List {% endblock title %}
+{% block title %} {% translate "CWE List" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -15,11 +16,11 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>CWE List</h1>
+            <h1>{% translate "CWE List" %}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
             </ol>
           </div>
         </div>
@@ -31,7 +32,7 @@
     <div class="container-fluid">
       <div class="card card-outline card-primary">
         <div class="card-header">
-          <h3 class="card-title">{{ DB_cwe_query.count }} CWEs</h3>
+          <h3 class="card-title">{{ DB_cwe_query.count }} {% translate "CWEs" %}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -44,12 +45,12 @@
               <thead>
                   <tr>
                       <th style="width: 25%">
-                          Title
+                          {% translate "Title" %}
                       </th>
                       <th style="width: 60%">
-                          Description
+                          {% translate "Description" %}
                       </th>
-                      <th style="width: 15%" class="text-center">Actions</th>
+                      <th style="width: 15%" class="text-center">{% translate "Actions" %}</th>
 
                   </tr>
               </thead>
@@ -67,8 +68,8 @@
 
                     <td class="text-center">
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                          <a href="/cwe/edit/{{ cwe.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{cwe.pk}}"><i class="fas fa-trash"></i> Delete </button>
+                          <a href="/cwe/edit/{{ cwe.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{cwe.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
                     </td>
 
@@ -79,17 +80,17 @@
                           <div class="modal-dialog">
                             <div class="modal-content bg-danger">
                               <div class="modal-header">
-                                <h4 class="modal-title">Are you sure?</h4>
+                                <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                   <span aria-hidden="true">&times;</span>
                                 </button>
                               </div>
                               <div class="modal-body">
-                                <p>Delete CWE&hellip;</p>
+                                <p>{% translate "Delete CWE" %}&hellip;</p>
                               </div>
                               <div class="modal-footer justify-content-between">
-                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                                <button type="button" onclick="DeleteID({{cwe.pk}});" class="btn btn-outline-light">Delete CWE</button>
+                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                <button type="button" onclick="DeleteID({{cwe.pk}});" class="btn btn-outline-light">{% translate "Delete CWE" %}</button>
 
                               </div>
                             </div>
@@ -133,7 +134,7 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/cwe/delete/",
+            url: "/en/cwe/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
@@ -146,6 +147,3 @@
   }
 </script>
 {% endblock javascripts %}
-
-
-

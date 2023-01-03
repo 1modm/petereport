@@ -1,4 +1,4 @@
-
+{% load i18n%}
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
     <a href="/" class="brand-link">
@@ -15,7 +15,7 @@
             <a href="/" class="nav-link">
               <i class="nav-icon fas fa-tachometer-alt text-light"></i>
               <p>
-                Dashboard
+                {% translate "Dashboard" %}
               </p>
             </a>
           </li>
@@ -26,7 +26,7 @@
             <a href="/" class="nav-link">
               <i class="nav-icon fas fa-cogs text-info"></i>
               <p>
-                Configuration
+                {% translate "Configuration" %}
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
@@ -35,7 +35,7 @@
               <li class="nav-item">
                 <a href="/configuration/users" class="nav-link">
                   <i class="nav-icon fas fa-id-card"></i>
-                  <p>Users</p>
+                  <p>{% translate "Users" %}</p>
                 </a>
               </li>
             </ul>
@@ -44,7 +44,7 @@
               <li class="nav-item">
                 <a href="/configuration/user/add" class="nav-link">
                   <i class="nav-icon fas fa-users-cog"></i>
-                  <p>Add User</p>
+                  <p>{% translate "Add User" %}</p>
                 </a>
               </li>
             </ul>
@@ -56,7 +56,7 @@
             <a href="/product/list" class="nav-link">
               <i class="nav-icon fas fa-th text-primary"></i>
               <p>
-                Products
+                {% translate "Products" %}
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
@@ -65,7 +65,7 @@
               <li class="nav-item">
                 <a href="/product/list" class="nav-link">
                   <i class="nav-icon fas fa-table"></i>
-                  <p>All Products</p>
+                  <p>{% translate "All Products" %}</p>
                 </a>
               </li>
             </ul>
@@ -75,7 +75,7 @@
               <li class="nav-item">
                 <a href="/product/add" class="nav-link">
                   <i class="nav-icon fas fa-edit"></i>
-                  <p>Add Product</p>
+                  <p>{% translate "Add Product" %}</p>
                 </a>
               </li>
             </ul>
@@ -88,7 +88,7 @@
             <a href="/product/list" class="nav-link">
               <i class="nav-icon fas fa-copy text-success"></i>
               <p>
-                Reports
+                {% translate "Reports" %}
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
@@ -97,7 +97,7 @@
               <li class="nav-item">
                 <a href="/report/list" class="nav-link">
                   <i class="nav-icon fas fa-table"></i>
-                  <p>All Reports</p>
+                  <p>{% translate "All Reports" %}</p>
                 </a>
               </li>
             </ul>
@@ -107,7 +107,7 @@
               <li class="nav-item">
                 <a href="/report/add" class="nav-link">
                   <i class="nav-icon fas fa-edit"></i>
-                  <p>Add Report</p>
+                  <p>{% translate "Add Report" %}</p>
                 </a>
               </li>
             </ul>
@@ -120,7 +120,7 @@
             <a href="/finding/open/" class="nav-link">
               <i class="nav-icon fas fa-bug text-danger"></i>
               <p>
-                Findings
+                {% translate "Findings" %}
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -128,19 +128,19 @@
               <li class="nav-item">
                 <a href="/finding/open/" class="nav-link">
                   <i class="nav-icon fas fa-exclamation-triangle"></i>
-                  <p>Open Findings</p>
+                  <p>{% translate "Open Findings" %}</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="/finding/closed/" class="nav-link">
                   <i class="nav-icon fas fa-toolbox"></i>
-                  <p>Closed Findings</p>
+                  <p>{% translate "Closed Findings" %}</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="/template/list/" class="nav-link">
                   <i class="far fa-file-alt nav-icon"></i>
-                  <p>Finding templates</p>
+                  <p>{% translate "Finding templates" %}</p>
                 </a>
               </li>
 
@@ -148,7 +148,7 @@
               <li class="nav-item">
                 <a href="/template/add/" class="nav-link">
                   <i class="fas fa-file-code nav-icon"></i>
-                  <p>Add Finding template</p>
+                  <p>{% translate "Add Finding template" %}</p>
                 </a>
               </li>
             {% endif %}
@@ -160,7 +160,7 @@
             <a href="/finding/open/" class="nav-link">
               <i class="nav-icon fas fa-fingerprint text-warning"></i>
               <p>
-                CWE
+                {% translate "CWE" %}
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
@@ -168,7 +168,7 @@
               <li class="nav-item">
                 <a href="/cwe/list/" class="nav-link">
                   <i class="nav-icon fas fa-radiation-alt"></i>
-                  <p>CWE List</p>
+                  <p>{% translate "CWE List" %}</p>
                 </a>
               </li>
 
@@ -176,7 +176,7 @@
               <li class="nav-item">
                 <a href="/cwe/add/" class="nav-link">
                   <i class="fas fa-edit nav-icon"></i>
-                  <p>Add CWE</p>
+                  <p>{% translate "Add CWE" %}</p>
                 </a>
               </li>
             {% endif %}

@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
+{% load i18n %}
 
-{% block title %} Attack Flow {% endblock title %}
+{% block title %} {% translate "Attack Flow" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -13,11 +14,11 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>{{DB_report_query.title}} Findings</h1>
+          <h1>{{DB_report_query.title}} {% translate "Findings" %}</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
             <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
             <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
           </ol>
@@ -32,7 +33,7 @@
     <div class="container-fluid">
       <div class="card card-outline card-danger">
         <div class="card-header">
-          <h3 class="card-title">{{ count_finding_query }} Findings</h3>
+          <h3 class="card-title">{{ count_finding_query }} {% translate "Findings" %}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -49,11 +50,11 @@
 
                         <thead>
                           <tr>
-                            <th style="width: 40%">Title</th>
-                            <th style="width: 5%">Severity</th>
-                            <th style="width: 10%">CVSS Score</th>
-                            <th style="width: 5%">CWE</th>
-                            <th style="width: 20%"class="text-center"> Actions</th>
+                            <th style="width: 40%"  class="text-center">{% translate "Title" %}</th>
+                            <th style="width: 5%"  class="text-center">{% translate "Severity" %}</th>
+                            <th style="width: 10%"  class="text-center">{% translate "CVSS Score" %}</th>
+                            <th style="width: 5%"  class="text-center">{% translate "CWE" %}</th>
+                            <th style="width: 20%" class="text-center">{% translate "Actions" %}</th>
                           </tr>
                         </thead>
 
@@ -77,7 +78,7 @@
                                         {% elif finding.severity == "Info" %}
                                             <b><font color="#45A7F7">{{ finding.severity }}</font></b>
                                         {% else %}
-                                            <b>{{ finding.severity }}</b> (will not appear in the report)
+                                            <b>{{ finding.severity }}</b> ({% translate "will not appear in the report" %})
                                         {% endif %}
 
                                   </td>
@@ -88,7 +89,7 @@
                                       <a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{ finding.cwe.cwe_id }}</a>
                                   </td>
                                   <td align="center">
-                                      <a href="/attackflow/add_flow/{{DB_report_query.pk}}/{{ finding.pk }}"><button type="button" class="btn btn-warning btn-sm"><i class="fa fa-sitemap"></i> Attach Attack Flow</button></a>
+                                      <a href="/attackflow/add_flow/{{DB_report_query.pk}}/{{ finding.pk }}"><button type="button" class="btn btn-warning btn-sm"><i class="fa fa-sitemap"></i> {% translate "Attach Attack Flow" %}</button></a>
 
                                       
                                   </td>

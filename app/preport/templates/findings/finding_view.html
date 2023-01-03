@@ -1,9 +1,10 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load martortags %}
 {% load bleach_tags %}
 
-{% block title %} Finding Details {% endblock title %}
+{% block title %} {% translate "Finding Details" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -17,12 +18,12 @@
         <div class="row mb-2">
 
           <div class="col-sm-3">
-            <h1>Finding Details</h1>
+            <h1>{% translate "Finding Details" %}</h1>
           </div>
           <div class="col-sm-9">
             <ol class="breadcrumb float-sm-right">
 
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
               <li class="breadcrumb-item"><a href="/product/view/{{ finding.report.product.pk}}">{{ finding.report.product.name | bleach}}</a></li>
               <li class="breadcrumb-item"><a href="/report/view/{{ finding.report.pk}}">{{ finding.report.title | bleach}}</a></li>
               <li class="breadcrumb-item active">{{ finding.title | bleach}}</li>
@@ -36,9 +37,9 @@
         <div class="row">
             <div class="col-md-7">
                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                  <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> Edit Finding</button></a>
-                  <a href="/finding/customfields/{{ finding.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> Finding custom fields</button></a>
-                  <a href="/field/add/{{ finding.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-edit"></i> Add custom field</button></a> 
+                  <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Edit Finding" %}</button></a>
+                  <a href="/finding/customfields/{{ finding.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Finding custom fields" %}</button></a>
+                  <a href="/field/add/{{ finding.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-edit"></i> {% translate "Add custom field" %}</button></a> 
                 {% endif %}
             </div>
         </div>
@@ -60,7 +61,7 @@
                 <div class="card-header">
                   <h3 class="card-title">
                     <i class="far fa-chart-bar"></i>
-                    <b>Summary</b>
+                    <b>{% translate "Summary" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -76,7 +77,7 @@
                       <div class="col-12 col-sm-4">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">Finding ID</span>
+                            <span class="info-box-number text-center text-muted">{% translate "Finding ID" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">{{ finding.finding_id | safe_markdown | bleach}}</span>
                           </div>
                         </div>
@@ -84,7 +85,7 @@
                       <div class="col-12 col-sm-4">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">Product</span>
+                            <span class="info-box-number text-center text-muted">{% translate "Product" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">{{ DB_report.product.name | safe_markdown | bleach}}</span>
                           </div>
                         </div>
@@ -92,7 +93,7 @@
                       <div class="col-12 col-sm-4">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">Report</span>
+                            <span class="info-box-number text-center text-muted">{% translate "Report" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">{{ DB_report.title | safe_markdown | bleach}}<span>
                           </span></span></div>
                         </div>
@@ -105,7 +106,7 @@
                       <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">CWE</span>
+                            <span class="info-box-number text-center text-muted">{% translate "CWE" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">{{ finding.cwe.cwe_id |safe| bleach}} - {{finding.cwe.cwe_name |safe| bleach}}</span>
                           </div>
                         </div>
@@ -114,7 +115,7 @@
                       <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">CVSS Score</span>
+                            <span class="info-box-number text-center text-muted">{% translate "CVSS Score" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_base_score | safe | bleach}}<span>
                           </span></span></div>
                         </div>
@@ -127,7 +128,7 @@
                       <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">Status</span>
+                            <span class="info-box-number text-center text-muted">{% translate "Status" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">{{ finding.status | safe_markdown | bleach}}<span>
                           </span></span></div>
                         </div>
@@ -136,7 +137,7 @@
                         <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">Severity</span>
+                            <span class="info-box-number text-center text-muted">{% translate "Severity" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">
                                 {% if finding.severity == "Critical" %}
                                       <span><b><font color="#cc0000">{{finding.severity| safe_markdown | bleach}}</font></b></span>
@@ -149,7 +150,7 @@
                                   {% elif finding.severity == "Info" %}
                                       <span><b><font color="#45a7f7">{{finding.severity| safe_markdown | bleach}}</font></b></span>
                                   {% else %}
-                                      <span><b>{{finding.severity}}</b></span> (will not appear in the report)
+                                      <span><b>{{finding.severity}}</b></span> ({% translate "will not appear in the report" %})
                                 {% endif %}
                           </span>
                           </div>
@@ -174,7 +175,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                   <b> Title</b>
+                   <b>{% translate "Title" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -199,7 +200,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Description</b>
+                    <b>{% translate "Description" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -226,7 +227,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Location</b>
+                    <b>{% translate "Location" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -252,7 +253,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Impact</b>
+                    <b>{% translate "Impact" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -277,7 +278,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Recommendation</b>
+                    <b>{% translate "Recommendation" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -302,7 +303,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>References</b>
+                    <b>{% translate "References" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -358,7 +359,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Additional Notes</b>
+                    <b>{% translate "Additional Notes" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -388,7 +389,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Attack Flow</b>
+                    <b>{% translate "Attack Flow" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">

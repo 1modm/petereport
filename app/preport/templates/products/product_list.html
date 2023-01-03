@@ -1,8 +1,9 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load app_filters %}
 
-{% block title %} Product List {% endblock title %}
+{% block title %} {% translate "Product List" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -14,12 +15,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Product List</h1>
+            <h1>{% translate "Product List" %}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
-              <li class="breadcrumb-item active">Products</li>
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+              <li class="breadcrumb-item active">{% translate "Products" %}</li>
             </ol>
           </div>
         </div>
@@ -31,7 +32,7 @@
     <div class="container-fluid">
       <div class="card card-outline card-primary">
         <div class="card-header">
-          <h3 class="card-title">{{ DB_product_query.count }} Product{{ DB_product_query.count|pluralize:"s" }}</h3>
+          <h3 class="card-title">{{ DB_product_query.count }} {% translate "Product" %}{{ DB_product_query.count|pluralize:"s" }}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -44,16 +45,16 @@
               <thead>
                   <tr>
                       <th style="width: 40%">
-                          Product
+                          {% translate "Product" %}
                       </th>
                       <th style="width: 20%">
-                          Reports
+                          {% translate "Reports" %}
                       </th>
                       <th style="width: 20%">
-                          Findings
+                          {% translate "Findings" %}
                       </th>
                       <th style="width: 20%" class="text-center">
-                          Actions
+                          {% translate "Actions" %}
                       </th>
                   </tr>
               </thead>
@@ -66,27 +67,27 @@
                         <a href="/product/view/{{ product.pk }}">{{ product.name }}</a>
                       </td>
                       <td>
-                        <span class="pull-right badge bg-blue">{{ product.db_report_set.count }}</span> Report{{ product.db_report_set.count|pluralize:"s" }}
+                        <span class="pull-right badge bg-blue">{{ product.db_report_set.count }}</span> {% translate "Report" %}{{ product.db_report_set.count|pluralize:"s" }}
                       </td>
                       <td>
-                        <span class="pull-right badge bg-red">{{ product.db_report_set.all|findings_count }}</span> Finding{{ product.db_report_set.all|findings_count|pluralize:"s" }}
+                        <span class="pull-right badge bg-red">{{ product.db_report_set.all|findings_count }}</span> {% translate "Finding" %}{{ product.db_report_set.all|findings_count|pluralize:"s" }}
                       </td>
                       <td class="project-actions text-center">
                           <a class="btn btn-primary btn-sm" href="/product/view/{{ product.pk }}">
                               <i class="fas fa-folder"></i>
-                              View
+                              {% translate "View" %}
                           </a>
 
                           {% if user.groups.all.0|stringformat:'s' == "administrator" %}
 
                             <a class="btn btn-info btn-sm" href="/product/edit/{{ product.pk }}">
                                 <i class="fas fa-pencil-alt"></i>
-                                Edit
+                                {% translate "Edit" %}
                             </a>
 
                             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{product.pk}}">
                               <i class="fas fa-trash"></i>
-                                Delete
+                                {% translate "Delete" %}
                             </button>
 
                           {% endif %}
@@ -99,17 +100,17 @@
                         <div class="modal-dialog">
                           <div class="modal-content bg-danger">
                             <div class="modal-header">
-                              <h4 class="modal-title">Are you sure?</h4>
+                              <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                               </button>
                             </div>
                             <div class="modal-body">
-                              <p>Delete product&hellip;</p>
+                              <p>{% translate "Delete product" %}&hellip;</p>
                             </div>
                             <div class="modal-footer justify-content-between">
-                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                              <button type="button" onclick="DeleteID({{product.pk}});" class="btn btn-outline-light">Delete product</button>
+                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                              <button type="button" onclick="DeleteID({{product.pk}});" class="btn btn-outline-light">{% translate "Delete product" %}</button>
 
                             </div>
                           </div>
@@ -153,7 +154,7 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/product/delete/",
+            url: "/en/product/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
@@ -167,6 +168,3 @@
 </script>
 
 {% endblock javascripts %}
-
-
-

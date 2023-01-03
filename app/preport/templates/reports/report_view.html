@@ -1,9 +1,10 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load martortags %}
 {% load bleach_tags %}
 
-{% block title %} Report Details {% endblock title %}
+{% block title %} {% translate "Report Details" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -21,7 +22,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
               <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name | bleach}}</a></li>
               <li class="breadcrumb-item active">{{ DB_report_query.title | bleach}}</li>
             </ol>
@@ -33,18 +34,18 @@
 
         <div class="row">
             <div class="col-md-5">
-              <a href="/report/findings/{{ DB_report_query.pk }}"><button type="button" class="btn btn-danger"><i class="fa fa-bug"></i> Findings</button></a>
-              <a href="/report/appendix/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> Appendix</button></a>
-              <a href="/report/attackflow/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-sitemap"></i> Attack Flows</button></a>
+              <a href="/report/findings/{{ DB_report_query.pk }}"><button type="button" class="btn btn-danger"><i class="fa fa-bug"></i> {% translate "Findings" %}</button></a>
+              <a href="/report/appendix/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Appendix" %}</button></a>
+              <a href="/report/attackflow/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-sitemap"></i> {% translate "Attack Flows" %}</button></a>
 
             </div>
 
             <div class="col-md-7 text-right">
-              <button type="button" onclick="SaveSummaryImage('Markdown');" class="btn btn-info"><i class="fa fa-download"></i> Markdown</button>
-              <button type="button" onclick="SaveSummaryImage('PDF');" class="btn btn-warning"><i class="fa fa-download"></i> PDF</button>
-              <a href="/report/download/html/{{ DB_report_query.pk }}"><button type="button" class="btn btn-primary"><i class="fa fa-download"></i> HTML</button></a>
-              <a href="/finding/csv/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-download"></i> CSV</button></a>
-              <a href="/report/download/jupyter/{{ DB_report_query.pk }}"><button type="button" class="btn btn-secondary"><i class="fa fa-download"></i> Jupyter</button></a>
+              <button type="button" onclick="SaveSummaryImage('Markdown');" class="btn btn-info"><i class="fa fa-download"></i> {% translate "Markdown" %}</button>
+              <button type="button" onclick="SaveSummaryImage('PDF');" class="btn btn-warning"><i class="fa fa-download"></i> {% translate "PDF" %}</button>
+              <a href="/report/download/html/{{ DB_report_query.pk }}"><button type="button" class="btn btn-primary"><i class="fa fa-download"></i> {% translate "HTML" %}</button></a>
+              <a href="/finding/csv/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-download"></i> {% translate "CSV" %}</button></a>
+              <a href="/report/download/jupyter/{{ DB_report_query.pk }}"><button type="button" class="btn btn-secondary"><i class="fa fa-download"></i> {% translate "Jupyter" %}</button></a>
             </div>
         </div>
 
@@ -67,7 +68,7 @@
                 <div class="card-header">
                   <h3 class="card-title">
                     <i class="far fa-chart-bar"></i>
-                    <b>Executive Summary</b>
+                    <b>{% translate "Executive Summary" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -89,7 +90,7 @@
                               <input type="text" value="{{count_findings_critical}}" class="dial" data-min="0" data-max="{{count_findings_critical}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
                             {% endif %}
 
-                        <h3>Critical</h3>
+                        <h3>{% translate "Critical" %}</h3>
 
                         </div>
 
@@ -101,7 +102,7 @@
                               <input type="text" value="{{count_findings_high}}" class="dial" data-min="0" data-max="{{count_findings_high}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
                             {% endif %}
 
-                        <h3>High</h3>
+                        <h3>{% translate "High" %}</h3>
                         </div>
 
 
@@ -113,7 +114,7 @@
                               <input type="text" value="{{count_findings_medium}}" class="dial" data-min="0" data-max="{{count_findings_medium}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
                             {% endif %}
 
-                        <h3>Medium</h3>
+                        <h3>{% translate "Medium" %}</h3>
                         </div>
 
                         <div class="col-2 text-center">
@@ -124,7 +125,7 @@
                               <input type="text" value="{{count_findings_low}}" class="dial" data-min="0" data-max="{{count_findings_low}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
                             {% endif %}
 
-                        <h3>Low</h3>
+                        <h3>{% translate "Low" %}</h3>
                         </div>
 
 
@@ -136,7 +137,7 @@
                               <input type="text" value="{{count_findings_info}}" class="dial" data-min="0" data-max="{{count_findings_info}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
                             {% endif %}
 
-                        <h3>Info</h3>
+                        <h3>{% translate "Info" %}</h3>
                         </div>
                       
                         <div class="col-2 text-center">
@@ -147,7 +148,7 @@
                               <input type="text" value="{{count_findings_none}}" class="dial" data-min="0" data-max="{{count_findings_none}}" data-fgColor="#D3D3D3" data-readOnly=true data-width="60%">
                             {% endif %}
 
-                        <h3>None</h3>
+                        <h3>{% translate "None" %}</h3>
                         </div>
 
 
@@ -161,15 +162,15 @@
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
                         <div class="info-box-content">
-                          <span class="info-box-number text-center text-muted">Creation date</span>
-                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.creation_date|date:"Y-m-d H:i:s" | safe| bleach}}</span>
+                          <span class="info-box-number text-center text-muted">{% translate "Creation date" %}</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.creation_date|date:"Y-m-d H:i:s" | safe | bleach}}</span>
                         </div>
                       </div>
                     </div>
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
                         <div class="info-box-content">
-                          <span class="info-box-number text-center text-muted">Report date</span>
+                          <span class="info-box-number text-center text-muted">{% translate "Report date" %}</span>
                           <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_date|date:"d-m-Y" | safe | bleach}}</span>
                         </div>
                       </div>
@@ -177,7 +178,7 @@
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
                         <div class="info-box-content">
-                          <span class="info-box-number text-center text-muted">Product</span>
+                          <span class="info-box-number text-center text-muted">{% translate "Product" %}</span>
                           <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.product.name | safe | bleach}}<span>
                         </span></span></div>
                       </div>
@@ -189,7 +190,7 @@
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
                         <div class="info-box-content">
-                          <span class="info-box-number text-center text-muted">Report</span>
+                          <span class="info-box-number text-center text-muted">{% translate "Report" %}</span>
                           <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.title | safe | bleach}}</span>
                         </div>
                       </div>
@@ -197,7 +198,7 @@
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
                         <div class="info-box-content">
-                          <span class="info-box-number text-center text-muted">Findings</span>
+                          <span class="info-box-number text-center text-muted">{% translate "Findings" %}</span>
                           <span class="info-box-text text-center text-muted mb-0">{{ count_finding_query | safe | bleach}}</span>
                         </div>
                       </div>
@@ -205,7 +206,7 @@
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
                         <div class="info-box-content">
-                          <span class="info-box-number text-center text-muted">Report ID</span>
+                          <span class="info-box-number text-center text-muted">{% translate "Report ID" %}</span>
                           <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_id | safe | bleach}}<span>
                         </span></span></div>
                       </div>
@@ -242,7 +243,7 @@
             <div class="card card-outline card-success">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Breakdown by Severity</b>
+                    <b>{% translate "Breakdown by Severity" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -272,7 +273,7 @@
             <div class="card card-outline card-success">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Breakdown by Categories</b>
+                    <b>{% translate "Breakdown by Categories" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -302,7 +303,7 @@
             <div class="card card-outline card-success">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Scope</b>
+                    <b>{% translate "Scope" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -329,7 +330,7 @@
             <div class="card card-outline card-success">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Methodology</b>
+                    <b>{% translate "Methodology" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -356,7 +357,7 @@
             <div class="card card-outline card-success">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Recommendation</b>
+                    <b>{% translate "Recommendation" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -384,7 +385,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>{{ count_finding_query }} Finding{{ count_finding_query|pluralize:"s" }}</b>
+                    <b>{{ count_finding_query }} {% translate "Finding" %}{{ count_finding_query|pluralize:"s" }}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -400,7 +401,7 @@
 
                       {% if count_finding_query == 0 %}
 
-                        <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm" data-toggle="modal">Add Findings</button></a>
+                        <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm" data-toggle="modal">{% translate "Add Findings" %}</button></a>
 
                       {% else %}
 
@@ -408,11 +409,11 @@
 
                         <thead>
                           <tr>
-                            <th style="width: 40%">Title</th>
-                            <th style="width: 5%">Severity</th>
-                            <th style="width: 10%">CVSS Score</th>
-                            <th style="width: 5%">CWE</th>
-                            <th style="width: 20%"class="text-center"> Actions</th>
+                            <th style="width: 40%">{% translate "Title" %}</th>
+                            <th style="width: 5%">{% translate "Severity" %}</th>
+                            <th style="width: 10%">{% translate "CVSS Score" %}</th>
+                            <th style="width: 5%">{% translate "CWE" %}</th>
+                            <th style="width: 20%"class="text-center">{% translate "Actions" %}</th>
                           </tr>
                         </thead>
 
@@ -436,7 +437,7 @@
                                         {% elif finding.severity == "Info" %}
                                             <b><font color="#45A7F7">{{ finding.severity }}</font></b>
                                         {% else %}
-                                            <b>{{ finding.severity }}</b> (will not appear in the report)
+                                            <b>{{ finding.severity }}</b> ({% translate "will not appear in the report" %})
                                         {% endif %}
 
                                   </td>
@@ -447,11 +448,11 @@
                                       <a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{ finding.cwe.cwe_id }}</a>
                                   </td>
                                   <td align="center">
-                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-folder"></i> View</button></a>
+                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                        <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                                        <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                       {% endif %}
 
                                   </td>
@@ -462,17 +463,17 @@
                             <div class="modal-dialog">
                               <div class="modal-content bg-danger">
                                 <div class="modal-header">
-                                  <h4 class="modal-title">Are you sure?</h4>
+                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                   </button>
                                 </div>
                                 <div class="modal-body">
-                                  <p>Delete Finding&hellip;</p>
+                                  <p>{% translate "Delete Finding" %}&hellip;</p>
                                 </div>
                                 <div class="modal-footer justify-content-between">
-                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                                  <button type="button" onclick="DeleteID({{finding.pk}});" class="btn btn-outline-light">Delete Finding</button>
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                  <button type="button" onclick="DeleteID({{finding.pk}});" class="btn btn-outline-light">{% translate "Delete Finding" %}</button>
                                 </div>
                               </div>
                             </div>
@@ -505,7 +506,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>{{ DB_appendix_query.count }} Appendix</b>
+                    <b>{{ DB_appendix_query.count }} {% translate "Appendix" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -523,7 +524,7 @@
 
                       {% if count_appendix_query == 0 %}
 
-                        <a href="/appendix/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">Add Appendix</button></a>
+                        <a href="/appendix/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">{% translate "Add Appendix" %}</button></a>
 
                       {% else %}
 
@@ -531,9 +532,9 @@
 
                         <thead>
                           <tr>
-                            <th style="width: 35%">Title</th>
-                            <th style="width: 40%">Finding</th>
-                            <th style="width: 25%"class="text-center">Actions</th>
+                            <th style="width: 35%">{% translate "Title" %}</th>
+                            <th style="width: 40%">{% translate "Finding" %}</th>
+                            <th style="width: 25%"class="text-center">{% translate "Actions" %}</th>
                           </tr>
                         </thead>
 
@@ -553,11 +554,11 @@
                                 {% endfor %}
                             </td>
                             <td align="center">
-                                <a href="/appendix/view/{{ appendix.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> View</button></a>
+                                <a href="/appendix/view/{{ appendix.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                  <a href="/appendix/edit/{{ appendix.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-appendix-modal-{{appendix.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                                  <a href="/appendix/edit/{{ appendix.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-appendix-modal-{{appendix.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                 {% endif %}
                                 
                             </td>
@@ -568,17 +569,17 @@
                             <div class="modal-dialog">
                               <div class="modal-content bg-danger">
                                 <div class="modal-header">
-                                  <h4 class="modal-title">Are you sure?</h4>
+                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                   </button>
                                 </div>
                                 <div class="modal-body">
-                                  <p>Delete appendix&hellip;</p>
+                                  <p>{% translate "Delete appendix" %}&hellip;</p>
                                 </div>
                                 <div class="modal-footer justify-content-between">
-                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                                  <button type="button" onclick="DeleteID_A({{appendix.pk}});" class="btn btn-outline-light">Delete Appendix</button>
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                  <button type="button" onclick="DeleteID_A({{appendix.pk}});" class="btn btn-outline-light">{% translate "Delete Appendix" %}</button>
                                 </div>
                               </div>
                             </div>
@@ -614,7 +615,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>{{ DB_attackflow_query.count }} Attack Flows</b>
+                    <b>{{ DB_attackflow_query.count }} {% translate "Attack Flows" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -632,7 +633,7 @@
 
                       {% if count_attackflow_query == 0 %}
 
-                        <a href="/attackflow/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">Add Attack Flow</button></a>
+                        <a href="/attackflow/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">{% translate "Add Attack Flow" %}</button></a>
 
                       {% else %}
 
@@ -640,9 +641,9 @@
 
                         <thead>
                           <tr>
-                            <th style="width: 35%">Title</th>
-                            <th style="width: 40%">Finding</th>
-                            <th style="width: 25%" class="text-center">Actions</th>
+                            <th style="width: 35%">{% translate "Title" %}</th>
+                            <th style="width: 40%">{% translate "Finding" %}</th>
+                            <th style="width: 25%" class="text-center">{% translate "Actions" %}</th>
                           </tr>
                         </thead>
 
@@ -664,8 +665,8 @@
 
                             <td align="center">
                                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                  <a href="/attackflow/edit/{{ attackflow.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-attackflow-modal-{{attackflow.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                                  <a href="/attackflow/edit/{{ attackflow.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-attackflow-modal-{{attackflow.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                 {% endif %}
                                 
                             </td>
@@ -676,17 +677,17 @@
                             <div class="modal-dialog">
                               <div class="modal-content bg-danger">
                                 <div class="modal-header">
-                                  <h4 class="modal-title">Are you sure?</h4>
+                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                   </button>
                                 </div>
                                 <div class="modal-body">
-                                  <p>Delete Attack Flow&hellip;</p>
+                                  <p>{% translate "Delete Attack Flow" %}&hellip;</p>
                                 </div>
                                 <div class="modal-footer justify-content-between">
-                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                                  <button type="button" onclick="DeleteID_AT({{attackflow.pk}});" class="btn btn-outline-light">Delete Attack Flow</button>
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                  <button type="button" onclick="DeleteID_AT({{attackflow.pk}});" class="btn btn-outline-light">{% translate "Delete Attack Flow" %}</button>
 
                                 </div>
                               </div>
@@ -711,8 +712,6 @@
 
         </div>
       </div>
-
-
 
 
 
@@ -959,7 +958,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "/report/uploadsummaryfindings/" + {{ DB_report_query.pk }},
+            url: "/en/report/uploadsummaryfindings/" + {{ DB_report_query.pk }}, // prepend a language code or even better: use window.location.href
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
@@ -990,7 +989,7 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/finding/delete/",
+            url: "/en/finding/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
@@ -1007,7 +1006,7 @@
   function DeleteID_A(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/appendix/delete/",
+            url: "/en/appendix/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
@@ -1025,7 +1024,7 @@
   function DeleteID_AT(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/attackflow/delete/",
+            url: "/en/attackflow/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },

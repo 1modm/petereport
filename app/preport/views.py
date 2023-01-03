@@ -12,6 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_protect
+from django.utils.translation import gettext_lazy as _
 
 # Forms
 from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm
@@ -595,7 +596,7 @@ def reportdownloadmarkdown(request,pk):
         report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
 
     # Appendix
-    template_appendix = "# Additional Notes\n\n"
+    template_appendix = _('# Additional Notes') + "\n\n"
 
     # FINDINGS
     for finding in DB_finding_query:
@@ -625,7 +626,7 @@ def reportdownloadmarkdown(request,pk):
             # appendix
             if finding.appendix_finding.all():
 
-                template_appendix_in_finding = "**Additional notes**\n"
+                template_appendix_in_finding = _('**Additional notes**') + "\n"
 
                 for appendix_in_finding in finding.appendix_finding.all():
                     md_appendix = render_to_string('tpl/markdown/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
@@ -637,7 +638,7 @@ def reportdownloadmarkdown(request,pk):
             # attack flows
             if finding.attackflow_finding.all():
 
-                template_attackflow_in_finding = "**Attack Flow**\n"
+                template_attackflow_in_finding = _('**Attack Flow**') + "\n"
 
                 for attackflow_in_finding in finding.attackflow_finding.all():
                     md_attackflow = render_to_string('tpl/markdown/md_attackflow.md', {'attackflow_in_finding': attackflow_in_finding})
@@ -708,7 +709,7 @@ def reportdownloadhtml(request,pk):
     finding_summary_table = render_to_string('tpl/html/html_finding_summary_table.html')
 
     # Appendix
-    template_appendix = "# Additional Notes\n\n"
+    template_appendix = _('# Additional Notes') + "\n\n"
 
     # FINDINGS
     for finding in DB_finding_query:
@@ -759,7 +760,7 @@ def reportdownloadhtml(request,pk):
             # Appendix
             if finding.appendix_finding.all():
 
-                template_appendix_in_finding = "<td style=\"width: 15%\">**Additional notes**</td><td>\n"
+                template_appendix_in_finding = "<td style=\"width: 15%\">" + _('**Additional notes**') + "</td><td>\n"
 
                 for appendix_in_finding in finding.appendix_finding.all():
                     html_appendix = render_to_string('tpl/html/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
@@ -773,7 +774,7 @@ def reportdownloadhtml(request,pk):
             # attack flow
             if finding.attackflow_finding.all():
 
-                template_attackflow_in_finding = "<td style=\"width: 15%\">**Attack Flow**</td><td>\n"
+                template_attackflow_in_finding = "<td style=\"width: 15%\">" + _('**Attack Flow**') + "</td><td>\n"
 
                 for attackflow_in_finding in finding.attackflow_finding.all():
                     html_attackflow = render_to_string('tpl/html/md_attackflow.md', {'attackflow_in_finding': attackflow_in_finding})
@@ -848,7 +849,7 @@ def reportdownloadpdf(request,pk):
     pages_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_pages_background']}"
 
     # Appendix
-    template_appendix = "# Additional Notes\n\n"
+    template_appendix = _('# Additional Notes') + "\n\n"
 
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
@@ -921,7 +922,7 @@ def reportdownloadpdf(request,pk):
             # appendix
             if finding.appendix_finding.all():
 
-                template_appendix_in_finding = "**Additional notes**\n\n"
+                template_appendix_in_finding = _('**Additional notes**') + "\n\n"
 
                 for appendix_in_finding in finding.appendix_finding.all():
 
@@ -938,7 +939,7 @@ def reportdownloadpdf(request,pk):
             # attack flow
             if finding.attackflow_finding.all():
 
-                template_attackflow_in_finding = "**Attack Flow**\n\n"
+                template_attackflow_in_finding = _('**Attack Flow**') + "\n\n"
 
                 for attackflow_in_finding in finding.attackflow_finding.all():
 

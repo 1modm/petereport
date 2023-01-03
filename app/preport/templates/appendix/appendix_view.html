@@ -1,9 +1,10 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load martortags %}
 {% load bleach_tags %}
 
-{% block title %} Appendix Details {% endblock title %}
+{% block title %} {% translate "Appendix Details" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -16,11 +17,11 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-2">
-            <h4>Appendix Details</h4>
+            <h4>{% translate "Appendix Details" %}</h4>
           </div>
           <div class="col-sm-10">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
               <li class="breadcrumb-item"><a href="/product/view/{{ DB_finding_query.report.product.pk }}">{{ DB_finding_query.report.product.name | bleach}}</a></li>
               <li class="breadcrumb-item"><a href="/report/view/{{ DB_finding_query.report.pk }}">{{ DB_finding_query.report.title | bleach}}</a></li>
               <li class="breadcrumb-item"><a href="/finding/view/{{ DB_finding_query.pk }}">{{ DB_finding_query.title | bleach}}</a></li>
@@ -43,7 +44,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Title</b>
+                    <b>{% translate "Title" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -66,7 +67,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>Description</b>
+                    <b>{% translate "Description" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -91,13 +92,4 @@
 
 {% block javascripts %}
   {{ block.super }}
-
 {% endblock javascripts %}
-
-
-
-
-
-
-
-

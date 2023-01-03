@@ -1,3 +1,4 @@
+{% load i18n %}
 ---
 title: "{{DB_report_query.title}}"
 product: "{{DB_report_query.product.name}}"
@@ -8,17 +9,17 @@ subtitle: "{{DB_report_query.report_id}}"
 website: {{md_website}}
 ---
 
-# Project Overview
+# {% translate "Project Overview" %}
 
-## Description
+## {% translate "Description" %}
 
 {{DB_report_query.product.description | safe}}
 
-# Executive Summary
+# {% translate "Executive Summary" %}
 
 {{DB_report_query.executive_summary | safe}}
 
-## Summary of Findings Identified
+## {% translate "Summary of Findings Identified" %}
 
 ![Breakdown by Severity]({{report_executive_summary_image}})
 
@@ -26,25 +27,25 @@ website: {{md_website}}
 
 {{finding_summary}}
 
-## Scope
+## {% translate "Scope" %}
 
-### In Scope
+### {% translate "In Scope" %}
 
 {{DB_report_query.scope | safe}}
 
-### Out of Scope
+### {% translate "Out of Scope" %}
 
 {{DB_report_query.outofscope | safe}}
 
-## Methodology
+## {% translate "Methodology" %}
 
 {{DB_report_query.methodology | safe}}
 
-## Recommendations
+## {% translate "Recommendations" %}
 
 {{DB_report_query.recommendation | safe}}
 
-# Findings and Risk Analysis
+# {% translate "Findings and Risk Analysis" %}
 
 {{template_findings}}
 

@@ -1,9 +1,10 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load app_filters %}
 {% load bleach_tags %}
 
-{% block title %} Add CWE {% endblock title %}
+{% block title %} {% translate "Add CWE" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -16,13 +17,13 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>CWE</h1>
+        <h1>{% translate "CWE" %}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
-          <li class="breadcrumb-item"><a href="/cwe/list/">CWE List</a></li>
-          <li class="breadcrumb-item active">Add or Edit CWE</li>
+          <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+          <li class="breadcrumb-item"><a href="/cwe/list/">{% translate "CWE List" %}</a></li>
+          <li class="breadcrumb-item active">{% translate "Add or Edit CWE" %}</li>
         </ol>
       </div>
     </div>
@@ -37,7 +38,7 @@
 
             <div class="card card-outline card-primary">
               <div class="card-header">
-                <h3 class="card-title">CWE details</h3>
+                <h3 class="card-title">{% translate "CWE details" %}</h3>
               </div>
               
               <form role="form" method="post" enctype="multipart/form-data">
@@ -52,14 +53,14 @@
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">CWE Name</label>
+                    <label class="col-sm-2 col-form-label"> {% translate "CWE Name" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.cwe_name }}
                     </div>
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">CWE Description</label>
+                    <label class="col-sm-2 col-form-label"> {% translate "CWE Description" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.cwe_description }}
                     </div>
@@ -74,7 +75,7 @@
                             <div class="col-md-12 col-sm-12 col-xs-12">
                               <div class="alert alert-danger alert-dismissible ">
                               <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                              <h5><i class="icon fas fa-ban"></i> Error</h5>
+                              <h5><i class="icon fas fa-ban"></i> {% translate "Error" %}</h5>
                               {{ field.name }}: {{ error|escape }}
                               </div>
                             </div>
@@ -84,7 +85,7 @@
                 {% endif %}
 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">Save CWE</button>
+                  <button type="submit" class="btn btn-primary">{% translate "Save CWE" %}</button>
                 </div>
               </form>
             </div>

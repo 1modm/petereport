@@ -1,8 +1,9 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load app_filters %}
 
-{% block title %} Template List {% endblock title %}
+{% block title %} {% translate "Template List" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -15,12 +16,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Finding Templates list</h1>
+            <h1>{% translate "Finding Templates list" %}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
-              <li class="breadcrumb-item active">Templates</li>
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+              <li class="breadcrumb-item active">{% translate "Templates" %}</li>
             </ol>
           </div>
         </div>
@@ -32,7 +33,7 @@
     <div class="container-fluid">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">{{ DB_findings_query.count }} Templates</h3>
+          <h3 class="card-title">{{ DB_findings_query.count }} {% translate "Templates" %}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -44,10 +45,10 @@
           <table id="templatelist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                    <th style="width: 35%">Finding title</th>
-                    <th style="width: 5%">Severity</th>
-                    <th style="width: 35%">CVSS Score</th>
-                    <th style="width: 23%" class="text-center">Actions</th>
+                    <th style="width: 35%">{% translate "Finding title" %}</th>
+                    <th style="width: 5%">{% translate "Severity" %}</th>
+                    <th style="width: 35%">{% translate "CVSS Score" %}</th>
+                    <th style="width: 23%" class="text-center">{% translate "Actions" %}</th>
                   </tr>
               </thead>
               <tbody>
@@ -79,11 +80,11 @@
                       </td>
 
                     <td align="center">
-                        <a href="/template/view/{{ template.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> View</button></a>
+                        <a href="/template/view/{{ template.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                          <a href="/template/edit/{{ template.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{template.pk}}"><i class="fas fa-trash"></i> Delete</button>
+                          <a href="/template/edit/{{ template.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{template.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                         {% endif %}
                         
                     </td>
@@ -95,17 +96,17 @@
                         <div class="modal-dialog">
                           <div class="modal-content bg-danger">
                             <div class="modal-header">
-                              <h4 class="modal-title">Are you sure?</h4>
+                              <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                               </button>
                             </div>
                             <div class="modal-body">
-                              <p>Delete Template&hellip;</p>
+                              <p>{% translate "Delete Template" %}&hellip;</p>
                             </div>
                             <div class="modal-footer justify-content-between">
-                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
-                              <button type="button" onclick="DeleteID({{template.pk}});" class="btn btn-outline-light">Delete Template</button>
+                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                              <button type="button" onclick="DeleteID({{template.pk}});" class="btn btn-outline-light">{% translate "Delete Template" %}</button>
 
                             </div>
                           </div>
@@ -146,7 +147,7 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/template/delete/",
+            url: "/en/template/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
@@ -160,6 +161,3 @@
 </script>
 
 {% endblock javascripts %}
-
-
-

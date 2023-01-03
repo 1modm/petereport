@@ -1,10 +1,10 @@
 {% extends 'home/template.html' %}
 
+{% load i18n %}
 {% load martortags %}
-
 {% load bleach_tags %}
 
-{% block title %} Product Details {% endblock title %}
+{% block title %} {% translate "Product Details" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -18,12 +18,12 @@
         <div class="row mb-2">
 
           <div class="col-sm-6">
-            <h1>Product {{ DB_product_query.name }}</h1>
+            <h1>{% translate "Product" %} {{ DB_product_query.name }}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
-              <li class="breadcrumb-item"><a href="/product/list/">Products</a></li>
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+              <li class="breadcrumb-item"><a href="/product/list/">{% translate "Products" %}</a></li>
               <li class="breadcrumb-item active">{{ DB_product_query.name | bleach }}</li>
             </ol>
           </div>
@@ -43,7 +43,7 @@
           <div class="small-box bg-info">
             <div class="inner">
               <h3>{{count_product_report}}</h3> 
-              <p>Report{{ count_product_report|pluralize:"s" }}</p>
+              <p>{% translate "Report" %}{{ count_product_report|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fas fa-file-code"></i>
@@ -57,7 +57,7 @@
             <div class="inner">
               <h3>{{product_findings}}</h3>
 
-              <p>Finding{{ product_findings|pluralize:"s" }}</p>
+              <p>{% translate "Finding" %}{{ product_findings|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fa fa-bug"></i>
@@ -71,7 +71,7 @@
             <div class="inner">
               <h3>{{count_product_findings_medium}}</h3>
 
-              <p>Medium Severity Finding{{ count_product_findings_medium|pluralize:"s" }}</p>
+              <p>{% translate "Medium Severity Finding" %}{{ count_product_findings_medium|pluralize:"es" }}</p>
             </div>
             <div class="icon">
               <i class="fa fa-exclamation-triangle"></i>
@@ -85,7 +85,7 @@
             <div class="inner">
               <h3>{{count_product_findings_critical_high}}</h3>
 
-              <p>Critical/High Severity Finding{{ count_product_findings_critical_high|pluralize:"s" }}</p>
+              <p>{% translate "Critical/High Severity Finding" %}{{ count_product_findings_critical_high|pluralize:"es" }}</p>
             </div>
             <div class="icon">
               <i class="fas fa-radiation-alt"></i>
@@ -102,7 +102,7 @@
             <div class="card card-outline card-primary">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <dt>Description</dt>
+                    <dt>{% translate "Description" %}</dt>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -124,7 +124,7 @@
       <div class="card card-outline card-primary">
         <div class="card-header">
           <h3 class="card-title">
-            <dt>Reports</dt>
+            <dt>{% translate "Reports" %}</dt>
           </h3>
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -136,11 +136,11 @@
           <table id="reportlist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                    <th style="width: 20%">ID</th>
-                    <th style="width: 35%">Report</th>
-                    <th style="width: 5%">Date</th>
-                    <th style="width: 15%">Findings</th>
-                    <th style="width: 25%" class="text-center">Actions</th>
+                    <th style="width: 20%">{% translate "ID" %}</th>
+                    <th style="width: 35%">{% translate "Report" %}</th>
+                    <th style="width: 5%">{% translate "Date" %}</th>
+                    <th style="width: 15%">{% translate "Findings" %}</th>
+                    <th style="width: 25%" class="text-center">{% translate "Actions" %}</th>
                   </tr>
               </thead>
               <tbody>
@@ -151,14 +151,14 @@
                     <td>{{ report.title }} </td>
                     <td>{{ report.creation_date | date:"d-m-Y" }} </td>
                     <td>
-                      <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> Finding{{ report.db_finding_set.count|pluralize:"s" }}
+                      <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
                     </td>
                     <td class="text-center">
-                        <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> View</button></a>
+                        <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
                         
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                          <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> Edit</button></a> 
-                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> Delete </button>
+                          <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
                     </td>
                   </tr>
@@ -168,18 +168,18 @@
                           <div class="modal-dialog">
                             <div class="modal-content bg-danger">
                               <div class="modal-header">
-                                <h4 class="modal-title">Are you sure?</h4>
+                                <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                   <span aria-hidden="true">&times;</span>
                                 </button>
                               </div>
                               <div class="modal-body">
-                                <p>Delete Report&hellip;</p>
+                                <p>{% translate "Delete Report" %}&hellip;</p>
                               </div>
                               <div class="modal-footer justify-content-between">
-                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
 
-                                <button type="button" onclick="DeleteID({{report.pk}});" class="btn btn-outline-light">Delete Report</button>
+                                <button type="button" onclick="DeleteID({{report.pk}});" class="btn btn-outline-light">{% translate "Delete Report" %}</button>
                               </div>
                             </div>
                           </div>
@@ -219,7 +219,7 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/report/delete/",
+            url: "/en/report/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
