@@ -33,6 +33,8 @@ class DB_Report(models.Model):
 	recommendation = MartorField()
 	creation_date = models.DateTimeField(auto_now_add=True)
 	report_date = models.DateTimeField(blank=False)
+	def __str__(self):
+		return self.title
 
 
 # ---------- Finding ------------
@@ -41,6 +43,8 @@ class DB_Finding(models.Model):
 	report = models.ForeignKey(DB_Report, on_delete=models.CASCADE)
 	finding_id = models.CharField(blank=True, max_length=200)
 	status = models.CharField(blank=True, max_length=200, default="Open")
+	created_at = models.DateTimeField(auto_now_add = True)
+	closed_at = models.DateTimeField(blank=True, null=True)
 	title = models.CharField(blank=True, max_length=200)
 	severity = models.CharField(blank=True, max_length=200)
 	cvss_base_score = models.CharField(blank=True, max_length=200)
@@ -51,6 +55,12 @@ class DB_Finding(models.Model):
 	recommendation = MartorField(blank=True)
 	references = MartorField(blank=True)
 	cwe = models.ForeignKey(DB_CWE, on_delete=models.CASCADE)
+	def __str__(self):
+		return self.title
+	def save(self, *args, **kwargs):
+		if self.status == "Closed":
+			self.closed_at = timezone.now()
+		super().save(*args, **kwargs)
 
 # ---------- Finding templates ------------
 
