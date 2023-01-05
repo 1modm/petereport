@@ -11,13 +11,25 @@ class DB_CWE(models.Model):
 	cwe_id = models.IntegerField(blank=False, unique=True)
 	cwe_name = models.CharField(max_length=255, blank=True)
 	cwe_description = models.TextField(blank=True)
-	
+	class Meta:
+		verbose_name_plural = "CWEs"
 # ---------- Product ------------
 
+class DB_Customer(models.Model):
+	name = models.CharField(max_length=255, blank=False)
+	contact_list = models.JSONField()
+	contact_sp_mail = models.EmailField(max_length=255, blank=True)
+	contact_dp_mail = models.EmailField(max_length=255, blank=True)
+	description = MartorField()
+	class Meta:
+		verbose_name_plural = "Customers"
+
 class DB_Product(models.Model):
+	customer = models.ForeignKey(DB_Customer, on_delete=models.CASCADE)
 	name = models.CharField(max_length=255, blank=False)
 	description = MartorField()
-
+	class Meta:
+		verbose_name_plural = "Products"
 # ---------- Report ------------
 
 class DB_Report(models.Model):
@@ -35,6 +47,8 @@ class DB_Report(models.Model):
 	report_date = models.DateTimeField(blank=False)
 	def __str__(self):
 		return self.title
+	class Meta:
+		verbose_name_plural = "Reports"
 
 
 # ---------- Finding ------------
@@ -61,6 +75,8 @@ class DB_Finding(models.Model):
 		if self.status == "Closed":
 			self.closed_at = timezone.now()
 		super().save(*args, **kwargs)
+	class Meta:
+		verbose_name_plural = "Findings"
 
 # ---------- Finding templates ------------
 

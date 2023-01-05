@@ -261,6 +261,102 @@ def user_delete(request):
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
+# ----------------------------------------------------------------------
+#                           Customers
+# ----------------------------------------------------------------------
+
+@login_required
+def customer_list(request):
+
+    DB_customer_query = DB_Customer.objects.order_by('pk').all()
+    report_number = {}
+
+    for customer_in_db in DB_customer_query:
+        count_product_report = DB_Report.objects.filter(customer=customer_in_db.id).count()
+        report_number[customer_in_db.id] = count_customer_report
+
+    return render(request, 'customer/customer_list.html', {'DB_customer_query': DB_customer_query, 'report_number': report_number})
+
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def customer_add(request):
+
+    if request.method == 'POST':
+        form = NewCustomerForm(request.POST)
+        if form.is_valid():
+            prod = form.save(commit=False)
+            prod.save()
+            return redirect('customer_list')
+    else:
+        form = NewCustomerForm()
+        form.fields['description'].initial = PETEREPORT_TEMPLATES['initial_text']
+
+    return render(request, 'customers/customer_add.html', {
+        'form': form
+    })
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def customer_edit(request,pk):
+
+    DB_customer_query = get_object_or_404(DB_Customer, pk=pk)
+
+    if request.method == 'POST':
+        form = NewCustomerForm(request.POST, instance=DB_customer_query)
+        if form.is_valid():
+            prod = form.save(commit=False)
+            prod.save()
+            return redirect('customer_list')
+    else:
+        form = NewCustomerForm(instance=DB_customer_query)
+
+    return render(request, 'customers/customer_add.html', {
+        'form': form
+    })
+
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def customer_delete(request):
+
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_Customer.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+
+
+
+@login_required
+def customer_view(request,pk):
+
+    DB_customer_query = get_object_or_404(DB_Customer, pk=pk)
+    DB_report_query = DB_Report.objects.filter(customer=DB_customer_query).order_by('creation_date').reverse()
+    count_customer_report = DB_report_query.count()
+    customer_findings = {}
+    count_customer_findings_total = 0
+    count_customer_findings_critical_high = 0
+    count_customer_findings_medium = 0
+
+    for report in DB_report_query:
+        DB_finding_query = DB_Finding.objects.filter(report=report.id)
+        count_customer_findings = DB_finding_query.count()
+        customer_findings[report.id] = count_customer_findings
+        count_customer_findings_total += count_customer_findings
+        for finding in DB_finding_query:
+            if finding.severity == 'High' or finding.severity == 'Critical':
+                count_customer_findings_critical_high += 1
+            elif finding.severity == 'Medium':
+                count_customer_findings_medium += 1
+
+    return render(request, 'customers/customer_view.html', {'pk': pk, 'DB_customer_query': DB_customer_query, 'DB_report_query': DB_report_query, 'count_customer_report': count_customer_report, 'customer_findings': count_customer_findings_total, 'count_customer_findings_critical_high': count_customer_findings_critical_high, 'count_customer_findings_medium': count_customer_findings_medium})
 
 # ----------------------------------------------------------------------
 #                           Products 
