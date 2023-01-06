@@ -10,15 +10,22 @@ from multi_email_field.forms import MultiEmailField
 
 import datetime
 
+class ProductModelChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "%s" % obj.name
+
 class NewCustomerForm(forms.ModelForm):
+    product_placeholder = _('(Select a product)')
+
+    product = ProductModelChoiceField(queryset=DB_Product.objects.all(), empty_label=product_placeholder, widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = DB_Customer
-        fields = ('name', 'contact_list', 'contact_sp_mail', 'contact_dp_mail', 'description')
+        fields = ('product', 'name', 'contact_list', 'contact_sp_mail', 'contact_dp_mail', 'description')
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Customer Name')}),
-            'contact_list': Textarea(attrs={'class': 'form-control', 'type':'textarea', 'placeholder': 'Enter multiple email line by line'}),
+            'contact_list': Textarea(attrs={'class': 'form-control', 'type':'textarea', 'placeholder': _('Enter multiple email line by line')}),
             'contact_sp_mail': TextInput(attrs={'class': 'form-control', 'type':'email', 'aria-describedby':'emailHelp', 'placeholder': 'Enter Email'}),
             'contact_dp_mail': TextInput(attrs={'class': 'form-control', 'type':'email', 'aria-describedby':'emailHelp', 'placeholder': 'Enter Email'})
         }
@@ -49,9 +56,7 @@ class NewSettingsForm(forms.ModelForm):
             # 'company_picture': FileInput(attrs={'class': 'form-control', 'type': "file", 'required': "required", 'placeholder': _('Company picture')}),
         }
 
-class ProductModelChoiceField(ModelChoiceField):
-    def label_from_instance(self, obj):
-        return "%s" % obj.name
+
 
 
 class NewReportForm(forms.ModelForm):

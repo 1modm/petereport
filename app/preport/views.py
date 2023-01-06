@@ -319,6 +319,7 @@ def customer_add(request):
     else:
         form = NewCustomerForm()
         form.fields['description'].initial = PETEREPORT_TEMPLATES['initial_text']
+        form.fields['contact_list'].initial = ""
 
     return render(request, 'customers/customer_add.html', {
         'form': form
@@ -338,7 +339,11 @@ def customer_edit(request,pk):
             prod.save()
             return redirect('customer_list')
     else:
+        DB_customer_query.contact_list = "\n".join(DB_customer_query.contact_list)
         form = NewCustomerForm(instance=DB_customer_query)
+
+        # import ipdb; ipdb.set_trace()
+        form.fields['contact_list'].inital = ""
 
     return render(request, 'customers/customer_add.html', {
         'form': form
