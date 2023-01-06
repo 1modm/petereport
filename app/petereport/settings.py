@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'martor',
     'django_bleach',
-    'preport'
+    'preport',
+    'multi_email_field',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [

@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block title %} {% translate "Customers" %} {% endblock title %}
+{% block title %} {% translate "Settings" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -15,13 +15,13 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>{% translate "Customer" %}</h1>
+        <h1>{% translate "Settings" %}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-          <li class="breadcrumb-item"><a href="/customer/list/">{% translate "Customers" %}</a></li>
-          <li class="breadcrumb-item active">{% translate "Add or Edit customer" %}</li>
+          <li class="breadcrumb-item"><a href="/settings">{% translate "Settings" %}</a></li>
+          <li class="breadcrumb-item active">{% translate "Edit settings" %}</li>
         </ol>
       </div>
     </div>
@@ -36,43 +36,36 @@
 
             <div class="card card-outline card-primary">
               <div class="card-header">
-                <h3 class="card-title">{% translate "Customer details" %}</h3>
+                <h3 class="card-title">{% translate "Settings" %}</h3>
               </div>
               
               <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card-body">
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Customer Name" %}</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Company Name" %}</label>
                       <div class="col-md-10 col-sm-10 col-xs-12">
-                        {{ form.name }}
+                        {{ form.company_name }}
                       </div>
                   </div>
-                    <div class="form-group row">
-                      <label class="col-sm-2 col-form-label">Email contact list</label>
-                      <div class="col-md-10 col-sm-10 col-xs-12">
-                        {{ form.contact_list }}
-                      </div>
-                    </div>
-                    <div class="form-group row">
-                      <label class="col-sm-2 col-form-label">Security partner email</label>
-                      <div class="col-md-10 col-sm-10 col-xs-12">
-                        {{ form.contact_sp_mail }}
-                      </div>
-                    </div>
-                    <div class="form-group row">
-                      <label class="col-sm-2 col-form-label">Digital partner email</label>
-                      <div class="col-md-10 col-sm-10 col-xs-12">
-                        {{ form.contact_dp_mail }}
-                      </div>
-                    </div>
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Customer Description" %}</label>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.description }}
-                    </div>
+                    <label class="col-sm-2 col-form-label">{% translate "Company website" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.company_website }}
+                      </div>
                   </div>
-   
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Company address" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.company_address }}
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Company picture" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.company_picture }}
+                      </div>
+                  </div>
                 </div>
 
                 {% if form.errors %}
@@ -92,7 +85,7 @@
                 {% endif %}
                 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">{% translate "Save Customer" %}</button>
+                  <button type="submit" class="btn btn-primary">{% translate "Save" %}</button>
                 </div>
               </form>
             </div>

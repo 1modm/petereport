@@ -66,6 +66,7 @@
                         
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
                           <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                         <a href="/report/duplicate/{{ report.pk }}"><button type="button" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> {% translate "Duplicate" %}</button></a>
                           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
                     </td>

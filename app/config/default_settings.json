@@ -1,0 +1,10 @@
+[
+    {
+        "model": "preport.db_settings",
+        "pk": 1,
+        "fields": {
+        "first_name": "John",
+        "last_name": "Lennon"
+        }
+    }
+]

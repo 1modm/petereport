@@ -13,6 +13,8 @@ urlpatterns = [
     path('configuration/user/add', views.user_add, name='user_add'),
     path('configuration/user/edit/<int:pk>', views.user_edit, name='user_edit'),
     path('configuration/user/delete/', views.user_delete, name='user_delete'),
+    # Settings
+    path('configuration/settings/', views.settings, name='settings'),
     # Customers
     path('customer/list/', views.customer_list, name='customer_list'),
     path('customer/add/', views.customer_add, name='customer_add'),

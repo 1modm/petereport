@@ -16,5 +16,10 @@ cairosvg				= "==2.5.2"
 django-bleach			= "==3.0.0"
 bleach					= "==5.0.1"
 Markdown				= "==3.3.4"
+django-multi-email-field = "*"
 
 [dev-packages]
+django-extensions = "*"
+werkzeug = "*"
+ipdb = "*"
+pillow = "*"

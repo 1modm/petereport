@@ -2,12 +2,27 @@ from django import forms
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
-from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, PasswordInput, EmailField, BooleanField
-from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree, DB_Custom_field
+from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, PasswordInput, EmailField, BooleanField, FileInput
+from .models import DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree, DB_Custom_field
 from martor.fields import MartorFormField
 from django.utils.translation import gettext_lazy as _
+from multi_email_field.forms import MultiEmailField
 
 import datetime
+
+class NewCustomerForm(forms.ModelForm):
+
+    class Meta:
+        model = DB_Customer
+        fields = ('name', 'contact_list', 'contact_sp_mail', 'contact_dp_mail', 'description')
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Customer Name')}),
+            'contact_list': Textarea(attrs={'class': 'form-control', 'type':'textarea', 'placeholder': 'Enter multiple email line by line'}),
+            'contact_sp_mail': TextInput(attrs={'class': 'form-control', 'type':'email', 'aria-describedby':'emailHelp', 'placeholder': 'Enter Email'}),
+            'contact_dp_mail': TextInput(attrs={'class': 'form-control', 'type':'email', 'aria-describedby':'emailHelp', 'placeholder': 'Enter Email'})
+        }
+
 
 class NewProductForm(forms.ModelForm):
 
@@ -17,6 +32,21 @@ class NewProductForm(forms.ModelForm):
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Product Name')}),
+        }
+
+
+class NewSettingsForm(forms.ModelForm):
+
+    class Meta:
+        model = DB_Settings
+        fields = ('company_name', 'company_website', 'company_address',
+                  'company_picture')
+
+        widgets = {
+            'company_name': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Company name')}),
+            'company_website': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Company website')}),
+            'company_address': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Company address')}),
+            # 'company_picture': FileInput(attrs={'class': 'form-control', 'type': "file", 'required': "required", 'placeholder': _('Company picture')}),
         }
 
 class ProductModelChoiceField(ModelChoiceField):

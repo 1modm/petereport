@@ -3,7 +3,7 @@
 *.bak
 TODO
 .DS_Store
-
+*.kate-swp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

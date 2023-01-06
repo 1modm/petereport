@@ -1,24 +1,32 @@
 #!/usr/bin/env python3
 
-import json
 import os
 import django
 import shutil
-from termcolor import colored #pip3 install termcolor
+
+from termcolor import colored  # pip3 install termcolor
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "petereport.settings")
 django.setup()
 
 from petereport.settings import MEDIA_ROOT, REPORTS_MEDIA_ROOT
-from preport.models import DB_Product, DB_Report, DB_Finding, DB_Appendix, DB_Finding_Template, DB_Appendix, DB_CWE
+from preport.models import (DB_Product,
+                            DB_Report,
+                            DB_Finding,
+                            DB_Finding_Template,
+                            DB_Appendix,
+                            DB_CWE
+                            )
+
 
 def remove_folder(path):
     # check if folder exists
     if os.path.exists(path):
-         # remove if exists
-         shutil.rmtree(path)
+        # remove if exists
+        shutil.rmtree(path)
     else:
         print(colored("[-] Error removing files", "red"))
+
 
 def create_media_folders(path):
 

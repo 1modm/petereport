@@ -15,10 +15,10 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.translation import gettext_lazy as _
 
 # Forms
-from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm
+from .forms import NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm
 
 # Model
-from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_Custom_field, DB_AttackFlow
+from .models import DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_Custom_field, DB_AttackFlow
 
 # Decorators
 from .decorators import allowed_users
@@ -262,6 +262,31 @@ def user_delete(request):
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 # ----------------------------------------------------------------------
+#                           Settings
+# ----------------------------------------------------------------------
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def settings(request):
+    DB_settings_query = DB_Settings.objects.get_or_create()[0]
+
+    if request.method == 'POST':
+        form = NewSettingsForm(request.POST, request.FILES, instance=DB_settings_query)
+        #import ipdb; ipdb.set_trace()
+        if form.is_valid():
+
+            prod = form.save(commit=False)
+            prod.save()
+            return redirect('settings')
+    else:
+        form = NewSettingsForm(instance=DB_settings_query)
+
+    return render(request, 'settings/settings.html', {
+        'form': form
+    })
+
+# ----------------------------------------------------------------------
 #                           Customers
 # ----------------------------------------------------------------------
 
@@ -269,13 +294,15 @@ def user_delete(request):
 def customer_list(request):
 
     DB_customer_query = DB_Customer.objects.order_by('pk').all()
-    report_number = {}
 
-    for customer_in_db in DB_customer_query:
-        count_product_report = DB_Report.objects.filter(customer=customer_in_db.id).count()
-        report_number[customer_in_db.id] = count_customer_report
+    ## Apparently useless
+    # report_number = {}
+    #
+    # for customer_in_db in DB_customer_query:
+    #     count_product_report = DB_Report.objects.filter(customer=customer_in_db.id).count()
+    #     report_number[customer_in_db.id] = count_customer_report
 
-    return render(request, 'customer/customer_list.html', {'DB_customer_query': DB_customer_query, 'report_number': report_number})
+    return render(request, 'customers/customer_list.html', {'DB_customer_query': DB_customer_query})
 
 
 
