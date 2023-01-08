@@ -2,7 +2,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
