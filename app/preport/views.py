@@ -687,7 +687,7 @@ def reportdownloadhtml(request,pk):
     md_website = PETEREPORT_MARKDOWN['website']
 
     DB_finding_query.count()
-    counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
+    counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = 0
     
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
@@ -824,7 +824,7 @@ def reportdownloadpdf(request,pk):
     md_author = PETEREPORT_MARKDOWN['author']
     md_subject = PETEREPORT_MARKDOWN['subject']
     md_website = PETEREPORT_MARKDOWN['website']
-    counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
+    counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = 0
     title_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_title_background']}"
     pages_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_pages_background']}"
 
@@ -977,7 +977,7 @@ def reportdownloadjupyter(request,pk):
 
     # INIT
     template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = ""
-    counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
+    counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = 0
     md_author = PETEREPORT_MARKDOWN['author']
     md_subject = PETEREPORT_MARKDOWN['subject']
     md_website = PETEREPORT_MARKDOWN['website']
