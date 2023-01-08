@@ -831,7 +831,7 @@ def reportdownloadpdf(request,pk):
     # COLORS
 
     # INIT
-    template_findings = template_findings_summary = template_appendix = pdf_finding_summary = ''
+    template_findings = template_appendix = pdf_finding_summary = ''
     md_author = PETEREPORT_MARKDOWN['author']
     md_subject = PETEREPORT_MARKDOWN['subject']
     md_website = PETEREPORT_MARKDOWN['website']
