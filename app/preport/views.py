@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_protect
 from django.utils.translation import gettext_lazy as _
-
+import django.db
 # Forms
 from .forms import NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm
 
@@ -545,6 +545,27 @@ def report_delete(request):
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def report_duplicate(request):
+
+    if request.method == 'POST':
+        duplicate_id = request.POST['duplicate_id']
+        report = DB_Report.objects.get(pk=duplicate_id)
+        report.pk = None
+        report._state.adding = True
+
+        report.report_id = report.report_id + "-copy"
+
+        try:
+            report.save()
+        except django.db.utils.IntegrityError:
+            report.report_id = DB_Report.objects.filter(report_id__contains = report.report_id, report_id__endswith = "-copy").latest("creation_date").report_id
+            report.report_id = report.report_id + "-copy"
+        report.save()
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 @login_required

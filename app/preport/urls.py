@@ -33,6 +33,7 @@ urlpatterns = [
     path('report/view/<int:pk>', views.report_view, name='report_view'),
     path('report/edit/<int:pk>', views.report_edit, name='report_edit'),
     path('report/delete/', views.report_delete, name='report_delete'),
+    path('report/duplicate/', views.report_duplicate, name='report_duplicate'),
     path('report/uploadsummaryfindings/<int:pk>', views.uploadsummaryfindings, name='uploadsummaryfindings'), # prepend a language code in ajax
     path('report/download/markdown/<int:pk>', views.reportdownloadmarkdown, name='reportdownloadmarkdown'),
     path('report/download/html/<int:pk>', views.reportdownloadhtml, name='reportdownloadhtml'),

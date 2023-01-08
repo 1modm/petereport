@@ -66,14 +66,14 @@
                         
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
                           <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
-                         <a href="/report/duplicate/{{ report.pk }}"><button type="button" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> {% translate "Duplicate" %}</button></a>
-                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
+                          <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Clone" %} </button>
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
                     </td>
                   </tr>
                   
 
-                        <div class="modal modal-danger fade mm-modal-{{report.pk}}" id="modal-danger">
+                        <div class="modal modal-danger fade mm-modal-del-{{report.pk}}" id="modal-danger">
                           <div class="modal-dialog">
                             <div class="modal-content bg-danger">
                               <div class="modal-header">
@@ -94,6 +94,27 @@
                           </div>
                         </div>
 
+
+                        <div class="modal modal-warning fade mm-modal-clone-{{report.pk}}" id="modal-warning">
+                          <div class="modal-dialog">
+                            <div class="modal-content bg-warning">
+                              <div class="modal-header">
+                                <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <p>{% translate "Clone Report" %}&hellip;</p>
+                              </div>
+                              <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                <button type="button" onclick="DuplicateID({{report.pk}});" class="btn btn-outline-light">{% translate "Clone Report" %}</button>
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                 {% endfor %}
 
               </tbody>
@@ -137,6 +158,21 @@
 
             success : function(json) {
               document.location.href = "/report/list/"; 
+            }
+        })
+  }
+
+  function DuplicateID(dup_id) {
+        $.ajax({
+            type: 'POST',
+            url: "/en/report/duplicate/",
+            headers:{
+              "X-CSRFToken": '{{ csrf_token }}'
+            },
+            data : { 'duplicate_id': dup_id},
+
+            success : function(json) {
+              document.location.href = "/report/list/";
             }
         })
   }
