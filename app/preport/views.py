@@ -1308,7 +1308,7 @@ def defectdojo_products(request,pk):
 
     try:
         r = requests.get(DefectDojoURLProducts, headers = headersapi, verify=False)
-    except:
+    except requests.exceptions.HTTPError:
         return HttpResponseNotFound(f"Not found. Response error from DefectDojo {DefectDojoURL}")
 
     if not (r.status_code == 200 or r.status_code == 201):
