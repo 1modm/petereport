@@ -2,16 +2,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound, HttpResponseServerError
-from django.utils.html import strip_tags
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
-from django.views.decorators.csrf import csrf_protect
 from django.utils.translation import gettext_lazy as _
 
 # Forms
@@ -36,14 +32,12 @@ import io
 import os
 from collections import Counter
 import pypandoc
-import cairosvg
-from PIL import Image
 
 # Martor
 from petereport.settings import MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, SERVER_CONF
 
 # PeTeReport config
-from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, PETEREPORT_CONFIG, DEFECTDOJO_CONFIG, DJANGO_CONFIG
+from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG
 
 
 # ----------------------------------------------------------------------
@@ -99,7 +93,7 @@ def markdown_uploader(request):
                 img_uuid = "{0}-{1}".format(uuid.uuid4().hex[:10], image.name.replace(' ', '-'))
                 tmp_file = os.path.join(MARTOR_UPLOAD_PATH, img_uuid)
                 def_path = default_storage.save(tmp_file, ContentFile(image.read()))
-                img_url = os.path.join(MEDIA_URL, def_path)
+                os.path.join(MEDIA_URL, def_path)
                 # Modified to include server host and port
                 MEDIA_URL_COMPLETE = PETEREPORT_MARKDOWN['media_host'] + MEDIA_URL
                 img_url_complete = os.path.join(MEDIA_URL_COMPLETE, def_path)
@@ -203,8 +197,8 @@ def user_add(request):
         if form.is_valid():
             user = form.save(commit=False)
             
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
+            form.cleaned_data.get('username')
+            form.cleaned_data.get('password1')
             user_group = form.cleaned_data.get('group')
             superadmin = form.cleaned_data.get('superadmin')
             user.is_staff = superadmin
@@ -231,8 +225,8 @@ def user_edit(request,pk):
         if form.is_valid():
             user = form.save(commit=False)
             
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
+            form.cleaned_data.get('username')
+            form.cleaned_data.get('password1')
             user_group = form.cleaned_data.get('group')
             superadmin = form.cleaned_data.get('superadmin')
             user.is_staff = superadmin
@@ -380,7 +374,7 @@ def report_list(request):
 def report_add(request):
 
     today = datetime.date.today().strftime('%Y-%m-%d')
-    nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_id_format = PETEREPORT_TEMPLATES['report_id_format'] + str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))
 
     if request.method == 'POST':
@@ -572,8 +566,8 @@ def reportdownloadmarkdown(request,pk):
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
     # Datetime
-    today = datetime.date.today().strftime('%Y-%m-%d')
-    nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    datetime.date.today().strftime('%Y-%m-%d')
+    datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
     # MD filename
@@ -672,8 +666,8 @@ def reportdownloadhtml(request,pk):
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
     # Datetime
-    today = datetime.date.today().strftime('%Y-%m-%d')
-    nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    datetime.date.today().strftime('%Y-%m-%d')
+    datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
     # HTML filename
@@ -685,7 +679,6 @@ def reportdownloadhtml(request,pk):
     WARNING = 'FC7F03'
     LOW = '05B04F'
     INFO = '002060'
-    DEBUG = '45A7F7'
 
     # INIT
     template_findings = template_appendix = md_finding_summary = ''
@@ -693,16 +686,16 @@ def reportdownloadhtml(request,pk):
     md_subject = PETEREPORT_MARKDOWN['subject']
     md_website = PETEREPORT_MARKDOWN['website']
 
-    count_finding_query = DB_finding_query.count()
+    DB_finding_query.count()
     counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
     
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
-        report_executive_summary_image = DB_report_query.executive_summary_image
-        report_executive_categories_image = DB_report_query.categories_summary_image
+        DB_report_query.executive_summary_image
+        DB_report_query.categories_summary_image
     elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-        report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-        report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
+        f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
+        f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
 
 
     # Summary table
@@ -725,23 +718,18 @@ def reportdownloadhtml(request,pk):
             template_appendix_in_finding = template_attackflow_in_finding = None
 
             if finding.severity == 'Critical':
-                color_cell_bg = CRITICAL
                 color_text_severity = CRITICAL
                 counter_finding_critical += 1 
             elif finding.severity == 'High':
-                color_cell_bg = HIGH
                 color_text_severity = HIGH
                 counter_finding_high += 1 
             elif finding.severity == 'Medium':
-                color_cell_bg = WARNING
                 color_text_severity = WARNING
                 counter_finding_medium += 1 
             elif finding.severity == 'Low':
-                color_cell_bg = LOW
                 color_text_severity = LOW
                 counter_finding_low += 1 
             else:
-                color_cell_bg = INFO
                 color_text_severity = INFO
                 counter_finding_info += 1 
 
@@ -802,7 +790,7 @@ def reportdownloadhtml(request,pk):
 
     html_file_output = os.path.join(REPORTS_MEDIA_ROOT, pathfile)
 
-    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained'])
+    pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained'])
 
     if os.path.exists(html_file_output):
             with open(html_file_output, 'rb') as fh:
@@ -822,25 +810,17 @@ def reportdownloadpdf(request,pk):
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
     # Datetime
-    today = datetime.date.today().strftime('%Y-%m-%d')
-    nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    datetime.date.today().strftime('%Y-%m-%d')
+    datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
     # PDF filename
     name_file = PETEREPORT_TEMPLATES['report_pdf_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.pdf'
 
     # COLORS
-    CRITICAL = 'CC0000'
-    HIGH = 'FF0000'
-    WARNING = 'FFB000'
-    LOW = '05B04F'
-    INFO = '002060'
-    DEBUG = '45A7F7'
 
     # INIT
-    vulnerabilities = []
     template_findings = template_findings_summary = template_appendix = pdf_finding_summary = ''
-    template_appendix_check = False
     md_author = PETEREPORT_MARKDOWN['author']
     md_subject = PETEREPORT_MARKDOWN['subject']
     md_website = PETEREPORT_MARKDOWN['website']
@@ -871,36 +851,26 @@ def reportdownloadpdf(request,pk):
             template_appendix_in_finding = template_attackflow_in_finding = ''
 
             if finding.severity == 'Critical':
-                color_cell_bg = CRITICAL
-                color_text_severity = CRITICAL
                 counter_finding_critical += 1
                 icon_finding = 'important'
                 severity_color = 'criticalcolor'
                 severity_box = 'criticalbox'
             elif finding.severity == 'High':
-                color_cell_bg = HIGH
-                color_text_severity = HIGH
                 counter_finding_high += 1
                 icon_finding = 'highnote'
                 severity_color = 'highcolor'
                 severity_box = 'highbox'
             elif finding.severity == 'Medium':
-                color_cell_bg = WARNING
-                color_text_severity = WARNING
                 counter_finding_medium += 1
                 icon_finding = 'mediumnote'
                 severity_color = 'mediumcolor'
                 severity_box = 'mediumbox'
             elif finding.severity == 'Low':
-                color_cell_bg = LOW
-                color_text_severity = LOW
                 counter_finding_low += 1
                 icon_finding = 'lownote'
                 severity_color = 'lowcolor'
                 severity_box = 'lowbox'
             else:
-                color_cell_bg = INFO
-                color_text_severity = INFO
                 counter_finding_info += 1
                 icon_finding = 'debugnote'
                 severity_color = 'debugcolor'
@@ -975,7 +945,7 @@ def reportdownloadpdf(request,pk):
 
     PETEREPORT_LATEX_FILE = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['pdf_latex_template'])
 
-    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings'])
+    pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings'])
     #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
 
     if os.path.exists(pdf_file_output):
@@ -998,8 +968,8 @@ def reportdownloadjupyter(request,pk):
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
     # Datetime
-    today = datetime.date.today().strftime('%Y-%m-%d')
-    nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    datetime.date.today().strftime('%Y-%m-%d')
+    datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
     # MD filename
@@ -1034,7 +1004,6 @@ def reportdownloadjupyter(request,pk):
             pass
         else:
             counter_finding += 1
-            template_appendix_in_finding = ''
 
             if finding.severity == 'Critical':
                 counter_finding_critical += 1 
@@ -1379,7 +1348,7 @@ def defectdojo_import(request,pk,ddpk):
 
         jsondata = json.loads(r.text)
 
-        finding_id = jsondata['id']
+        jsondata['id']
         finding_title = jsondata['title'] or ""
         finding_cvssv3 = jsondata['cvssv3'] or ""
         finding_cvssv3_score = jsondata['cvssv3_score'] or 0
@@ -1432,7 +1401,7 @@ def appendix_add(request,pk):
         if form.is_valid():
             appendix = form.save(commit=False)            
             finding_pk = form['finding'].value()
-            DB_finding_m2m = get_object_or_404(DB_Finding, pk=finding_pk)
+            get_object_or_404(DB_Finding, pk=finding_pk)
             appendix.save()
             appendix.finding.add(finding_pk)
 
@@ -1726,7 +1695,7 @@ def cwe_add(request):
     else:
         form = NewCWEForm()
         latest_id = DB_CWE.objects.latest('cwe_id').cwe_id
-        next_id = latest_id+1
+        latest_id+1
         #form.fields['cwe_id'].initial = next_id
         #form.fields['cwe_description'].initial = PETEREPORT_TEMPLATES['initial_text']
 
@@ -1815,7 +1784,7 @@ def attackflow_edit_flow(request,pk):
     DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
 
     report = DB_finding_query.report
-    DB_report_query = get_object_or_404(DB_Report, pk=report.pk)
+    get_object_or_404(DB_Report, pk=report.pk)
 
     return render(request, 'attackflow/attackflow_edit.html', {
         'report_pk': report.pk, 'attackflow_pk': pk, 'finding_pk': finding_pk, 'attackflow_afb': attackflow_afb
@@ -1826,15 +1795,15 @@ def attackflow_edit_flow(request,pk):
 @allowed_users(allowed_roles=['administrator'])
 def attackflow_add_afb(request,pk,finding_pk):
     
-    DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
+    get_object_or_404(DB_Report, pk=pk)
+    get_object_or_404(DB_Finding, pk=finding_pk)
 
     if request.method == 'POST':
 
         # data received from mitre attack flow
         data = json.loads(request.body)
         title_file = data['title']
-        extension = data['extension']
+        data['extension']
         afb_content = data['afb_content']
         afb_image = data['afb_image']
 
@@ -1860,7 +1829,7 @@ def attackflow_edit_afb(request,pk):
         # data received from mitre attack flow
         data = json.loads(request.body)
         title_file = data['title']
-        extension = data['extension']
+        data['extension']
         afb_content = data['afb_content']
         afb_image = data['afb_image']
 

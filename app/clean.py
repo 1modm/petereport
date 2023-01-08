@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import json
 import os
 import django
 import shutil
@@ -10,7 +9,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "petereport.settings")
 django.setup()
 
 from petereport.settings import MEDIA_ROOT, REPORTS_MEDIA_ROOT
-from preport.models import DB_Product, DB_Report, DB_Finding, DB_Appendix, DB_Finding_Template, DB_Appendix, DB_CWE
+from preport.models import DB_Product, DB_Report, DB_Finding, DB_Finding_Template, DB_Appendix, DB_CWE
 
 def remove_folder(path):
     # check if folder exists
