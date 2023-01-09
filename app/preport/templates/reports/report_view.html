@@ -40,12 +40,27 @@
 
             </div>
 
-            <div class="col-md-7 text-right">
-              <button type="button" onclick="SaveSummaryImage('Markdown');" class="btn btn-info"><i class="fa fa-download"></i> {% translate "Markdown" %}</button>
-              <button type="button" onclick="SaveSummaryImage('PDF');" class="btn btn-warning"><i class="fa fa-download"></i> {% translate "PDF" %}</button>
-              <a href="/report/download/html/{{ DB_report_query.pk }}"><button type="button" class="btn btn-primary"><i class="fa fa-download"></i> {% translate "HTML" %}</button></a>
-              <a href="/finding/csv/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-download"></i> {% translate "CSV" %}</button></a>
-              <a href="/report/download/jupyter/{{ DB_report_query.pk }}"><button type="button" class="btn btn-secondary"><i class="fa fa-download"></i> {% translate "Jupyter" %}</button></a>
+            <div class="input-group col-md-7 text-right">
+
+                <div class="input-group-prepend" >
+                  <label class="input-group-text" for="inputGroupSelect01">Template</label>
+                </div>
+                <select style="margin-right: 2px" class="custom-select" id="inputGroupSelect01">
+                  <option selected>Choose...</option>
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                  <option value="3">Three</option>
+                </select>
+
+
+              <button style="margin-right: 2px" type="button" onclick="SaveSummaryImage('Markdown');" class="btn btn-info"><i class="fa fa-download"></i> {% translate "Markdown" %}</button>
+
+
+
+              <button style="margin-right: 2px" type="button" onclick="SaveSummaryImage('PDF');" class="btn btn-warning"><i class="fa fa-download"></i> {% translate "PDF" %}</button>
+              <a href="/report/download/html/{{ DB_report_query.pk }}"><button style="margin-right: 2px" type="button" class="btn btn-primary"><i class="fa fa-download"></i> {% translate "HTML" %}</button></a>
+              <a href="/finding/csv/{{ DB_report_query.pk }}"><button style="margin-right: 2px" type="button" class="btn btn-success"><i class="fa fa-download"></i> {% translate "CSV" %}</button></a>
+              <a href="/report/download/jupyter/{{ DB_report_query.pk }}"><button style="margin-right: 2px" type="button" class="btn btn-secondary"><i class="fa fa-download"></i> {% translate "Jupyter" %}</button></a>
             </div>
         </div>
 

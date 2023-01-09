@@ -26,6 +26,8 @@
               <li class="breadcrumb-item"><a href="/customer/list/">{% translate "Customers" %}</a></li>
               <li class="breadcrumb-item active">{{ DB_customer_query.name | bleach }}</li>
             </ol>
+          </div><div class="row">
+
           </div>
         </div>
       </div>
@@ -42,8 +44,8 @@
 
           <div class="small-box bg-info">
             <div class="inner">
-              <h3>{{count_customer_report}}</h3>
-              <p>{% translate "Report" %}{{ count_customer_report|pluralize:"s" }}</p>
+              <h3>{{count_customer_product}}</h3>
+              <p>{% translate "Product" %}{{ count_customer_product|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fas fa-file-code"></i>
@@ -55,9 +57,9 @@
 
           <div class="small-box bg-green">
             <div class="inner">
-              <h3>{{customer_findings}}</h3>
+              <h3>{{count_customer_report}}</h3>
 
-              <p>{% translate "Finding" %}{{ customer_findings|pluralize:"s" }}</p>
+              <p>{% translate "Report" %}{{ count_customer_report|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fa fa-bug"></i>
@@ -69,9 +71,9 @@
 
           <div class="small-box bg-yellow">
             <div class="inner">
-              <h3>{{count_customer_findings_medium}}</h3>
+              <h3>{{count_customer_findings_total}}</h3>
 
-              <p>{% translate "Medium Severity Finding" %}{{ count_customer_findings_medium|pluralize:"es" }}</p>
+              <p>{% translate "Finding" %}{{ customer_findings|pluralize:"s" }}</p>
             </div>
             <div class="icon">
               <i class="fa fa-exclamation-triangle"></i>
@@ -119,7 +121,53 @@
         </div>
       </div>
 
+      <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <dt>{% translate "Contact list" %}</dt>
+                  </h3>
+                </div>
+                <ul class="list-group">
+                {% for mail in DB_customer_query.contact_list %}
+                  <li class="list-group-item">{{ mail }}</li>
 
+                {% endfor %}
+                </ul>
+              </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <dt>{% translate "Security partner" %}</dt>
+                  </h3>
+                </div>
+                <ul class="list-group">
+                  <li class="list-group-item">{{ DB_customer_query.contact_sp_mail }}</li>
+                </ul>
+              </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <dt>{% translate "Digital partner" %}</dt>
+                  </h3>
+                </div>
+                <ul class="list-group">
+                  <li class="list-group-item">{{ DB_customer_query.contact_dp_mail }}</li>
+                </ul>
+              </div>
+        </div>
+      </div>
 
       <div class="card card-outline card-primary">
         <div class="card-header">

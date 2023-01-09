@@ -2,7 +2,7 @@ from django import forms
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
-from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, PasswordInput, EmailField, BooleanField, FileInput
+from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, PasswordInput, EmailField, BooleanField, FileInput, ModelMultipleChoiceField
 from .models import DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree, DB_Custom_field
 from martor.fields import MartorFormField
 from django.utils.translation import gettext_lazy as _
@@ -10,18 +10,15 @@ from multi_email_field.forms import MultiEmailField
 
 import datetime
 
-class ProductModelChoiceField(ModelChoiceField):
+class CustomModelChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
         return "%s" % obj.name
 
 class NewCustomerForm(forms.ModelForm):
-    product_placeholder = _('(Select a product)')
-
-    product = ProductModelChoiceField(queryset=DB_Product.objects.all(), empty_label=product_placeholder, widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = DB_Customer
-        fields = ('product', 'name', 'contact_list', 'contact_sp_mail', 'contact_dp_mail', 'description')
+        fields = ('name', 'contact_list', 'contact_sp_mail', 'contact_dp_mail', 'description')
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Customer Name')}),
@@ -32,10 +29,16 @@ class NewCustomerForm(forms.ModelForm):
 
 
 class NewProductForm(forms.ModelForm):
+    customer_placeholder = _('(Select a customer)')
 
+    customer = CustomModelChoiceField(queryset=DB_Customer.objects.all(),
+                                      empty_label=customer_placeholder,
+                                      widget=forms.Select(
+        attrs={'class': 'form-control'}
+    ))
     class Meta:
         model = DB_Product
-        fields = ('name', 'description')
+        fields = ('name', 'description', 'customer')
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Product Name')}),
@@ -63,7 +66,7 @@ class NewReportForm(forms.ModelForm):
 
     product_placeholder = _('(Select a product)')
 
-    product = ProductModelChoiceField(queryset=DB_Product.objects.all(), empty_label=product_placeholder, widget=forms.Select(attrs={'class': 'form-control'}))
+    product = CustomModelChoiceField(queryset=DB_Product.objects.all(), empty_label=product_placeholder, widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         today = datetime.date.today().strftime('%Y-%m-%d')

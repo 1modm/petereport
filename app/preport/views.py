@@ -125,6 +125,7 @@ def markdown_uploader(request):
 @login_required
 def index(request):
 
+    company_name = DB_Settings.objects.get().company_name
     DB_product_query = DB_Product.objects.order_by('name')
 
     report_number = {}
@@ -177,7 +178,7 @@ def index(request):
     # TOP 10 findings
     DB_finding_query = DB_finding_query[:10] 
 
-    return render(request, 'home/index.html', {'total_reports': total_reports, 'total_products': total_products, 'count_product_findings_total': count_product_findings_total, 'count_product_findings_critical_high': count_product_findings_critical_high, 'count_product_findings_medium': count_product_findings_medium, 'DB_finding_query':DB_finding_query, 'cwe_categories': cwe_categories})
+    return render(request, 'home/index.html', {'total_reports': total_reports, 'total_products': total_products, 'count_product_findings_total': count_product_findings_total, 'count_product_findings_critical_high': count_product_findings_critical_high, 'count_product_findings_medium': count_product_findings_medium, 'DB_finding_query':DB_finding_query, 'cwe_categories': cwe_categories, 'company_name': company_name})
 
 
 # ----------------------------------------------------------------------
@@ -309,9 +310,10 @@ def customer_list(request):
 @login_required
 @allowed_users(allowed_roles=['administrator'])
 def customer_add(request):
-
+    # DB_product_query = DB_product.objects.filter(customer_id = request.POST.)
     if request.method == 'POST':
         form = NewCustomerForm(request.POST)
+
         if form.is_valid():
             prod = form.save(commit=False)
             prod.save()
@@ -334,8 +336,10 @@ def customer_edit(request,pk):
 
     if request.method == 'POST':
         form = NewCustomerForm(request.POST, instance=DB_customer_query)
+
         if form.is_valid():
             prod = form.save(commit=False)
+            # DB_customer.entry_set.add(request.POST.)
             prod.save()
             return redirect('customer_list')
     else:
@@ -370,25 +374,25 @@ def customer_delete(request):
 def customer_view(request,pk):
 
     DB_customer_query = get_object_or_404(DB_Customer, pk=pk)
-    DB_report_query = DB_Report.objects.filter(customer=DB_customer_query).order_by('creation_date').reverse()
+    DB_product_query = DB_Product.objects.filter(customer=DB_customer_query)
+    DB_report_query = DB_Report.objects.filter(product__in = DB_product_query)
+    count_customer_product = DB_product_query.count()
     count_customer_report = DB_report_query.count()
     customer_findings = {}
     count_customer_findings_total = 0
     count_customer_findings_critical_high = 0
-    count_customer_findings_medium = 0
 
     for report in DB_report_query:
         DB_finding_query = DB_Finding.objects.filter(report=report.id)
-        count_customer_findings = DB_finding_query.count()
-        customer_findings[report.id] = count_customer_findings
-        count_customer_findings_total += count_customer_findings
+        count_product_findings = DB_finding_query.count()
+        customer_findings[report.id] = count_product_findings
+        count_customer_findings_total += count_product_findings
+
         for finding in DB_finding_query:
             if finding.severity == 'High' or finding.severity == 'Critical':
                 count_customer_findings_critical_high += 1
-            elif finding.severity == 'Medium':
-                count_customer_findings_medium += 1
 
-    return render(request, 'customers/customer_view.html', {'pk': pk, 'DB_customer_query': DB_customer_query, 'DB_report_query': DB_report_query, 'count_customer_report': count_customer_report, 'customer_findings': count_customer_findings_total, 'count_customer_findings_critical_high': count_customer_findings_critical_high, 'count_customer_findings_medium': count_customer_findings_medium})
+    return render(request, 'customers/customer_view.html', {'pk': pk, 'DB_customer_query': DB_customer_query, 'DB_product_query': DB_product_query, 'DB_report_query': DB_report_query, 'count_customer_product': count_customer_product, 'count_customer_report': count_customer_report, 'customer_findings': customer_findings, 'count_customer_findings_total': count_customer_findings_total, 'count_customer_findings_critical_high': count_customer_findings_critical_high})
 
 # ----------------------------------------------------------------------
 #                           Products 

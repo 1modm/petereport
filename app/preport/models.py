@@ -19,9 +19,23 @@ class DB_CWE(models.Model):
 	def __str__(self):
 		return self.cwe_id
 
+# ---------- Customer ------------
+
+class DB_Customer(models.Model):
+	name = models.CharField(max_length=255, blank=False)
+	contact_list = MultiEmailField()
+	contact_sp_mail = models.EmailField(max_length=255, blank=True)
+	contact_dp_mail = models.EmailField(max_length=255, blank=True)
+	description = MartorField()
+	class Meta:
+		verbose_name_plural = "Customers"
+	def __str__(self):
+		return self.name
+
 # ---------- Product ------------
 
 class DB_Product(models.Model):
+	customer = models.ForeignKey(DB_Customer, blank=True, null=True, on_delete=models.CASCADE)
 	name = models.CharField(max_length=255, blank=False)
 	description = MartorField()
 	class Meta:
@@ -41,20 +55,6 @@ class DB_Settings(models.Model):
 	company_picture = models.ImageField(upload_to=logo_dst)
 	class Meta:
 		verbose_name_plural = "Settings"
-
-# ---------- Customer ------------
-
-class DB_Customer(models.Model):
-	product = models.ForeignKey(DB_Product, blank=True, null=True, on_delete=models.CASCADE)
-	name = models.CharField(max_length=255, blank=False)
-	contact_list = MultiEmailField()
-	contact_sp_mail = models.EmailField(max_length=255, blank=True)
-	contact_dp_mail = models.EmailField(max_length=255, blank=True)
-	description = MartorField()
-	class Meta:
-		verbose_name_plural = "Customers"
-	def __str__(self):
-		return self.name
 
 # ---------- Report ------------
 
