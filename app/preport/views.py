@@ -339,14 +339,12 @@ def customer_edit(request,pk):
 
         if form.is_valid():
             prod = form.save(commit=False)
-            # DB_customer.entry_set.add(request.POST.)
             prod.save()
             return redirect('customer_list')
     else:
         DB_customer_query.contact_list = "\n".join(DB_customer_query.contact_list)
         form = NewCustomerForm(instance=DB_customer_query)
 
-        # import ipdb; ipdb.set_trace()
         form.fields['contact_list'].inital = ""
 
     return render(request, 'customers/customer_add.html', {
@@ -973,7 +971,7 @@ def reportdownloadpdf(request,pk):
     # DB
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
-
+    DB_settings_query = DB_Settings.objects.get()
     # Datetime
     today = datetime.date.today().strftime('%Y-%m-%d')
     nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
@@ -994,12 +992,12 @@ def reportdownloadpdf(request,pk):
     vulnerabilities = []
     template_findings = template_findings_summary = template_appendix = pdf_finding_summary = ''
     template_appendix_check = False
-    md_author = PETEREPORT_MARKDOWN['author']
+    md_author = DB_settings_query.company_name
     md_subject = PETEREPORT_MARKDOWN['subject']
-    md_website = PETEREPORT_MARKDOWN['website']
+    md_website = DB_settings_query.company_website
     counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
-    title_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_title_background']}"
-    pages_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_pages_background']}"
+    title_background_image = f"/home/noct/erebus/01_dev/thales_DF/petereport/app/preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_title_background']}"
+    pages_background_image = f"/home/noct/erebus/01_dev/thales_DF/petereport/app/preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_pages_background']}"
 
     # Appendix
     template_appendix = _('# Additional Notes') + "\n\n"

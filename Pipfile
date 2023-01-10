@@ -17,6 +17,10 @@ django-bleach			= "==3.0.0"
 bleach					= "==5.0.1"
 Markdown				= "==3.3.4"
 django-multi-email-field = "*"
+pandoc = "*"
+pandoc-latex-environment = "*"
+pdftex = "*"
+pdflatex = "*"
 
 [dev-packages]
 django-extensions = "*"
