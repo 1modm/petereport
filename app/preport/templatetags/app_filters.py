@@ -1,11 +1,9 @@
 # ----------  Template filters ------------
 
 from django import template
-from django.utils.safestring import mark_safe, SafeData
-from django.template.defaultfilters import stringfilter
-from preport.models import DB_Report, DB_Finding
+from django.utils.safestring import mark_safe
+from preport.models import DB_Finding
 
-import json
 
 register = template.Library()
 

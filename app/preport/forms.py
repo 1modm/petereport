@@ -1,10 +1,8 @@
 from django import forms
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
-from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, PasswordInput, EmailField, BooleanField
+from django.forms import Textarea, TextInput, DateInput, ModelChoiceField, EmailField, BooleanField
 from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree, DB_Custom_field
-from martor.fields import MartorFormField
 from django.utils.translation import gettext_lazy as _
 
 import datetime
