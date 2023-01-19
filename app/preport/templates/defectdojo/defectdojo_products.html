@@ -1,0 +1,117 @@
+{% extends 'home/template.html' %}
+
+{% load i18n %}
+{% load martortags %}
+{% load bleach_tags %}
+
+{% block title %} {% translate "DefectDojo Import" %} {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+  
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-8">
+          <h2> {% translate "Import DefectDojo Findings into" %} {{DB_report_query.title}} </h2>
+        </div>
+        <div class="col-sm-4">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+            <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name | bleach}}</a></li>
+            <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title | bleach}}</a></li>
+          </ol>
+        </div>
+      </div>
+      <h5><b>DefectDojo:</b> {{DefectDojoURL}} </h5>
+  </section>
+
+  <section class="content">
+
+    <div class="container-fluid">
+      <div class="card card-outline card-danger">
+        <div class="card-header">
+          <h3 class="card-title">{{DDproducts_count}} {% translate "DefectDojo Products" %}</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <div class="row">
+            <div class="col-md-12">
+
+              <table id="ddproductlist" class="table table-bordered table-hover"> 
+
+                    <thead>
+                      <tr>
+                        <th style="width: 5%">{% translate "ID" %}</th>
+                        <th style="width: 25%">{% translate "Product Name" %}</th>
+                        <th style="width: 5%">{% translate "Findings" %}</th>
+                        <th style="width: 40%">{% translate "Description" %}</th>
+                        <th style="width: 25%"class="text-center">{% translate "Actions" %}</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {% for product in DDproducts %}
+                      <tr>
+                          <td>
+                              {{ product.id }}
+                          </td>
+                          <td>
+                              {{ product.name  | bleach }}
+                          </td>
+                          <td>
+                              {{ product.findings_count }}
+                          </td>
+                          <td>
+                              {{ product.description  | bleach}}
+                          </td>
+
+                          <td align="center">
+                            <a href="/findings/defectdojo/import/{{ DB_report_query.pk }}/{{ product.id }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-upload"></i> {% translate "Import All Findings" %}</button></a>
+                           <a href="/findings/defectdojo/viewfindings/{{ DB_report_query.pk }}/{{ product.id }}"><button type="button" class="btn btn-success btn-sm"><i class="fa fa-folder"></i> {% translate "View Findings" %}</button></a>
+                          </td>
+                      </tr>
+
+                      {% endfor %}
+
+                    </tbody>
+                  </table>
+
+                </div>
+               </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+ 
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+<script>
+  $(function () {
+    $("#ddproductlist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true, 
+      "lengthChange": false, 
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#ddproductlist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+{% endblock javascripts %}

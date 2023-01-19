@@ -24,9 +24,9 @@
             <ol class="breadcrumb float-sm-right">
 
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-              <li class="breadcrumb-item"><a href="/product/view/{{ finding.report.product.pk}}">{{ finding.report.product.name | bleach}}</a></li>
-              <li class="breadcrumb-item"><a href="/report/view/{{ finding.report.pk}}">{{ finding.report.title | bleach}}</a></li>
-              <li class="breadcrumb-item active">{{ finding.title | bleach}}</li>
+              <li class="breadcrumb-item"><a href="/product/view/{{ finding.report.product.pk}}">{{ finding.report.product.name | bleach }}</a></li>
+              <li class="breadcrumb-item"><a href="/report/view/{{ finding.report.pk}}">{{ finding.report.title | bleach }}</a></li>
+              <li class="breadcrumb-item active">{{ finding.title | bleach }}</li>
 
             </ol>
           </div>
@@ -107,7 +107,7 @@
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "CWE" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cwe.cwe_id |safe| bleach}} - {{finding.cwe.cwe_name |safe| bleach}}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cwe.cwe_id | safe | bleach}} - {{finding.cwe.cwe_name |safe| bleach}}</span>
                           </div>
                         </div>
                       </div>

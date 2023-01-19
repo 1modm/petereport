@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## Version 1.3.3
+
+### Enhancements and Bugfixes:
+* lint the code and fix some code using ruff linter [#63](https://github.com/1modm/petereport/pull/63)
+* Feature to select specific findings only from a product in DefectDojo [#64](https://github.com/1modm/petereport/issues/64)
+
 ## Version 1.3.2
 
 ### Enhancements and Bugfixes:
