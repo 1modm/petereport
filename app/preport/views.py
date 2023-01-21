@@ -1316,9 +1316,10 @@ def defectdojo_products(request,pk):
     DefectDojoApiKey = DEFECTDOJO_CONFIG['apiKey']
 
     headersapi = {'Authorization': DefectDojoApiKey}
+    params = {'limit': 10000}
 
     try:
-        r = requests.get(DefectDojoURLProducts, headers = headersapi, verify=False)
+        r = requests.get(DefectDojoURLProducts, params = params, headers = headersapi, verify=False)
     except requests.exceptions.HTTPError:
         return HttpResponseNotFound(f"Not found. Response error from DefectDojo {DefectDojoURL}")
 
