@@ -143,3 +143,4 @@ dmypy.json
 /app/storage_reports/images/*.jpg
 /app/storage_reports/images/*.gif
 /app/storage_reports/pdf/*.pdf
+/app/media/images/company_picture_*.png

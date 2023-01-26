@@ -181,7 +181,6 @@ def index(request):
         cwe_categories.append(dict_cwe)
 
 
-
     # TOP 10 findings
     DB_finding_query = DB_finding_query[:10]
 
@@ -590,7 +589,7 @@ def report_findings_duplicate(request):
             finding.pk = None
             finding._state.adding = True
             finding.finding_id = finding.finding_id + copy_datetime
-            finding.report_id = report.report_id
+            finding.report_id = report.pk
             try:
                 finding.save()
             except django.db.utils.IntegrityError:
@@ -1299,7 +1298,7 @@ def finding_list(request):
     return render(request, 'findings/findings_list.html', {'Status': '', 'Link': 'list', 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 @login_required
-def openedfindings(request):
+def findings_opened(request):
     DB_finding_query = DB_Finding.objects.filter(status='Open').order_by('cvss_score').reverse()
     count_finding_query = DB_finding_query.count()
 
@@ -1307,7 +1306,7 @@ def openedfindings(request):
 
 
 @login_required
-def closedfindings(request):
+def findings_closed(request):
     DB_finding_query = DB_Finding.objects.filter(status='Closed').order_by('cvss_score').reverse()
     count_finding_query = DB_finding_query.count()
 
@@ -1622,14 +1621,14 @@ def defectdojo_import(request,pk,ddpk):
 
 
 @login_required
-def reportappendix(request,pk):
+def report_appendix(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
     DB_appendix_query = DB_Appendix.objects.filter(finding__in=DB_finding_query)
 
     count_appendix_query = DB_appendix_query.count()
 
-    return render(request, 'appendix/reportappendix.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'DB_appendix_query': DB_appendix_query, 'count_appendix_query': count_appendix_query})
+    return render(request, 'appendix/report_appendix.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'DB_appendix_query': DB_appendix_query, 'count_appendix_query': count_appendix_query})
 
 
 

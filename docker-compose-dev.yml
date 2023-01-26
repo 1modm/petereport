@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx:/opt/petereport/nginx
+      - ./nginx/petereport.conf:/etc/nginx/conf.d/petereport.conf
+      - ./app/petereport/static:/opt/petereport/app/petereport/static
+      - ./app/media:/opt/petereport/app/media
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - petereport
+
+  petereport:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - PETEREPORT_DJANGO_DEBUG=True
+      - PETEREPORT_DJANGO_AMIN_MODULE=True
+    command: bash -c "
+      sleep 1 &&
+      pipenv install --deploy --ignore-pipfile --python 3.9 &&
+      pip freeze &&
+      pipenv run ./app/manage.py makemigrations &&
+      pipenv run ./app/manage.py migrate &&
+      pipenv run ./app/manage.py loaddata ./app/config/cwe-list.json &&
+      pipenv run gunicorn --chdir ./app petereport.wsgi:application --timeout 120 --graceful-timeout 60 --bind 0.0.0.0:8000 --reload"
+    volumes:
+      - .:/opt/petereport
+    expose:
+      - 8000
+    restart: unless-stopped
