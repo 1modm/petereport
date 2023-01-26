@@ -17,6 +17,17 @@ class DB_Product(models.Model):
 	name = models.CharField(max_length=255, blank=False)
 	description = MartorField()
 
+
+# ---------- Engagement ------------
+
+class DB_Engagement(models.Model):
+	name = models.CharField(max_length=255, blank=False)
+	creation_date = models.DateTimeField(auto_now_add=True)
+	start_date = models.DateTimeField(blank=False)
+	end_date = models.DateTimeField(blank=False)
+	description = MartorField()
+
+
 # ---------- Report ------------
 
 class DB_Report(models.Model):
