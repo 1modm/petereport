@@ -2,13 +2,36 @@
 
 import os
 import django
+
 from config.petereport_config import PETEREPORT_CONFIG
 
+def initApplication():
+
+    os.environ["DJANGO_SETTINGS_MODULE"] = 'petereport.settings'
+    django.setup()
+
+    createAdminUser()
+    createSettings()
+
+
+def createSettings():
+
+    from preport.models import DB_Settings
+    from django.db import Error as DjangoError
+
+    try:
+        if not DB_Settings.objects.count():
+            company_settings =DB_Settings(
+                company_name = PETEREPORT_CONFIG['company_name'],
+                company_website = PETEREPORT_CONFIG['company_website'],
+                company_address = PETEREPORT_CONFIG['company_address']
+            )
+            company_settings.save()
+
+    except DjangoError:
+        pass
 
 def createAdminUser():
-
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", 'preport.settings')
-    django.setup()
 
     from django.contrib.auth.models import User, Group
     from django.db import Error as DjangoError
@@ -44,4 +67,3 @@ def createAdminUser():
 
     except DjangoError:
         pass
-

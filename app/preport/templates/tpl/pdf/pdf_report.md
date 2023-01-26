@@ -1,7 +1,7 @@
 {% load i18n %}
 # {% translate "Project Overview" %}
 
-## {% translate "Description" %}
+## {% translate "Product Description" %}
 
 {{DB_report_query.product.description | safe}}
 

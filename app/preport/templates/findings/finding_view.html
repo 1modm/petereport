@@ -11,7 +11,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  
+
 
     <section class="content-header">
       <div class="container-fluid">
@@ -39,7 +39,7 @@
                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
                   <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Edit Finding" %}</button></a>
                   <a href="/finding/customfields/{{ finding.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Finding custom fields" %}</button></a>
-                  <a href="/field/add/{{ finding.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-edit"></i> {% translate "Add custom field" %}</button></a> 
+                  <a href="/field/add/{{ finding.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-edit"></i> {% translate "Add custom field" %}</button></a>
                 {% endif %}
             </div>
         </div>
@@ -71,8 +71,8 @@
 
                 </div>
                 <div class="card-body">
-                    
-      
+
+
                   <div class="row">
                       <div class="col-12 col-sm-4">
                         <div class="info-box bg-light">
@@ -122,9 +122,9 @@
                       </div>
                     </div>
 
-        
+
                     <div class="row">
-     
+
                       <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
@@ -165,7 +165,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
 
 
 
@@ -190,7 +190,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
 
 
       {% if finding.description %}
@@ -215,7 +215,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
       {% endif %}
 
 
@@ -293,7 +293,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
       {% endif %}
 
       {% if finding.references %}
@@ -318,10 +318,10 @@
               </div>
 
         </div>
-      </div> 
+      </div>
       {% endif %}
 
-            
+
     {% if DB_field %}
 
     {% for custom_field in DB_field %}

@@ -122,16 +122,16 @@
                           </div>
                         </div>
                       </div>
-                     
+
                   {% endfor %}
 
 
               </tbody>
           </table>
         </div>
-       
+
       </div>
-      
+
     </div>
   </section>
 
@@ -147,8 +147,8 @@
     $("#productlist").DataTable({
       "paging": true,
       "searching": true,
-      "responsive": true, 
-      "lengthChange": false, 
+      "responsive": true,
+      "lengthChange": false,
       "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#productlist_wrapper .col-md-6:eq(0)');
@@ -167,7 +167,7 @@
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/product/list/"; 
+              document.location.href = "/product/list/";
             }
         })
   }

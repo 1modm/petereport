@@ -10712,6 +10712,14 @@ a.text-danger:hover, a.text-danger:focus {
   color: #a71d2a !important;
 }
 
+.text-purple {
+  color: #800080 !important;
+}
+
+a.text-purple:hover, a.text-purple:focus {
+  color: #4b0082 !important;
+}
+
 .text-light {
   color: #f8f9fa !important;
 }

@@ -56,7 +56,7 @@ def markdown_uploader(request):
     Makdown image upload for locale storage
     and represent as json to markdown editor.
     """
-    if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         if 'markdown-image-upload' in request.FILES:
             image = request.FILES['markdown-image-upload']
             image_types = [
@@ -86,7 +86,7 @@ def markdown_uploader(request):
             if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
 
                 image_content_base64 = base64.b64encode(image.read()).decode('utf-8')
-             
+
                 image_content_base64_final = 'data:' + image.content_type +';base64,' + image_content_base64
 
                 data = json.dumps({
@@ -117,7 +117,7 @@ def markdown_uploader(request):
 
 
 # ----------------------------------------------------------------------
-#                           index 
+#                           index
 # ----------------------------------------------------------------------
 
 
@@ -125,13 +125,20 @@ def markdown_uploader(request):
 @login_required
 def index(request):
 
+    application_license = PETEREPORT_CONFIG['application_license']
+    application_name = PETEREPORT_CONFIG['application_name']
     company_name = DB_Settings.objects.get().company_name
+    company_picture = DB_Settings.objects.get().company_picture
+    company_website = DB_Settings.objects.get().company_website
+    DB_customer_query = DB_Customer.objects.order_by('name')
     DB_product_query = DB_Product.objects.order_by('name')
+
 
     report_number = {}
     product_findings = {}
     total_reports = 0
     total_products = DB_product_query.count()
+    total_customers = DB_customer_query.count()
     count_product_findings_total = 0
     count_product_findings_critical_high = 0
     count_product_findings_medium = 0
@@ -176,13 +183,25 @@ def index(request):
 
 
     # TOP 10 findings
-    DB_finding_query = DB_finding_query[:10] 
+    DB_finding_query = DB_finding_query[:10]
 
-    return render(request, 'home/index.html', {'total_reports': total_reports, 'total_products': total_products, 'count_product_findings_total': count_product_findings_total, 'count_product_findings_critical_high': count_product_findings_critical_high, 'count_product_findings_medium': count_product_findings_medium, 'DB_finding_query':DB_finding_query, 'cwe_categories': cwe_categories, 'company_name': company_name})
+    return render(request, 'home/index.html', {  'total_customers': total_customers,
+                                                 'total_products': total_products,
+                                                 'total_reports': total_reports,
+                                                 'count_product_findings_total': count_product_findings_total,
+                                                 'count_product_findings_critical_high': count_product_findings_critical_high,
+                                                 'count_product_findings_medium': count_product_findings_medium,
+                                                 'DB_finding_query':DB_finding_query,
+                                                 'cwe_categories': cwe_categories,
+                                                 'application_name': application_name,
+                                                 'application_license': application_license,
+                                                 'company_name': company_name,
+                                                 'company_picture': company_picture,
+                                                 'company_website': company_website})
 
 
 # ----------------------------------------------------------------------
-#                           Configuration 
+#                           Configuration
 # ----------------------------------------------------------------------
 
 @login_required
@@ -198,12 +217,12 @@ def user_list(request):
 @login_required
 @allowed_users(allowed_roles=['administrator'])
 def user_add(request):
-    
+
     if request.method == 'POST':
         form = AddUserForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            
+
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user_group = form.cleaned_data.get('group')
@@ -231,7 +250,7 @@ def user_edit(request,pk):
         form = AddUserForm(request.POST, instance=DB_user_query)
         if form.is_valid():
             user = form.save(commit=False)
-            
+
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user_group = form.cleaned_data.get('group')
@@ -276,7 +295,6 @@ def settings(request):
         form = NewSettingsForm(request.POST, request.FILES, instance=DB_settings_query)
         #import ipdb; ipdb.set_trace()
         if form.is_valid():
-
             prod = form.save(commit=False)
             prod.save()
             return redirect('settings')
@@ -393,7 +411,7 @@ def customer_view(request,pk):
     return render(request, 'customers/customer_view.html', {'pk': pk, 'DB_customer_query': DB_customer_query, 'DB_product_query': DB_product_query, 'DB_report_query': DB_report_query, 'count_customer_product': count_customer_product, 'count_customer_report': count_customer_report, 'customer_findings': customer_findings, 'count_customer_findings_total': count_customer_findings_total, 'count_customer_findings_critical_high': count_customer_findings_critical_high})
 
 # ----------------------------------------------------------------------
-#                           Products 
+#                           Products
 # ----------------------------------------------------------------------
 
 @login_required
@@ -493,7 +511,7 @@ def product_view(request,pk):
 
 
 # ----------------------------------------------------------------------
-#                           Reports 
+#                           Reports
 # ----------------------------------------------------------------------
 
 @login_required
@@ -549,22 +567,37 @@ def report_delete(request):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def report_duplicate(request):
+def report_findings_duplicate(request):
 
     if request.method == 'POST':
         duplicate_id = request.POST['duplicate_id']
         report = DB_Report.objects.get(pk=duplicate_id)
         report.pk = None
         report._state.adding = True
-
-        report.report_id = report.report_id + "-copy"
+        copy_datetime = '-COPY-' + str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))
+        report.report_id = report.report_id + copy_datetime
 
         try:
             report.save()
         except django.db.utils.IntegrityError:
-            report.report_id = DB_Report.objects.filter(report_id__contains = report.report_id, report_id__endswith = "-copy").latest("creation_date").report_id
-            report.report_id = report.report_id + "-copy"
-        report.save()
+            report.report_id = DB_Report.objects.filter(report_id__contains = report.report_id, report_id__endswith = copy_datetime).latest("creation_date").report_id
+            report.report_id = report.report_id + copy_datetime
+            report.save()
+
+        # Now, duplicate findings
+        DB_finding_query = DB_Finding.objects.filter(report_id=duplicate_id)
+        for finding in DB_finding_query:
+            finding.pk = None
+            finding._state.adding = True
+            finding.finding_id = finding.finding_id + copy_datetime
+            finding.report_id = report.report_id
+            try:
+                finding.save()
+            except django.db.utils.IntegrityError:
+                finding.finding_id = DB_Finding.objects.filter(finding_id__contains = finding.finding_id, finding_id__endswith = copy_datetime).latest("creation_date").finding_id
+                finding.finding_id = finding.finding_id + copy_datetime
+                finding.save()
+
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
@@ -609,7 +642,7 @@ def report_view(request,pk):
     count_findings_none = 0
 
     cwe_rows = []
-    
+
     for finding in DB_finding_query:
         # Only reporting Critical/High/Medium/Low/Info findings
         if finding.severity == 'None':
@@ -652,7 +685,7 @@ def report_view(request,pk):
 
 @login_required
 def uploadsummaryfindings(request,pk):
-    
+
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
 
     if request.method == 'POST':
@@ -686,8 +719,8 @@ def uploadsummaryfindings(request,pk):
                 os.remove(media_url_severity)
 
             fs = FileSystemStorage()
-            filename_severity = fs.save(img_url_severity, dataimgSeveritybar) 
-            uploaded_file_url_severity = fs.url(filename_severity) 
+            filename_severity = fs.save(img_url_severity, dataimgSeveritybar)
+            uploaded_file_url_severity = fs.url(filename_severity)
 
             DB_report_query.report_executive_summary = uploaded_file_url_severity
 
@@ -701,8 +734,8 @@ def uploadsummaryfindings(request,pk):
                 os.remove(media_url_categories)
 
             fs = FileSystemStorage()
-            filename_categories = fs.save(img_url_categories, dataCWE) 
-            uploaded_file_url_categories = fs.url(filename_categories) 
+            filename_categories = fs.save(img_url_categories, dataCWE)
+            uploaded_file_url_categories = fs.url(filename_categories)
 
             DB_report_query.report_categories_summary = uploaded_file_url_categories
 
@@ -725,7 +758,7 @@ def reportdownloadmarkdown(request,pk):
     # Datetime
     today = datetime.date.today().strftime('%Y-%m-%d')
     nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-    report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
+    report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
     # MD filename
     name_file = PETEREPORT_TEMPLATES['report_markdown_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.md'
@@ -733,11 +766,10 @@ def reportdownloadmarkdown(request,pk):
     # INIT
     template_findings = template_appendix = md_finding_summary = md_finding = "\n"
     counter_finding = 0
-    md_author = PETEREPORT_MARKDOWN['author']
+    md_author = PETEREPORT_CONFIG['company_name']
     md_subject = PETEREPORT_MARKDOWN['subject']
-    md_website = PETEREPORT_MARKDOWN['website']
+    md_website = PETEREPORT_CONFIG['company_website']
 
-    
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
         report_executive_summary_image = DB_report_query.executive_summary_image
@@ -825,7 +857,7 @@ def reportdownloadhtml(request,pk):
     # Datetime
     today = datetime.date.today().strftime('%Y-%m-%d')
     nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-    report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
+    report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
     # HTML filename
     name_file = PETEREPORT_TEMPLATES['report_html_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.html'
@@ -840,13 +872,13 @@ def reportdownloadhtml(request,pk):
 
     # INIT
     template_findings = template_appendix = md_finding_summary = ''
-    md_author = PETEREPORT_MARKDOWN['author']
+    md_author = PETEREPORT_CONFIG['company_name']
     md_subject = PETEREPORT_MARKDOWN['subject']
-    md_website = PETEREPORT_MARKDOWN['website']
+    md_website = PETEREPORT_CONFIG['company_website']
 
     count_finding_query = DB_finding_query.count()
     counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
-    
+
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
         report_executive_summary_image = DB_report_query.executive_summary_image
@@ -864,7 +896,7 @@ def reportdownloadhtml(request,pk):
 
     # FINDINGS
     for finding in DB_finding_query:
-        
+
         # Custom fields
         template_custom_fields = ""
 
@@ -878,27 +910,27 @@ def reportdownloadhtml(request,pk):
             if finding.severity == 'Critical':
                 color_cell_bg = CRITICAL
                 color_text_severity = CRITICAL
-                counter_finding_critical += 1 
+                counter_finding_critical += 1
             elif finding.severity == 'High':
                 color_cell_bg = HIGH
                 color_text_severity = HIGH
-                counter_finding_high += 1 
+                counter_finding_high += 1
             elif finding.severity == 'Medium':
                 color_cell_bg = WARNING
                 color_text_severity = WARNING
-                counter_finding_medium += 1 
+                counter_finding_medium += 1
             elif finding.severity == 'Low':
                 color_cell_bg = LOW
                 color_text_severity = LOW
-                counter_finding_low += 1 
+                counter_finding_low += 1
             else:
                 color_cell_bg = INFO
                 color_text_severity = INFO
-                counter_finding_info += 1 
+                counter_finding_info += 1
 
             # Summary table
             finding_summary_table += render_to_string('tpl/html/html_finding_summary.html', {'finding': finding, 'counter_finding': counter_finding, 'color_text_severity': color_text_severity})
-            
+
             # Custom fields
             if finding.custom_field_finding.all():
 
@@ -921,7 +953,7 @@ def reportdownloadhtml(request,pk):
 
                 template_appendix_in_finding += ''.join("</td>\n")
 
-            
+
             # attack flow
             if finding.attackflow_finding.all():
 
@@ -931,7 +963,7 @@ def reportdownloadhtml(request,pk):
                     html_attackflow = render_to_string('tpl/html/md_attackflow.md', {'attackflow_in_finding': attackflow_in_finding})
 
                     template_attackflow_in_finding += ''.join(html_attackflow + "<br>")
-                    
+
                 template_attackflow_in_finding += ''.join("</td>\n")
 
 
@@ -948,7 +980,7 @@ def reportdownloadhtml(request,pk):
     final_markdown = textwrap.dedent(render_md)
     final_markdown_output = mark_safe(final_markdown)
 
-    html_template = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['html_template'])    
+    html_template = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['html_template'])
     pathfile = f"html/{name_file}"
 
     html_file_output = os.path.join(REPORTS_MEDIA_ROOT, pathfile)
@@ -975,7 +1007,7 @@ def reportdownloadpdf(request,pk):
     # Datetime
     today = datetime.date.today().strftime('%Y-%m-%d')
     nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-    report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
+    report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
     # PDF filename
     name_file = PETEREPORT_TEMPLATES['report_pdf_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.pdf'
@@ -996,8 +1028,8 @@ def reportdownloadpdf(request,pk):
     md_subject = PETEREPORT_MARKDOWN['subject']
     md_website = DB_settings_query.company_website
     counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
-    title_background_image = f"/home/noct/erebus/01_dev/thales_DF/petereport/app/preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_title_background']}"
-    pages_background_image = f"/home/noct/erebus/01_dev/thales_DF/petereport/app/preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_pages_background']}"
+    title_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_title_background']}"
+    pages_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_pages_background']}"
 
     # Appendix
     template_appendix = _('# Additional Notes') + "\n\n"
@@ -1059,7 +1091,7 @@ def reportdownloadpdf(request,pk):
 
             # Summary table
             pdf_finding_summary += render_to_string('tpl/pdf/pdf_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding, 'severity_box': severity_box})
-            
+
             severity_color_finding = "\\textcolor{" + f"{severity_color}" +"}{" + f"{finding.severity}" + "}"
 
             # Custom fields
@@ -1095,7 +1127,7 @@ def reportdownloadpdf(request,pk):
                 for attackflow_in_finding in finding.attackflow_finding.all():
 
                     pdf_attackflow = render_to_string('tpl/pdf/pdf_attackflow.md', {'attackflow_in_finding': attackflow_in_finding})
-            
+
                     template_attackflow_in_finding += ''.join(pdf_attackflow + "\n")
 
                 template_attackflow_in_finding += ''.join("\\pagebreak")
@@ -1151,7 +1183,7 @@ def reportdownloadjupyter(request,pk):
     # Datetime
     today = datetime.date.today().strftime('%Y-%m-%d')
     nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-    report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
+    report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
     # MD filename
     name_file = PETEREPORT_TEMPLATES['report_jupyter_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.ipynb'
@@ -1159,16 +1191,16 @@ def reportdownloadjupyter(request,pk):
     # INIT
     template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = ""
     counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
-    md_author = PETEREPORT_MARKDOWN['author']
+    md_author = PETEREPORT_CONFIG['company_name']
     md_subject = PETEREPORT_MARKDOWN['subject']
-    md_website = PETEREPORT_MARKDOWN['website']
+    md_website = PETEREPORT_CONFIG['company_website']
 
     # Appendix
     template_appendix = render_to_string('tpl/jupyter/additional_notes.ipynb')
 
     # Attackflow init
     template_attackflow = render_to_string('tpl/jupyter/attackflows.ipynb')
-    
+
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
         report_executive_summary_image = DB_report_query.executive_summary_image
@@ -1188,19 +1220,19 @@ def reportdownloadjupyter(request,pk):
             template_appendix_in_finding = ''
 
             if finding.severity == 'Critical':
-                counter_finding_critical += 1 
+                counter_finding_critical += 1
             elif finding.severity == 'High':
-                counter_finding_high += 1 
+                counter_finding_high += 1
             elif finding.severity == 'Medium':
-                counter_finding_medium += 1 
+                counter_finding_medium += 1
             elif finding.severity == 'Low':
-                counter_finding_low += 1 
+                counter_finding_low += 1
             else:
-                counter_finding_info += 1 
+                counter_finding_info += 1
 
             # Summary table
             ipynb_finding_summary += render_to_string('tpl/jupyter/finding_summary.ipynb', {'finding': finding, 'counter_finding': counter_finding})
-            
+
             # finding
             ipynb_finding = render_to_string('tpl/jupyter/finding.ipynb', {'finding': finding})
 
@@ -1228,8 +1260,8 @@ def reportdownloadjupyter(request,pk):
                     ipynb_attackflow = render_to_string('tpl/jupyter/attackflow.ipynb', {'attackflow_in_finding': attackflow_in_finding})
 
                     template_attackflow += ''.join(ipynb_attackflow)
-                    
-            
+
+
             template_findings += ''.join(ipynb_finding)
 
     render_jupyter = render_to_string('tpl/jupyter/report.ipynb', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'template_attackflow': template_attackflow, 'finding_summary': ipynb_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
@@ -1246,7 +1278,7 @@ def reportdownloadjupyter(request,pk):
 
 
 # ----------------------------------------------------------------------
-#                           Findings 
+#                           Findings
 # ----------------------------------------------------------------------
 
 
@@ -1260,11 +1292,18 @@ def reportfindings(request,pk):
 
 
 @login_required
-def openfindings(request):
+def finding_list(request):
+    DB_finding_query = DB_Finding.objects.order_by('cvss_score').reverse()
+    count_finding_query = DB_finding_query.count()
+
+    return render(request, 'findings/findings_list.html', {'Status': '', 'Link': 'list', 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
+
+@login_required
+def openedfindings(request):
     DB_finding_query = DB_Finding.objects.filter(status='Open').order_by('cvss_score').reverse()
     count_finding_query = DB_finding_query.count()
 
-    return render(request, 'findings/findings_list.html', {'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
+    return render(request, 'findings/findings_list.html', {'Status': 'Opened', 'Link': 'opened', 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 
 @login_required
@@ -1272,7 +1311,7 @@ def closedfindings(request):
     DB_finding_query = DB_Finding.objects.filter(status='Closed').order_by('cvss_score').reverse()
     count_finding_query = DB_finding_query.count()
 
-    return render(request, 'findings/findings_list.html', {'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
+    return render(request, 'findings/findings_list.html', {'Status': 'Closed', 'Link': 'closed', 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
@@ -1282,9 +1321,9 @@ def finding_add(request,pk):
 
     if request.method == 'POST':
         form = NewFindingForm(request.POST)
-        
+
         if form.is_valid():
-            finding = form.save(commit=False)            
+            finding = form.save(commit=False)
             finding.report = DB_report_query
             finding.finding_id = uuid.uuid4()
             finding.save()
@@ -1348,7 +1387,29 @@ def finding_delete(request):
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def finding_duplicate(request):
 
+    if request.method == 'POST':
+        duplicate_id = request.POST['duplicate_id']
+        finding = DB_Finding.objects.get(pk=duplicate_id)
+        finding.pk = None
+        finding._state.adding = True
+        copy_datetime = '-COPY-' + str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))
+        finding.finding_id = finding.finding_id + copy_datetime
+
+        try:
+            finding.save()
+        except django.db.utils.IntegrityError:
+            finding.finding_id = DB_Finding.objects.filter(finding_id__contains = finding.finding_id, finding_id__endswith = copy_datetime).latest("creation_date").finding_id
+            finding.finding_id = finding.finding_id + copy_datetime
+            finding.save()
+
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 @login_required
 def finding_view(request,pk):
@@ -1410,7 +1471,7 @@ def downloadfindingscsv(request,pk):
 @login_required
 @allowed_users(allowed_roles=['administrator'])
 def upload_csv_findings(request,pk):
-    
+
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
 
     if request.method == 'POST':
@@ -1438,9 +1499,9 @@ def upload_csv_findings(request,pk):
         f_references = header.index("References")
         f_appendix = header.index("Appendix")
         f_appendix_description = header.index("Appendix Description")
-         
+
         List = []
-         
+
         for row in csvReader:
             fid = row[f_id]
             ftitle = row[f_title]
@@ -1456,7 +1517,7 @@ def upload_csv_findings(request,pk):
             freferences = row[f_references]
             fappendix = row[f_appendix]
             fappendixdescription = row[f_appendix_description]
-            
+
             List.append([fid,ftitle,fstatus,fseverity,fcvss_score,fcvss,fcwe,fdescription,flocation,fimpact,frecommendation,freferences,fappendix,fappendixdescription])
 
             DB_cwe = get_object_or_404(DB_CWE, cwe_id=fcwe)
@@ -1556,7 +1617,7 @@ def defectdojo_import(request,pk,ddpk):
 
 
 # ----------------------------------------------------------------------
-#                           Appendix 
+#                           Appendix
 # ----------------------------------------------------------------------
 
 
@@ -1581,7 +1642,7 @@ def appendix_add(request,pk):
     if request.method == 'POST':
         form = NewAppendixForm(request.POST, reportpk=pk)
         if form.is_valid():
-            appendix = form.save(commit=False)            
+            appendix = form.save(commit=False)
             finding_pk = form['finding'].value()
             DB_finding_m2m = get_object_or_404(DB_Finding, pk=finding_pk)
             appendix.save()
@@ -1664,7 +1725,7 @@ def appendix_view(request,pk):
 
 
 # ----------------------------------------------------------------------
-#                           Custom Fields 
+#                           Custom Fields
 # ----------------------------------------------------------------------
 
 @login_required
@@ -1738,7 +1799,7 @@ def field_delete(request):
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 # ----------------------------------------------------------------------
-#                           Templates 
+#                           Templates
 # ----------------------------------------------------------------------
 
 
@@ -1853,7 +1914,7 @@ def templateaddreport(request,pk,reportpk):
 
 
 # ----------------------------------------------------------------------
-#                           CWE 
+#                           CWE
 # ----------------------------------------------------------------------
 
 @login_required
@@ -1920,7 +1981,7 @@ def cwe_edit(request,pk):
 
 
 # ----------------------------------------------------------------------
-#                           Attack Flow 
+#                           Attack Flow
 # ----------------------------------------------------------------------
 
 
@@ -1976,7 +2037,7 @@ def attackflow_edit_flow(request,pk):
 @login_required
 @allowed_users(allowed_roles=['administrator'])
 def attackflow_add_afb(request,pk,finding_pk):
-    
+
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
 
@@ -1991,7 +2052,7 @@ def attackflow_add_afb(request,pk,finding_pk):
 
         # Save attack flow
         attackflow_to_DB = DB_AttackFlow(title=title_file, attackflow_afb=afb_content, attackflow_png=afb_image)
-        
+
         attackflow_to_DB.save()
         attackflow_to_DB.finding.add(finding_pk)
 
@@ -2003,7 +2064,7 @@ def attackflow_add_afb(request,pk,finding_pk):
 @login_required
 @allowed_users(allowed_roles=['administrator'])
 def attackflow_edit_afb(request,pk):
-    
+
     DB_attackflow_query = get_object_or_404(DB_AttackFlow, pk=pk)
 
     if request.method == 'POST':
@@ -2037,4 +2098,3 @@ def attackflow_delete(request):
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
-

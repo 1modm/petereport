@@ -2,8 +2,8 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
     <a href="/" class="brand-link">
-<img src="/media/images/company_picture.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">PeTeReport</span>
+<img src="/media/{{company_picture}}" alt="{{company_name}} Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">{{company_name}}</span>
     </a>
 
     <div class="sidebar">
@@ -60,7 +60,7 @@
 
           <li class="nav-item">
             <a href="/customer/list" class="nav-link">
-              <i class="nav-icon fas fa-building text-primary"></i>
+              <i class="nav-icon fas fa-building text-purple"></i>
               <p>
                 {% translate "Customers" %}
                 <i class="right fas fa-angle-left"></i>
@@ -91,7 +91,7 @@
 
           <li class="nav-item">
             <a href="/product/list" class="nav-link">
-              <i class="nav-icon fas fa-th text-primary"></i>
+              <i class="nav-icon fa fa-cube text-primary"></i>
               <p>
                 {% translate "Products" %}
                 <i class="right fas fa-angle-left"></i>
@@ -123,7 +123,7 @@
 
           <li class="nav-item">
             <a href="/product/list" class="nav-link">
-              <i class="nav-icon fas fa-copy text-success"></i>
+              <i class="nav-icon fa fa-file-code text-success"></i>
               <p>
                 {% translate "Reports" %}
                 <i class="right fas fa-angle-left"></i>
@@ -154,7 +154,7 @@
 
 
           <li class="nav-item">
-            <a href="/finding/open/" class="nav-link">
+            <a href="/finding/list/" class="nav-link">
               <i class="nav-icon fas fa-bug text-danger"></i>
               <p>
                 {% translate "Findings" %}
@@ -163,9 +163,17 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/finding/open/" class="nav-link">
+                <a href="/finding/list/" class="nav-link">
+                  <i class="nav-icon fas fa-table"></i>
+                  <p>{% translate "All Findings" %}</p>
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/finding/opened/" class="nav-link">
                   <i class="nav-icon fas fa-exclamation-triangle"></i>
-                  <p>{% translate "Open Findings" %}</p>
+                  <p>{% translate "Opened Findings" %}</p>
                 </a>
               </li>
               <li class="nav-item">

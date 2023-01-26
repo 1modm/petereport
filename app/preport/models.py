@@ -44,15 +44,20 @@ class DB_Product(models.Model):
 		return self.name
 
 # ---------- Settings ------------
+
 def logo_dst(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    # File will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'images/company_picture{}'.format(pathlib.Path(filename).suffix)
 
 class DB_Settings(models.Model):
 	company_name = models.CharField(max_length=255, blank=False)
-	company_website = models.CharField(max_length=255, blank=False)
-	company_address = models.CharField(max_length=255, blank=False)
-	company_picture = models.ImageField(upload_to=logo_dst)
+	company_website = models.CharField(max_length=255, blank=True)
+	company_address = models.CharField(max_length=255, blank=True)
+	company_picture = models.ImageField(upload_to=logo_dst, blank=True)
+	def save(self, *args, **kwargs):
+		if self.__class__.objects.count():
+			self.pk = self.__class__.objects.first().pk
+		super().save(*args, **kwargs)
 	class Meta:
 		verbose_name_plural = "Settings"
 

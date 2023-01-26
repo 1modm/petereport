@@ -6,7 +6,7 @@ import shutil
 
 from termcolor import colored  # pip3 install termcolor
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "petereport.settings")
+os.environ['DJANGO_SETTINGS_MODULE']= 'petereport.settings'
 django.setup()
 
 from petereport.settings import MEDIA_ROOT, REPORTS_MEDIA_ROOT
@@ -15,7 +15,8 @@ from preport.models import (DB_Product,
                             DB_Finding,
                             DB_Finding_Template,
                             DB_Appendix,
-                            DB_CWE
+                            DB_CWE,
+                            DB_Settings
                             )
 
 
@@ -79,6 +80,7 @@ def main():
         DB_Finding_Template.objects.all().delete()
         DB_Appendix.objects.all().delete()
         DB_CWE.objects.all().delete()
+        DB_Settings.objects.all().delete()
 
         remove_folder(MEDIA_ROOT)
         create_media_folders(MEDIA_ROOT)

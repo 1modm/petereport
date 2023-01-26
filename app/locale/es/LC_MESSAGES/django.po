@@ -731,7 +731,7 @@ msgstr "Notas adicionales"
 #: preport/templates/findings/findings_list.html:25
 #: preport/templates/findings/findings_list.html:38
 #: preport/templates/home/aside.html:131
-msgid "Open Findings"
+msgid "Opened Findings"
 msgstr "Hallazgos abiertos"
 
 #: preport/templates/findings/findings_list.html:60

@@ -11,7 +11,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  
+
 
     <section class="content-header">
       <div class="container-fluid">
@@ -95,7 +95,7 @@
           </div>
         </div>
       </div>
-  
+
 
 
       <div class="row">
@@ -184,7 +184,7 @@
           <table id="reportlist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                    <th style="width: 20%">{% translate "ID" %}</th>
+                    <th style="width: 20%">{% translate "Product" %}</th>
                     <th style="width: 35%">{% translate "Report" %}</th>
                     <th style="width: 5%">{% translate "Date" %}</th>
                     <th style="width: 15%">{% translate "Findings" %}</th>
@@ -195,7 +195,7 @@
 
               {% for report in DB_report_query %}
                   <tr>
-                    <td>{{ report.report_id }} </td>
+                    <td>{{ report.product.name }} </td>
                     <td>{{ report.title }} </td>
                     <td>{{ report.creation_date | date:"d-m-Y" }} </td>
                     <td>
@@ -203,14 +203,14 @@
                     </td>
                     <td class="text-center">
                         <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
-                        
+
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                          <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                          <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
                     </td>
                   </tr>
-                  
+
 
                         <div class="modal modal-danger fade mm-modal-{{report.pk}}" id="modal-danger">
                           <div class="modal-dialog">
@@ -255,8 +255,8 @@
     $("#reportlist").DataTable({
       "paging": true,
       "searching": true,
-      "responsive": true, 
-      "lengthChange": false, 
+      "responsive": true,
+      "lengthChange": false,
       "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#reportlist_wrapper .col-md-6:eq(0)');
@@ -274,7 +274,7 @@
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/list/"; 
+              document.location.href = "/report/list/";
             }
         })
   }

@@ -3,6 +3,7 @@
 {% load i18n %}
 ---
 title: "{{DB_report_query.title| safe | bleach}}"
+customer: "{{DB_report_query.product.customer.name| safe | bleach}}"
 product: "{{DB_report_query.product.name| safe | bleach}}"
 author: ["{{md_author}}", "Report ID: {{DB_report_query.report_id| safe | bleach}}"]
 date: "{{report_date}}"

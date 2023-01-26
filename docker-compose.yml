@@ -18,10 +18,13 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    environment:
+      - PETEREPORT_DJANGO_DEBUG=True
+      - PETEREPORT_DJANGO_AMIN_MODULE=True
     command: bash -c "
       sleep 1 &&
-      pipenv install --deploy --ignore-pipfile &&
-      pip freeze && 
+      pipenv install --deploy --ignore-pipfile --python 3.9 &&
+      pip freeze &&
       pipenv run ./app/manage.py makemigrations &&
       pipenv run ./app/manage.py migrate &&
       pipenv run ./app/manage.py loaddata ./app/config/cwe-list.json &&

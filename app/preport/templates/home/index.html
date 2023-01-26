@@ -19,11 +19,24 @@
       <div class="container-fluid">
 
       <div class="row">
-        <div class="col-lg-3 col-xs-6">
+        <div class="col-lg-2 col-xs-6">
+
+          <div class="small-box bg-purple">
+            <div class="inner">
+              <h3>{{total_customers}}</h3>
+              <p>{% translate "Customer" %}{{ total_customers|pluralize:"s" }}</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-building"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-xs-6">
 
           <div class="small-box bg-info">
             <div class="inner">
-              <h3>{{total_products}}</h3> 
+              <h3>{{total_products}}</h3>
               <p>{% translate "Product" %}{{ total_products|pluralize:"s" }}</p>
             </div>
             <div class="icon">
@@ -32,7 +45,7 @@
           </div>
         </div>
 
-        <div class="col-lg-3 col-xs-6">
+        <div class="col-lg-2 col-xs-6">
 
           <div class="small-box bg-green">
             <div class="inner">
@@ -117,14 +130,16 @@
         </div>
 
         <div class="card-body">
-          
+
             <table class="table">
                   <thead>
                     <tr>
+                      <th class="text-center" style="width: 10%">{% translate "Customer" %}</th>
                       <th class="text-center" style="width: 10%">{% translate "Product" %}</th>
-                      <th class="text-center" style="width: 25%">{% translate "Report" %}</th>
+                      <th class="text-center" style="width: 15%">{% translate "Report" %}</th>
+                      <th class="text-center" style="width: 10%">{% translate "Status" %}</th>
                       <th class="text-center" style="width: 40%">{% translate "Finding" %}</th>
-                      <th class="text-center" style="width: 10%">{% translate "CWE" %}</th>
+                      <th class="text-center" style="width: 5%">{% translate "CWE" %}</th>
                       <th class="text-center" style="width: 10%">{% translate "Risk Score" %}</th>
                     </tr>
                   </thead>
@@ -133,9 +148,10 @@
 
                   {% for finding in DB_finding_query %}
                     <tr>
+                      <td class=" last" align="center"><a href="/customer/view/{{finding.report.product.customer.id}}">{{ finding.report.product.customer.name }}</a></td>
                       <td class=" last" align="center"><a href="/product/view/{{finding.report.product.id}}">{{ finding.report.product.name }}</a></td>
-
                       <td class=" last" align="center"><a href="/report/view/{{finding.report.id}}">{{ finding.report.title }}</a></td>
+                      <td class=" last" align="center"><a href="/finding/view/{{finding.id}}">{{ finding.status }}</a></td>
 
                       {% if finding.cvss_score >= 9 %}
                         <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#CC0000"><i class="fa fa-exclamation-circle"></i> {{finding.title}}</a></b></td>
@@ -160,7 +176,7 @@
                       {% endif %}
 
                   {% endfor %}
-                    
+
                   </tbody>
             </table>
 
@@ -190,8 +206,8 @@
             var obj = this, args = arguments;
             function delayed () {
                 if (!execAsap)
-                    func.apply(obj, args); 
-                timeout = null; 
+                    func.apply(obj, args);
+                timeout = null;
             }
 
             if (timeout)
@@ -199,11 +215,11 @@
             else if (execAsap)
                 func.apply(obj, args);
 
-            timeout = setTimeout(delayed, threshold || 100); 
+            timeout = setTimeout(delayed, threshold || 100);
         };
     };
 
-    // smartresize 
+    // smartresize
     jQuery.fn[sr] = function(fn){  return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr); };
 
 })(jQuery,'smartresize');

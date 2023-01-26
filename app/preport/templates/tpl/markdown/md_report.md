@@ -1,6 +1,7 @@
 {% load i18n %}
 ---
 title: "{{DB_report_query.title}}"
+customer: "{{DB_report_query.product.customer.name}}"
 product: "{{DB_report_query.product.name}}"
 author: ["{{md_author}}", "Report ID: {{DB_report_query.report_id}}"]
 date: "{{report_date}}"
@@ -11,7 +12,7 @@ website: {{md_website}}
 
 # {% translate "Project Overview" %}
 
-## {% translate "Description" %}
+## {% translate "Product Description" %}
 
 {{DB_report_query.product.description | safe}}
 

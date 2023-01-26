@@ -9,12 +9,12 @@
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
       {% endblock meta %}
 
-      <title>PeTeReport | {% block title %}{% endblock %}</title>
+      <title>{{application_name}} | {% block title %}{% endblock %}</title>
 
       <link rel="shortcut icon" href="/static/favicon.ico" />
 
       {% block stylesheets %}
-      
+
       <!-- Google Font: Source Sans Pro -->
       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
       <!-- Font Awesome -->
@@ -63,7 +63,7 @@
           {% include "home/aside.html" %}
       {% endblock aside_navigation %}
 
-      
+
       <div class="content-wrapper">
           {% block content %}
             <!-- {{ content }} -->
@@ -142,7 +142,7 @@
 
 <!-- Last release ECharts -->
 <script src="/static/echarts.min.js"></script>
-        
+
 
 {% endblock javascripts%}
 
