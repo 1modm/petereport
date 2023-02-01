@@ -18,16 +18,6 @@ class DB_Product(models.Model):
 	description = MartorField()
 
 
-# ---------- Engagement ------------
-
-class DB_Engagement(models.Model):
-	name = models.CharField(max_length=255, blank=False)
-	creation_date = models.DateTimeField(auto_now_add=True)
-	start_date = models.DateTimeField(blank=False)
-	end_date = models.DateTimeField(blank=False)
-	description = MartorField()
-
-
 # ---------- Report ------------
 
 class DB_Report(models.Model):
@@ -108,3 +98,14 @@ class DB_AttackFlow(models.Model):
 	title = models.CharField(blank=False, max_length=200)
 	attackflow_afb = models.TextField(blank=True, null=True)
 	attackflow_png = models.TextField(blank=True, null=True)
+
+
+# ---------- Engagement ------------
+
+class DB_Engagement(models.Model):
+	name = models.CharField(max_length=255, blank=False)
+	creation_date = models.DateTimeField(auto_now_add=True)
+	start_date = models.DateTimeField(blank=False)
+	end_date = models.DateTimeField(blank=False)
+	description = MartorField()
+

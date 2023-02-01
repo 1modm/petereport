@@ -14,10 +14,10 @@ from django.utils.encoding import force_text
 from django.core.serializers.json import DjangoJSONEncoder
 
 # Forms
-from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm
+from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm, NewEngagementForm
 
 # Model
-from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_Custom_field, DB_AttackFlow
+from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_Custom_field, DB_AttackFlow, DB_Engagement
 
 # Decorators
 from .decorators import allowed_users
@@ -196,7 +196,6 @@ def user_list(request):
     group_list = Group.objects.all()
 
     return render(request, 'configuration/user_list.html', {'userList': userList, 'group_list': group_list})
-
 
 
 @login_required
@@ -1956,3 +1955,23 @@ def attackflow_delete(request):
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
+
+
+@login_required
+def engagement_list(request):
+    DB_engagement_query = DB_Engagement.objects.order_by('pk').all()
+
+    return render(request, 'engagement/engagement_list.html', {'DB_engagement_query': DB_engagement_query})
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def engagement_add(request):
+    if request.method == 'POST':
+        form = NewEngagementForm(request.POST)
+        if form.is_valid():
+            engagement = form.save()
+            return redirect('engagement_detail', pk=engagement.pk)
+    else:
+        form = NewEngagementForm()
+    return render(request, 'engagement_add.html', {'form': form})

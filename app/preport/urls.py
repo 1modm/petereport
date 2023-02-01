@@ -76,4 +76,7 @@ urlpatterns = [
     path('attackflow/add_afb/<int:pk>/<int:finding_pk>', views.attackflow_add_afb, name='attackflow_add_afb'),
     path('attackflow/edit_afb/<int:pk>', views.attackflow_edit_afb, name='attackflow_edit_afb'),
     path('attackflow/delete/', views.attackflow_delete, name='attackflow_delete'),
+    # Engagements
+    path('engagement/list/', views.engagement_list, name='engagement_list'),
+    path('engagement/add/', views.engagement_add, name='engagement_add'),
 ]

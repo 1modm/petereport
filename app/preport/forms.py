@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 from django.forms import Textarea, TextInput, DateInput, ModelChoiceField, EmailField, BooleanField
-from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree, DB_Custom_field
+from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_AttackTree, DB_Custom_field, DB_Engagement
 from django.utils.translation import gettext_lazy as _
 
 import datetime
@@ -199,4 +199,20 @@ class NewFieldForm(forms.ModelForm):
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Title")}),
+        }
+
+class NewEngagementForm(forms.ModelForm):
+    class Meta:
+        model = DB_Engagement
+        fields = ('name', 'description', 'start_date', 'end_date')
+
+        widgets = {
+            'name': TextInput(
+                attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Name")}),
+            'description': TextInput(
+                attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Engagement Description")}),
+            'start_date': DateInput(
+                attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'yyyy-mm-dd'",'data-mask': '', 'required': "required"}),
+            'end_date': DateInput(
+                attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'yyyy-mm-dd'",'data-mask': '', 'required': "required"}),
         }
