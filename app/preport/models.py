@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.db import models
-from django.utils import timezone
 from martor.models import MartorField
 from multi_email_field.fields import MultiEmailField
 from django.core.validators import validate_image_file_extension

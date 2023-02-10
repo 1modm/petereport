@@ -2,16 +2,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound, HttpResponseServerError
-from django.utils.html import strip_tags
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
-from django.views.decorators.csrf import csrf_protect
 from django.utils.translation import gettext_lazy as _
 import django.db
 # Forms
@@ -36,15 +32,21 @@ import io
 import os
 from collections import Counter
 import pypandoc
-import cairosvg
-from PIL import Image
 
 # Martor
 from petereport.settings import MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, SERVER_CONF
 
 # PeTeReport config
-from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, PETEREPORT_CONFIG, DEFECTDOJO_CONFIG, DJANGO_CONFIG
+from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG
 
+# Not all Django output can be passed unmodified to json. In particular, lazy
+# translation objects need a special encoder written for them.
+# https://docs.djangoproject.com/en/1.8/topics/serialization/#serialization-formats-json
+class LazyEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Promise):
+            return force_text(obj)
+        return super(LazyEncoder, self).default(obj)
 
 # ----------------------------------------------------------------------
 # https://github.com/agusmakmun/django-markdown-editor/wiki
@@ -84,9 +86,7 @@ def markdown_uploader(request):
 
 
             if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
-
                 image_content_base64 = base64.b64encode(image.read()).decode('utf-8')
-
                 image_content_base64_final = 'data:' + image.content_type +';base64,' + image_content_base64
 
                 data = json.dumps({
@@ -99,7 +99,6 @@ def markdown_uploader(request):
                 img_uuid = "{0}-{1}".format(uuid.uuid4().hex[:10], image.name.replace(' ', '-'))
                 tmp_file = os.path.join(MARTOR_UPLOAD_PATH, img_uuid)
                 def_path = default_storage.save(tmp_file, ContentFile(image.read()))
-                img_url = os.path.join(MEDIA_URL, def_path)
                 # Modified to include server host and port
                 MEDIA_URL_COMPLETE = PETEREPORT_MARKDOWN['media_host'] + MEDIA_URL
                 img_url_complete = os.path.join(MEDIA_URL_COMPLETE, def_path)
@@ -527,7 +526,6 @@ def report_list(request):
 def report_add(request):
 
     today = datetime.date.today().strftime('%Y-%m-%d')
-    nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_id_format = PETEREPORT_TEMPLATES['report_id_format'] + str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))
 
     if request.method == 'POST':
@@ -867,7 +865,6 @@ def reportdownloadhtml(request,pk):
     WARNING = 'FC7F03'
     LOW = '05B04F'
     INFO = '002060'
-    DEBUG = '45A7F7'
 
     # INIT
     template_findings = template_appendix = md_finding_summary = ''
@@ -984,7 +981,7 @@ def reportdownloadhtml(request,pk):
 
     html_file_output = os.path.join(REPORTS_MEDIA_ROOT, pathfile)
 
-    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained'])
+    pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained'])
 
     if os.path.exists(html_file_output):
             with open(html_file_output, 'rb') as fh:
@@ -1017,7 +1014,6 @@ def reportdownloadpdf(request,pk):
     WARNING = 'FFB000'
     LOW = '05B04F'
     INFO = '002060'
-    DEBUG = '45A7F7'
 
     # INIT
     vulnerabilities = []
@@ -1157,7 +1153,7 @@ def reportdownloadpdf(request,pk):
 
     PETEREPORT_LATEX_FILE = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['pdf_latex_template'])
 
-    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings'])
+    pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings'])
     #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
 
     if os.path.exists(pdf_file_output):
@@ -1216,7 +1212,6 @@ def reportdownloadjupyter(request,pk):
             pass
         else:
             counter_finding += 1
-            template_appendix_in_finding = ''
 
             if finding.severity == 'Critical':
                 counter_finding_critical += 1
@@ -1547,10 +1542,11 @@ def defectdojo_products(request,pk):
     DefectDojoApiKey = DEFECTDOJO_CONFIG['apiKey']
 
     headersapi = {'Authorization': DefectDojoApiKey}
+    params = {'limit': 10000}
 
     try:
-        r = requests.get(DefectDojoURLProducts, headers = headersapi, verify=False)
-    except:
+        r = requests.get(DefectDojoURLProducts, params = params, headers = headersapi, verify=False)
+    except requests.exceptions.HTTPError:
         return HttpResponseNotFound(f"Not found. Response error from DefectDojo {DefectDojoURL}")
 
     if not (r.status_code == 200 or r.status_code == 201):
@@ -1561,8 +1557,52 @@ def defectdojo_products(request,pk):
     DDproducts_count = jsondata['count']
     DDproducts = jsondata['results']
 
-    return render(request, 'findings/defectdojo_products.html', {'DB_report_query': DB_report_query, 'DDproducts_count': DDproducts_count, 'DDproducts': DDproducts, 'DefectDojoURL': DefectDojoURL})
+    return render(request, 'defectdojo/defectdojo_products.html', {'DB_report_query': DB_report_query, 'DDproducts_count': DDproducts_count, 'DDproducts': DDproducts, 'DefectDojoURL': DefectDojoURL})
 
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def defectdojo_viewfindings(request,pk,ddpk):
+
+    DB_report_query = get_object_or_404(DB_Report, pk=pk)
+    DefectDojoURL = DEFECTDOJO_CONFIG['DefectDojoURL']
+    DefectDojoURLProducts = f"{DefectDojoURL}/api/v2/products/{ddpk}"
+    DefectDojoApiKey = DEFECTDOJO_CONFIG['apiKey']
+
+    headersapi = {'Authorization': DefectDojoApiKey}
+
+    try:
+        r = requests.get(DefectDojoURLProducts, headers = headersapi, verify=False)
+    except requests.exceptions.HTTPError:
+        return HttpResponseNotFound(f"Not found. Response error from DefectDojo {DefectDojoURL}")
+
+    if not (r.status_code == 200 or r.status_code == 201):
+        return HttpResponseNotFound(f"No data found. Response error from DefectDojo {DefectDojoURL}")
+
+    jsondata = json.loads(r.text)
+    DDproduct_findings_count = jsondata['findings_count']
+    DDproduct_name = jsondata['name']
+    DDproduct_findings_ids = jsondata['findings_list']
+
+    DDproduct_findings = {}
+
+    for finding in DDproduct_findings_ids:
+        DefectDojoURLFindings = f"{DefectDojoURL}/api/v2/findings/{finding}"
+        r = requests.get(DefectDojoURLFindings, headers = headersapi, verify=False)
+
+        jsondata = json.loads(r.text)
+
+        DDproduct_findings[finding] = {}
+
+        DDproduct_findings[finding]['id'] = jsondata['id']
+        DDproduct_findings[finding]['title'] = jsondata['title'] or ""
+        DDproduct_findings[finding]['cvssv3'] = jsondata['cvssv3'] or ""
+        DDproduct_findings[finding]['cvssv3_score'] = jsondata['cvssv3_score'] or 0
+        DDproduct_findings[finding]['cwe'] = jsondata['cwe'] or 0
+        DDproduct_findings[finding]['severity'] = (jsondata['severity']).capitalize() or ""
+
+    return render(request, 'defectdojo/defectdojo_findings_products.html', {'DDproduct_findings_count': DDproduct_findings_count, 'DDproduct_name': DDproduct_name, 'DDproduct_findings': DDproduct_findings, 'DB_report_query': DB_report_query, 'DefectDojoURL': DefectDojoURL})
 
 
 @login_required
@@ -1604,7 +1644,7 @@ def defectdojo_import(request,pk,ddpk):
         finding_hash_code = jsondata['hash_code'] or uuid.uuid4()
         finding_file_path = jsondata['file_path'] or ""
 
-        finding_final_description = finding_description + "\n----------\n" + finding_steps_to_reproduce
+        finding_final_description = (finding_description + "\n----------\n" + finding_steps_to_reproduce).replace("{", "\{\{").replace("}", "\}\}")
 
         cweDB = DB_CWE.objects.filter(cwe_id=finding_cwe).first() or DB_CWE.objects.filter(cwe_id=0).first()
 
@@ -1614,6 +1654,50 @@ def defectdojo_import(request,pk,ddpk):
 
     return redirect('report_view', pk=pk)
 
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def defectdojo_import_finding(request,pk,ddpk):
+
+    DB_report_query = get_object_or_404(DB_Report, pk=pk)
+    DefectDojoURL = DEFECTDOJO_CONFIG['DefectDojoURL']
+    DefectDojoURLFindings = f"{DefectDojoURL}/api/v2/findings/{ddpk}"
+    DefectDojoApiKey = DEFECTDOJO_CONFIG['apiKey']
+
+    headersapi = {'Authorization': DefectDojoApiKey}
+
+    r = requests.get(DefectDojoURLFindings, headers = headersapi, verify=False)
+
+    if not (r.status_code == 200 or r.status_code == 201):
+        return HttpResponseNotFound("Not found. Response error from DefectDojo")
+
+    jsondata = json.loads(r.text)
+
+    jsondata['id']
+    finding_title = jsondata['title'] or ""
+    finding_cvssv3 = jsondata['cvssv3'] or ""
+    finding_cvssv3_score = jsondata['cvssv3_score'] or 0
+    finding_cwe = jsondata['cwe'] or 0
+    finding_severity = (jsondata['severity']).capitalize() or ""
+    finding_description = jsondata['description'] or ""
+    finding_mitigation= jsondata['mitigation'] or ""
+    finding_impact = jsondata['impact'] or ""
+    finding_steps_to_reproduce = jsondata['steps_to_reproduce'] or ""
+    finding_references = jsondata['references'] or ""
+    finding_hash_code = jsondata['hash_code'] or uuid.uuid4()
+    finding_file_path = jsondata['file_path'] or ""
+
+    finding_final_description = (finding_description + "\n----------\n" + finding_steps_to_reproduce).replace("{", "\{\{").replace("}", "\}\}")
+
+
+    cweDB = DB_CWE.objects.filter(cwe_id=finding_cwe).first() or DB_CWE.objects.filter(cwe_id=0).first()
+
+    #Save Finding
+    finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_hash_code, status = 'Open', title=finding_title, severity=finding_severity, cvss_base_score=finding_cvssv3, cvss_score=finding_cvssv3_score, description=finding_final_description, location=finding_file_path, impact=finding_impact, recommendation=finding_mitigation, references=finding_references, cwe=cweDB)
+    finding_to_DB.save()
+
+    return redirect('report_view', pk=pk)
 
 # ----------------------------------------------------------------------
 #                           Appendix
@@ -1937,7 +2021,7 @@ def cwe_add(request):
     else:
         form = NewCWEForm()
         latest_id = DB_CWE.objects.latest('cwe_id').cwe_id
-        next_id = latest_id+1
+        latest_id+1
         #form.fields['cwe_id'].initial = next_id
         #form.fields['cwe_description'].initial = PETEREPORT_TEMPLATES['initial_text']
 

@@ -135,6 +135,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# Petereport Application
 /.vscode
 /petereport.code-workspace
 /app/db/petereport.sqlite3

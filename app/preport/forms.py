@@ -1,5 +1,4 @@
 from django import forms
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, PasswordInput, EmailField, BooleanField, FileInput, ModelMultipleChoiceField
@@ -115,7 +114,7 @@ class NewFindingForm(forms.ModelForm):
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Finding title")}),
             'cvss_base_score': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Base Score")}),
            }
-        
+
 
 
 class NewFindingTemplateForm(forms.ModelForm):
@@ -143,7 +142,7 @@ class NewFindingTemplateForm(forms.ModelForm):
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Finding title")}),
             'cvss_base_score': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Base Score")}),
         }
-        
+
 
 
 
@@ -191,7 +190,7 @@ class AddUserForm(UserCreationForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(AddUserForm, self).__init__(*args, **kwargs) 
+        super(AddUserForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget.attrs.update({'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Username")})
         self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Secret P@ssW0rd'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Secret P@ssW0rd'})

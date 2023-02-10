@@ -6,7 +6,7 @@ import shutil
 
 from termcolor import colored  # pip3 install termcolor
 
-os.environ['DJANGO_SETTINGS_MODULE']= 'petereport.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'petereport.settings'
 django.setup()
 
 from petereport.settings import MEDIA_ROOT, REPORTS_MEDIA_ROOT

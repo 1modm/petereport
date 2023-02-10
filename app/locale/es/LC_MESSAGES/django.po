@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-03 21:30+0000\n"
+"POT-Creation-Date: 2023-01-19 17:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,96 +30,96 @@ msgstr "Español"
 msgid "French"
 msgstr "Francés"
 
-#: preport/forms.py:19 preport/templates/findings/defectdojo_products.html:55
+#: preport/forms.py:17 preport/templates/defectdojo/defectdojo_products.html:55
 #: preport/templates/products/product_add.html:46
 msgid "Product Name"
 msgstr "Nombre del Producto"
 
-#: preport/forms.py:29
+#: preport/forms.py:27
 msgid "(Select a product)"
 msgstr "(Seleccionar un Producto)"
 
-#: preport/forms.py:41
+#: preport/forms.py:39
 msgid "Report Name"
 msgstr "Nombre del informe"
 
-#: preport/forms.py:53 preport/forms.py:86
+#: preport/forms.py:51 preport/forms.py:84
 msgid "(Select severity)"
 msgstr "(Seleccionar Severidad)"
 
-#: preport/forms.py:54 preport/forms.py:87
+#: preport/forms.py:52 preport/forms.py:85
 #: preport/templates/reports/report_view.html:93
 #: preport/templates/tpl/jupyter/report.ipynb:41
 msgid "Critical"
 msgstr "Critico"
 
-#: preport/forms.py:55 preport/forms.py:88
+#: preport/forms.py:53 preport/forms.py:86
 #: preport/templates/reports/report_view.html:105
 #: preport/templates/tpl/jupyter/report.ipynb:41
 msgid "High"
 msgstr "Alto"
 
-#: preport/forms.py:56 preport/forms.py:89
+#: preport/forms.py:54 preport/forms.py:87
 #: preport/templates/reports/report_view.html:117
 #: preport/templates/tpl/jupyter/report.ipynb:41
 msgid "Medium"
 msgstr "Moderado"
 
-#: preport/forms.py:57 preport/forms.py:90
+#: preport/forms.py:55 preport/forms.py:88
 #: preport/templates/reports/report_view.html:128
 #: preport/templates/tpl/jupyter/report.ipynb:41
 msgid "Low"
 msgstr "Bajo"
 
-#: preport/forms.py:58 preport/forms.py:91
+#: preport/forms.py:56 preport/forms.py:89
 #: preport/templates/reports/report_view.html:140
 msgid "Info"
 msgstr "Info"
 
-#: preport/forms.py:59 preport/forms.py:92
+#: preport/forms.py:57 preport/forms.py:90
 #: preport/templates/reports/report_view.html:151
 msgid "None"
 msgstr "Ninguno"
 
-#: preport/forms.py:63
+#: preport/forms.py:61
 msgid "(Select status)"
 msgstr "(Seleccionar estado)"
 
-#: preport/forms.py:64
+#: preport/forms.py:62
 msgid "Open"
 msgstr "Abierto"
 
-#: preport/forms.py:65
+#: preport/forms.py:63
 msgid "Closed"
 msgstr "Cerrado"
 
-#: preport/forms.py:68 preport/forms.py:97
+#: preport/forms.py:66 preport/forms.py:95
 msgid "Critical/High/Medium/Low/Info/None"
 msgstr "Critica/Alto/Moderado/Bajo/Info/Ninguna"
 
-#: preport/forms.py:69
+#: preport/forms.py:67
 msgid "Open/Close"
 msgstr "Abierto/Cerrado"
 
-#: preport/forms.py:70 preport/forms.py:98
+#: preport/forms.py:68 preport/forms.py:96
 msgid "(Select a CWE)"
 msgstr "(Seleccionar CWE)"
 
-#: preport/forms.py:77 preport/forms.py:105
+#: preport/forms.py:75 preport/forms.py:103
 #: preport/templates/findings/template_list.html:48
 #: preport/templates/findings/templateaddfinding.html:55
 msgid "Finding title"
 msgstr "Titulo del hallazgo"
 
-#: preport/forms.py:78 preport/forms.py:106
+#: preport/forms.py:76 preport/forms.py:104
 msgid "CVSS Base Score"
 msgstr "Puntuación CVSS"
 
-#: preport/forms.py:125
+#: preport/forms.py:123
 msgid "(Select a finding)"
 msgstr "(Seleccionar Hallazgo)"
 
-#: preport/forms.py:132 preport/forms.py:178 preport/forms.py:203
+#: preport/forms.py:130 preport/forms.py:176 preport/forms.py:201
 #: preport/templates/appendix/appendix_view.html:47
 #: preport/templates/attackflow/reportfindings.html:53
 #: preport/templates/cwe/cwe_list.html:48
@@ -136,27 +136,27 @@ msgstr "(Seleccionar Hallazgo)"
 msgid "Title"
 msgstr "Título"
 
-#: preport/forms.py:140
+#: preport/forms.py:138
 msgid "(Select a group)"
 msgstr "(Selecciona un grupo)"
 
-#: preport/forms.py:143
+#: preport/forms.py:141
 msgid "E-mail address"
 msgstr "Dirección de correo electrónico"
 
-#: preport/forms.py:151 preport/forms.py:157
+#: preport/forms.py:149 preport/forms.py:155
 msgid "Username"
 msgstr "Usuario"
 
-#: preport/forms.py:179
+#: preport/forms.py:177
 msgid "Attack Tree"
 msgstr "Flujo de ataque"
 
-#: preport/forms.py:191 preport/templates/cwe/cwe_add.html:56
+#: preport/forms.py:189 preport/templates/cwe/cwe_add.html:56
 msgid "CWE Name"
 msgstr "Nombre del CWE"
 
-#: preport/forms.py:192 preport/templates/cwe/cwe_add.html:63
+#: preport/forms.py:190 preport/templates/cwe/cwe_add.html:63
 msgid "CWE Description"
 msgstr "Descripción del CWE"
 
@@ -191,9 +191,10 @@ msgstr "Informe"
 #: preport/templates/configuration/user_add.html:16
 #: preport/templates/configuration/user_list.html:22
 #: preport/templates/cwe/cwe_add.html:24 preport/templates/cwe/cwe_list.html:23
+#: preport/templates/defectdojo/defectdojo_findings_products.html:23
+#: preport/templates/defectdojo/defectdojo_products.html:23
 #: preport/templates/findings/custom_field_add.html:22
 #: preport/templates/findings/custom_fields.html:24
-#: preport/templates/findings/defectdojo_products.html:23
 #: preport/templates/findings/finding_add.html:21
 #: preport/templates/findings/finding_view.html:26
 #: preport/templates/findings/findings_list.html:24
@@ -215,6 +216,7 @@ msgstr "Inicio"
 #: preport/templates/appendix/appendix_add.html:48
 #: preport/templates/appendix/reportappendix.html:70
 #: preport/templates/attackflow/reportattackflow.html:75
+#: preport/templates/defectdojo/defectdojo_findings_products.html:59
 #: preport/templates/findings/custom_field_add.html:18
 #: preport/templates/findings/custom_fields.html:20
 #: preport/templates/findings/finding_add.html:4
@@ -255,7 +257,7 @@ msgstr "Detalles del apéndice"
 
 #: preport/templates/appendix/appendix_view.html:70
 #: preport/templates/cwe/cwe_list.html:51
-#: preport/templates/findings/defectdojo_products.html:57
+#: preport/templates/defectdojo/defectdojo_products.html:57
 #: preport/templates/findings/finding_view.html:203
 #: preport/templates/findings/template_view.html:159
 #: preport/templates/products/product_view.html:105
@@ -280,8 +282,9 @@ msgstr "Añadir apéndice"
 #: preport/templates/attackflow/reportfindings.html:57
 #: preport/templates/configuration/user_list.html:62
 #: preport/templates/cwe/cwe_list.html:53
+#: preport/templates/defectdojo/defectdojo_findings_products.html:61
+#: preport/templates/defectdojo/defectdojo_products.html:58
 #: preport/templates/findings/custom_fields.html:60
-#: preport/templates/findings/defectdojo_products.html:58
 #: preport/templates/findings/reportfindings.html:83
 #: preport/templates/findings/template_list.html:51
 #: preport/templates/findings/templateaddfinding.html:58
@@ -413,7 +416,7 @@ msgstr "Eliminar flujo de ataque"
 
 #: preport/templates/attackflow/reportfindings.html:17
 #: preport/templates/attackflow/reportfindings.html:36
-#: preport/templates/findings/defectdojo_products.html:56
+#: preport/templates/defectdojo/defectdojo_products.html:56
 #: preport/templates/findings/findings_list.html:6
 #: preport/templates/findings/reportfindings.html:5
 #: preport/templates/findings/reportfindings.html:19
@@ -428,6 +431,7 @@ msgid "Findings"
 msgstr "Hallazgos"
 
 #: preport/templates/attackflow/reportfindings.html:54
+#: preport/templates/defectdojo/defectdojo_findings_products.html:60
 #: preport/templates/findings/finding_add.html:62
 #: preport/templates/findings/finding_view.html:140
 #: preport/templates/findings/findings_list.html:59
@@ -574,6 +578,43 @@ msgstr "CWEs"
 msgid "Delete CWE"
 msgstr "Eliminar CWE"
 
+#: preport/templates/defectdojo/defectdojo_findings_products.html:7
+#: preport/templates/defectdojo/defectdojo_products.html:7
+msgid "DefectDojo Import"
+msgstr "Importar desde DefectDojo"
+
+#: preport/templates/defectdojo/defectdojo_findings_products.html:19
+#: preport/templates/defectdojo/defectdojo_products.html:19
+msgid "Import DefectDojo Findings into"
+msgstr "Importar hallazgos desde DefectDojo"
+
+#: preport/templates/defectdojo/defectdojo_findings_products.html:41
+msgid "DefectDojo Product Findings"
+msgstr "Hallazgos en Productos de DefectDojo"
+
+#: preport/templates/defectdojo/defectdojo_findings_products.html:58
+#: preport/templates/defectdojo/defectdojo_products.html:54
+#: preport/templates/products/product_view.html:139
+#: preport/templates/reports/report_list.html:47
+msgid "ID"
+msgstr "ID"
+
+#: preport/templates/defectdojo/defectdojo_findings_products.html:81
+msgid "Import Finding"
+msgstr "Importar Hallazgos"
+
+#: preport/templates/defectdojo/defectdojo_products.html:37
+msgid "DefectDojo Products"
+msgstr "Productos definidos en DefectDojo"
+
+#: preport/templates/defectdojo/defectdojo_products.html:79
+msgid "Import All Findings"
+msgstr "Importar todos los hallazgos"
+
+#: preport/templates/defectdojo/defectdojo_products.html:80
+msgid "View Findings"
+msgstr "Ver Hallazgos"
+
 #: preport/templates/findings/custom_field_add.html:5
 msgid "Custom Fields"
 msgstr "Campos personalizados"
@@ -607,28 +648,6 @@ msgstr "Eliminar campo personalizado"
 #: preport/templates/findings/custom_fields.html:96
 msgid "Delete Custom Field"
 msgstr "Eliminar  campo personalizado"
-
-#: preport/templates/findings/defectdojo_products.html:7
-msgid "DefectDojo Import"
-msgstr "Importar desde DefectDojo"
-
-#: preport/templates/findings/defectdojo_products.html:19
-msgid "Import DefectDojo Findings into"
-msgstr "Importar hallazgos desde DefectDojo"
-
-#: preport/templates/findings/defectdojo_products.html:37
-msgid "DefectDojo Products"
-msgstr "Productos definidos en DefectDojo"
-
-#: preport/templates/findings/defectdojo_products.html:54
-#: preport/templates/products/product_view.html:139
-#: preport/templates/reports/report_list.html:47
-msgid "ID"
-msgstr "ID"
-
-#: preport/templates/findings/defectdojo_products.html:79
-msgid "Import Findings"
-msgstr "Importar Hallazgos"
 
 #: preport/templates/findings/finding_add.html:54
 #: preport/templates/findings/finding_view.html:131
@@ -1145,26 +1164,26 @@ msgstr "Notas adicionales"
 msgid "Informational"
 msgstr "Configuración"
 
-#: preport/views.py:69
+#: preport/views.py:74
 msgid "Bad image format."
 msgstr "Formato de imagen incorrecto."
 
-#: preport/views.py:80
+#: preport/views.py:85
 msgid "Maximum image file is %(size) MB."
 msgstr "El archivo de imagen máximo es %(size) MB."
 
-#: preport/views.py:115 preport/views.py:116
+#: preport/views.py:120 preport/views.py:121
 msgid "Invalid request!"
 msgstr "Petición no válida."
 
-#: preport/views.py:599 preport/views.py:712 preport/views.py:852
+#: preport/views.py:604 preport/views.py:716 preport/views.py:843
 msgid "# Additional Notes"
 msgstr "# Notas adicionales"
 
-#: preport/views.py:629 preport/views.py:763 preport/views.py:925
+#: preport/views.py:634 preport/views.py:762 preport/views.py:906
 msgid "**Additional notes**"
 msgstr "**Notas adicionales**"
 
-#: preport/views.py:641 preport/views.py:777 preport/views.py:942
+#: preport/views.py:646 preport/views.py:776 preport/views.py:923
 msgid "**Attack Flow**"
 msgstr "**Flujo de ataque**"

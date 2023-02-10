@@ -16,7 +16,7 @@ from pathlib import Path
 import time
 import os
 from config.startup import *
-from config.petereport_config import PETEREPORT_CONFIG, PETEREPORT_TEMPLATES, DJANGO_CONFIG
+from config.petereport_config import PETEREPORT_TEMPLATES, DJANGO_CONFIG
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
