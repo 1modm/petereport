@@ -9,6 +9,10 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 from django.utils.translation import gettext_lazy as _
+from django.utils.functional import Promise
+from django.utils.encoding import force_str
+from django.core.serializers.json import DjangoJSONEncoder
+
 import django.db
 # Forms
 from .forms import NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm
@@ -37,7 +41,7 @@ import pypandoc
 from petereport.settings import MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, SERVER_CONF
 
 # PeTeReport config
-from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG
+from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_CONFIG, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG
 
 # Not all Django output can be passed unmodified to json. In particular, lazy
 # translation objects need a special encoder written for them.
@@ -45,7 +49,7 @@ from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, 
 class LazyEncoder(DjangoJSONEncoder):
     def default(self, obj):
         if isinstance(obj, Promise):
-            return force_text(obj)
+            return force_str(obj)
         return super(LazyEncoder, self).default(obj)
 
 # ----------------------------------------------------------------------
