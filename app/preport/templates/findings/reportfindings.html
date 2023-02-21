@@ -16,11 +16,12 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>{{DB_report_query.title}} {% translate "Findings" %}</h1>
+          <h1>{{DB_report_query.title}} - {% translate "Findings" %}</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+            <li class="breadcrumb-item"><a href="/customer/view/{{ DB_report_query.product.customer.pk}}">{{ DB_report_query.product.customer.name}}</a></li>
             <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
             <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
           </ol>
@@ -77,10 +78,11 @@
                         <thead>
                           <tr>
                             <th style="width: 40%">{% translate "Title" %}</th>
-                            <th style="width: 10%">{% translate "Status" %}</th>
+                            <th style="width: 5%">{% translate "Status" %}</th>
                             <th style="width: 5%">{% translate "Severity" %}</th>
                             <th style="width: 10%">{% translate "CVSS Score" %}</th>
                             <th style="width: 5%">{% translate "CWE" %}</th>
+                            <th style="width: 5%">{% translate "OWASP" %}</th>
                             <th style="width: 30%"class="text-center">{% translate "Actions" %}</th>
                           </tr>
                         </thead>
@@ -116,7 +118,18 @@
                                       {{ finding.cvss_score }}
                                   </td>
                                   <td>
+                                    {% if finding.cwe.cwe_id == -1 %}
+                                      -
+                                    {% else %}
                                       <a href="https://cwe.mitre.org/data/definitions/{{finding.cwe.cwe_id}}.html">{{ finding.cwe.cwe_id }}</a>
+                                    {% endif %}
+                                  </td>
+                                  <td>
+                                    {% if finding.owasp.owasp_id == -1 %}
+                                      -
+                                    {% else %}
+                                      <a href="{{ finding.owasp.owasp_url }}">{{ finding.owasp.owasp_full_id }}</a>
+                                    {% endif %}
                                   </td>
                                   <td align="center">
                                       <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>

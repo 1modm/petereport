@@ -4,8 +4,32 @@ from django.db import models
 from martor.models import MartorField
 from multi_email_field.fields import MultiEmailField
 from django.core.validators import validate_image_file_extension
+from taggit.managers import TaggableManager
 
 import pathlib
+
+
+# ---------- OWASP ------------
+
+class DB_OWASP(models.Model):
+	owasp_id = models.IntegerField(blank=False, unique=True)
+	owasp_year = models.IntegerField(blank=False, unique=False)
+	owasp_name = models.CharField(max_length=255, blank=True)
+	owasp_description = models.TextField(blank=True)
+	owasp_url = models.CharField(max_length=255, blank=True)
+	owasp_full_id = models.CharField(max_length=20, blank=True)
+	class Meta:
+		verbose_name_plural = "OWASPs"
+	def __str__(self):
+		return str(self.owasp_id)
+	def save(self, *args, **kwargs):
+		prefix = 'A'
+		if self.owasp_id < 0:
+			self.owasp_full_id = "-1"
+		elif self.owasp_id < 10:
+			prefix += '0'
+		self.owasp_full_id = prefix + str(self.owasp_id) + ':' + str(self.owasp_year)
+		super().save(*args, **kwargs)
 
 # ---------- CWE ------------
 
@@ -16,7 +40,7 @@ class DB_CWE(models.Model):
 	class Meta:
 		verbose_name_plural = "CWEs"
 	def __str__(self):
-		return self.cwe_id
+		return str(self.cwe_id)
 
 # ---------- Customer ------------
 
@@ -26,6 +50,7 @@ class DB_Customer(models.Model):
 	contact_sp_mail = models.EmailField(max_length=255, blank=True)
 	contact_dp_mail = models.EmailField(max_length=255, blank=True)
 	description = MartorField()
+	tags = TaggableManager(blank=True)
 	class Meta:
 		verbose_name_plural = "Customers"
 	def __str__(self):
@@ -37,6 +62,7 @@ class DB_Product(models.Model):
 	customer = models.ForeignKey(DB_Customer, blank=True, null=True, on_delete=models.CASCADE)
 	name = models.CharField(max_length=255, blank=False)
 	description = MartorField()
+	tags = TaggableManager(blank=True)
 	class Meta:
 		verbose_name_plural = "Products"
 	def __str__(self):
@@ -45,13 +71,13 @@ class DB_Product(models.Model):
 # ---------- Settings ------------
 
 def logo_dst(instance, filename):
-    # File will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'images/company_picture{}'.format(pathlib.Path(filename).suffix)
 
 class DB_Settings(models.Model):
 	company_name = models.CharField(max_length=255, blank=False)
 	company_website = models.CharField(max_length=255, blank=True)
 	company_address = models.CharField(max_length=255, blank=True)
+	# File will be uploaded to MEDIA_ROOT/images/<filename>
 	company_picture = models.ImageField(upload_to=logo_dst, blank=True)
 	def save(self, *args, **kwargs):
 		if self.__class__.objects.count():
@@ -67,7 +93,8 @@ class DB_Report(models.Model):
 	report_id = models.CharField(max_length=255, blank=False, unique=True)
 	title = models.CharField(max_length=255, blank=False)
 	executive_summary_image = models.TextField(blank=True, null=True)
-	categories_summary_image = models.TextField(blank=True, null=True)
+	cwe_categories_summary_image = models.TextField(blank=True, null=True)
+	owasp_categories_summary_image = models.TextField(blank=True, null=True)
 	executive_summary = MartorField()
 	scope = MartorField()
 	outofscope = MartorField()
@@ -75,6 +102,7 @@ class DB_Report(models.Model):
 	recommendation = MartorField()
 	creation_date = models.DateTimeField(auto_now_add=True)
 	report_date = models.DateTimeField(blank=False)
+	tags = TaggableManager(blank=True)
 	def __str__(self):
 		return self.title
 	class Meta:
@@ -86,7 +114,7 @@ class DB_Report(models.Model):
 class DB_Finding(models.Model):
 	report = models.ForeignKey(DB_Report, on_delete=models.CASCADE)
 	finding_id = models.CharField(blank=True, max_length=200)
-	status = models.CharField(blank=True, max_length=200, default="Open")
+	status = models.CharField(blank=True, max_length=200, default="Opened")
 	created_at = models.DateTimeField(auto_now_add=True)
 	closed_at = models.DateTimeField(blank=True, null=True)
 	title = models.CharField(blank=True, max_length=200)
@@ -98,7 +126,10 @@ class DB_Finding(models.Model):
 	impact = MartorField(blank=True)
 	recommendation = MartorField(blank=True)
 	references = MartorField(blank=True)
-	cwe = models.ForeignKey(DB_CWE, on_delete=models.CASCADE)
+	poc = MartorField(blank=True)
+	cwe = models.ForeignKey(DB_CWE, default=0, on_delete=models.SET_DEFAULT, null=False, blank=False)
+	owasp = models.ForeignKey(DB_OWASP, default=0, on_delete=models.SET_DEFAULT, null=False, blank=False)
+	tags = TaggableManager(blank=True)
 
 	def __str__(self):
 		return self.title
@@ -124,7 +155,9 @@ class DB_Finding_Template(models.Model):
 	impact = MartorField(blank=True)
 	recommendation = MartorField(blank=True)
 	references = MartorField(blank=True)
-	cwe = models.ForeignKey(DB_CWE, on_delete=models.CASCADE)
+	cwe = models.ForeignKey(DB_CWE, default=0, on_delete=models.SET_DEFAULT, null=False, blank=False)
+	owasp = models.ForeignKey(DB_OWASP, default=0, on_delete=models.SET_DEFAULT, null=False, blank=False)
+	tags = TaggableManager(blank=True)
 
 # ---------- Appendix ------------
 

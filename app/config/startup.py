@@ -24,7 +24,8 @@ def createSettings():
             company_settings =DB_Settings(
                 company_name = PETEREPORT_CONFIG['company_name'],
                 company_website = PETEREPORT_CONFIG['company_website'],
-                company_address = PETEREPORT_CONFIG['company_address']
+                company_address = PETEREPORT_CONFIG['company_address'],
+                company_picture = PETEREPORT_CONFIG['company_picture']
             )
             company_settings.save()
 

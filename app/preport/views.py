@@ -15,10 +15,10 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 import django.db
 # Forms
-from .forms import NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm
+from .forms import NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm
 
 # Model
-from .models import DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_Custom_field, DB_AttackFlow
+from .models import DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow
 
 # Decorators
 from .decorators import allowed_users
@@ -118,6 +118,25 @@ def markdown_uploader(request):
         return HttpResponse(_('Invalid request!'))
     return HttpResponse(_('Invalid request!'))
 
+# ----------------------------------------------------------------------
+#                           header & footer
+# ----------------------------------------------------------------------
+
+
+def header_footer_data(request):
+    application_license = PETEREPORT_CONFIG['application_license']
+    application_name = PETEREPORT_CONFIG['application_name']
+    company_name = DB_Settings.objects.get().company_name
+    company_picture = DB_Settings.objects.get().company_picture
+    company_website = DB_Settings.objects.get().company_website
+
+    return {'application_name': application_name,
+            'application_license': application_license,
+            'company_name': company_name,
+            'company_picture': company_picture,
+            'company_website': company_website,
+            }
+
 
 # ----------------------------------------------------------------------
 #                           index
@@ -127,12 +146,6 @@ def markdown_uploader(request):
 
 @login_required
 def index(request):
-
-    application_license = PETEREPORT_CONFIG['application_license']
-    application_name = PETEREPORT_CONFIG['application_name']
-    company_name = DB_Settings.objects.get().company_name
-    company_picture = DB_Settings.objects.get().company_picture
-    company_website = DB_Settings.objects.get().company_website
     DB_customer_query = DB_Customer.objects.order_by('name')
     DB_product_query = DB_Product.objects.order_by('name')
 
@@ -165,11 +178,16 @@ def index(request):
 
     DB_finding_query = DB_Finding.objects.order_by('cvss_score').reverse()
 
+    # CWE - OWASP
     cwe_rows = []
+    owasp_rows = []
 
     for finding in DB_finding_query:
         finding_cwe = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
         cwe_rows.append(finding_cwe)
+
+        finding_owasp = f"OWASP-{finding.owasp.owasp_full_id} - {finding.owasp.owasp_name}"
+        owasp_rows.append(finding_owasp)
 
     cwe_cat = Counter(cwe_rows)
     cwe_categories = []
@@ -183,6 +201,17 @@ def index(request):
 
         cwe_categories.append(dict_cwe)
 
+    owasp_cat = Counter(owasp_rows)
+    owasp_categories = []
+
+    for key_owasp, value_owasp in owasp_cat.items():
+        fixed_key_owasp = '\n'.join(key_owasp[i:i+60] for i in range(0, len(key_owasp), 60))
+        dict_owasp = {
+            "value": value_owasp,
+            "name": fixed_key_owasp
+        }
+
+        owasp_categories.append(dict_owasp)
 
     # TOP 10 findings
     DB_finding_query = DB_finding_query[:10]
@@ -195,11 +224,8 @@ def index(request):
                                                  'count_product_findings_medium': count_product_findings_medium,
                                                  'DB_finding_query':DB_finding_query,
                                                  'cwe_categories': cwe_categories,
-                                                 'application_name': application_name,
-                                                 'application_license': application_license,
-                                                 'company_name': company_name,
-                                                 'company_picture': company_picture,
-                                                 'company_website': company_website})
+                                                 'owasp_categories': owasp_categories,
+                                                 })
 
 
 # ----------------------------------------------------------------------
@@ -304,7 +330,7 @@ def settings(request):
         form = NewSettingsForm(instance=DB_settings_query)
 
     return render(request, 'settings/settings.html', {
-        'form': form
+        'form': form,
     })
 
 # ----------------------------------------------------------------------
@@ -337,6 +363,7 @@ def customer_add(request):
         if form.is_valid():
             prod = form.save(commit=False)
             prod.save()
+            form.save_m2m() # Save tags
             return redirect('customer_list')
     else:
         form = NewCustomerForm()
@@ -360,6 +387,7 @@ def customer_edit(request,pk):
         if form.is_valid():
             prod = form.save(commit=False)
             prod.save()
+            form.save_m2m() # Save tags
             return redirect('customer_list')
     else:
         DB_customer_query.contact_list = "\n".join(DB_customer_query.contact_list)
@@ -396,6 +424,8 @@ def customer_view(request,pk):
     DB_report_query = DB_Report.objects.filter(product__in = DB_product_query)
     count_customer_product = DB_product_query.count()
     count_customer_report = DB_report_query.count()
+    customer_tags = u", ".join(o.name for o in DB_customer_query.tags.all())
+    print(customer_tags)
     customer_findings = {}
     count_customer_findings_total = 0
     count_customer_findings_critical_high = 0
@@ -410,7 +440,7 @@ def customer_view(request,pk):
             if finding.severity == 'High' or finding.severity == 'Critical':
                 count_customer_findings_critical_high += 1
 
-    return render(request, 'customers/customer_view.html', {'pk': pk, 'DB_customer_query': DB_customer_query, 'DB_product_query': DB_product_query, 'DB_report_query': DB_report_query, 'count_customer_product': count_customer_product, 'count_customer_report': count_customer_report, 'customer_findings': customer_findings, 'count_customer_findings_total': count_customer_findings_total, 'count_customer_findings_critical_high': count_customer_findings_critical_high})
+    return render(request, 'customers/customer_view.html', {'pk': pk, 'DB_customer_query': DB_customer_query, 'DB_product_query': DB_product_query, 'DB_report_query': DB_report_query, 'count_customer_product': count_customer_product, 'count_customer_report': count_customer_report, 'customer_findings': customer_findings, 'count_customer_findings_total': count_customer_findings_total, 'count_customer_findings_critical_high': count_customer_findings_critical_high, 'customer_tags':customer_tags})
 
 # ----------------------------------------------------------------------
 #                           Products
@@ -439,6 +469,7 @@ def product_add(request):
         if form.is_valid():
             prod = form.save(commit=False)
             prod.save()
+            form.save_m2m() # Save tags
             return redirect('product_list')
     else:
         form = NewProductForm()
@@ -460,6 +491,7 @@ def product_edit(request,pk):
         if form.is_valid():
             prod = form.save(commit=False)
             prod.save()
+            form.save_m2m() # Save tags
             return redirect('product_list')
     else:
         form = NewProductForm(instance=DB_product_query)
@@ -491,6 +523,7 @@ def product_view(request,pk):
     DB_product_query = get_object_or_404(DB_Product, pk=pk)
     DB_report_query = DB_Report.objects.filter(product=DB_product_query).order_by('creation_date').reverse()
     count_product_report = DB_report_query.count()
+    product_tags = u", ".join(o.name for o in DB_product_query.tags.all())
     product_findings = {}
     count_product_findings_total = 0
     count_product_findings_critical_high = 0
@@ -507,7 +540,7 @@ def product_view(request,pk):
             elif finding.severity == 'Medium':
                 count_product_findings_medium += 1
 
-    return render(request, 'products/product_view.html', {'pk': pk, 'DB_product_query': DB_product_query, 'DB_report_query': DB_report_query, 'count_product_report': count_product_report, 'product_findings': count_product_findings_total, 'count_product_findings_critical_high': count_product_findings_critical_high, 'count_product_findings_medium': count_product_findings_medium})
+    return render(request, 'products/product_view.html', {'pk': pk, 'DB_product_query': DB_product_query, 'DB_report_query': DB_report_query, 'count_product_report': count_product_report, 'product_findings': count_product_findings_total, 'count_product_findings_critical_high': count_product_findings_critical_high, 'count_product_findings_medium': count_product_findings_medium, 'product_tags': product_tags})
 
 
 
@@ -537,6 +570,7 @@ def report_add(request):
         if form.is_valid():
             report = form.save(commit=False)
             report.save()
+            form.save_m2m() # Save tags
             return redirect('report_view', pk=report.pk)
     else:
         form = NewReportForm()
@@ -614,6 +648,7 @@ def report_edit(request,pk):
         form = NewReportForm(request.POST, instance=report)
         if form.is_valid():
             form.save()
+            form.save_m2m() # Save tags
             return redirect('report_view', pk=report.pk)
     else:
         form = NewReportForm(instance=report)
@@ -628,6 +663,7 @@ def report_view(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
     count_finding_query = DB_finding_query.count()
+    report_tags = u", ".join(o.name for o in DB_Report.tags.all())
 
     DB_appendix_query = DB_Appendix.objects.filter(finding__in=DB_finding_query)
     count_appendix_query = DB_appendix_query.count()
@@ -643,6 +679,7 @@ def report_view(request,pk):
     count_findings_none = 0
 
     cwe_rows = []
+    owasp_rows = []
 
     for finding in DB_finding_query:
         # Only reporting Critical/High/Medium/Low/Info findings
@@ -652,6 +689,8 @@ def report_view(request,pk):
 
             finding_cwe = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
             cwe_rows.append(finding_cwe)
+            finding_owasp = f"OWASP-{finding.owasp.owasp_full_id} - {finding.owasp.owasp_name}"
+            owasp_rows.append(finding_owasp)
 
             if finding.severity == 'Critical':
                 count_findings_critical += 1
@@ -666,7 +705,6 @@ def report_view(request,pk):
 
 
     cwe_cat = Counter(cwe_rows)
-
     cwe_categories = []
 
     for key_cwe, value_cwe in cwe_cat.items():
@@ -677,11 +715,33 @@ def report_view(request,pk):
         }
         cwe_categories.append(dict_cwe)
 
+    owasp_cat = Counter(owasp_rows)
+    owasp_categories = []
 
-    return render(request, 'reports/report_view.html', {'DB_appendix_query': DB_appendix_query, 'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_appendix_query': count_appendix_query, 'count_finding_query': count_finding_query, 'count_findings_critical': count_findings_critical, 'count_findings_high': count_findings_high, 'count_findings_medium': count_findings_medium, 'count_findings_low': count_findings_low, 'count_findings_info': count_findings_info, 'count_findings_none': count_findings_none, 'cwe_categories': cwe_categories, 'DB_attackflow_query': DB_attackflow_query, 'count_attackflow_query': count_attackflow_query})
+    for key_owasp, value_owasp in owasp_cat.items():
+        fixed_key_owasp = '\n'.join(key_owasp[i:i+60] for i in range(0, len(key_owasp), 60))
+        dict_owasp = {
+            "value": value_owasp,
+            "name": fixed_key_owasp
+        }
+        owasp_categories.append(dict_owasp)
 
-
-
+    return render(request, 'reports/report_view.html',{ 'DB_appendix_query': DB_appendix_query,
+                                                        'DB_report_query': DB_report_query,
+                                                        'DB_finding_query': DB_finding_query,
+                                                        'count_appendix_query': count_appendix_query,
+                                                        'count_finding_query': count_finding_query,
+                                                        'count_findings_critical': count_findings_critical,
+                                                        'count_findings_high': count_findings_high,
+                                                        'count_findings_medium': count_findings_medium,
+                                                        'count_findings_low': count_findings_low,
+                                                        'count_findings_info': count_findings_info,
+                                                        'count_findings_none': count_findings_none,
+                                                        'cwe_categories': cwe_categories,
+                                                        'owasp_categories': owasp_categories,
+                                                        'DB_attackflow_query': DB_attackflow_query,
+                                                        'count_attackflow_query': count_attackflow_query,
+                                                        'reports_tags': report_tags})
 
 
 @login_required
@@ -697,15 +757,22 @@ def uploadsummaryfindings(request,pk):
         ext = format.split('/')[-1]
         dataimgSeveritybar = ContentFile(base64.b64decode(summary_finding_file_str))
 
-        # Categories
-        summary_categories_file_base64 = request.POST['file_cwe']
-        format, summary_categories_finding_file_str = summary_categories_file_base64.split(';base64,')
+        # CWE Categories
+        cwe_summary_categories_file_base64 = request.POST['file_cwe']
+        format, cwe_summary_categories_finding_file_str = cwe_summary_categories_file_base64.split(';base64,')
         ext = format.split('/')[-1]
-        dataCWE = ContentFile(base64.b64decode(summary_categories_finding_file_str))
+        dataCWE = ContentFile(base64.b64decode(cwe_summary_categories_finding_file_str))
+
+         # OWASP Categories
+        owasp_summary_categories_file_base64 = request.POST['file_owasp']
+        format, owasp_summary_categories_finding_file_str = owasp_summary_categories_file_base64.split(';base64,')
+        ext = format.split('/')[-1]
+        dataOWASP = ContentFile(base64.b64decode(owasp_summary_categories_finding_file_str))
 
         if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
             DB_report_query.executive_summary_image = summary_finding_file_base64
-            DB_report_query.categories_summary_image = summary_categories_file_base64
+            DB_report_query.cwe_categories_summary_image = cwe_summary_categories_file_base64
+            DB_report_query.owasp_categories_summary_image = owasp_summary_categories_file_base64
             DB_report_query.save()
 
 
@@ -774,10 +841,12 @@ def reportdownloadmarkdown(request,pk):
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
         report_executive_summary_image = DB_report_query.executive_summary_image
-        report_executive_categories_image = DB_report_query.categories_summary_image
+        report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
+        report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
     elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
         report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-        report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
+        report_cwe_categories_image = f"{SERVER_CONF}{DB_report_query.cwe_categories_summary_image}"
+        report_owasp_categories_image = f"{SERVER_CONF}{DB_report_query.owasp_categories_summary_image}"
 
     # Appendix
     template_appendix = _('# Additional Notes') + "\n\n"
@@ -834,7 +903,17 @@ def reportdownloadmarkdown(request,pk):
 
             template_findings += ''.join(md_finding)
 
-    render_md = render_to_string('tpl/markdown/md_report.md', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
+    render_md = render_to_string('tpl/markdown/md_report.md', { 'DB_report_query': DB_report_query,
+                                                                'template_findings': template_findings,
+                                                                'template_appendix': template_appendix,
+                                                                'finding_summary': md_finding_summary,
+                                                                'md_author': md_author,
+                                                                'report_date': report_date,
+                                                                'md_subject': md_subject,
+                                                                'md_website': md_website,
+                                                                'report_executive_summary_image': report_executive_summary_image,
+                                                                'report_cwe_categories_image': report_cwe_categories_image,
+                                                                'report_owasp_categories_image': report_owasp_categories_image,})
 
     final_markdown = textwrap.dedent(render_md)
     final_markdown_output = mark_safe(final_markdown)
@@ -882,10 +961,12 @@ def reportdownloadhtml(request,pk):
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
         report_executive_summary_image = DB_report_query.executive_summary_image
-        report_executive_categories_image = DB_report_query.categories_summary_image
+        report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
+        report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
     elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
         report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-        report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
+        report_cwe_categories_image = f"{SERVER_CONF}{DB_report_query.cwe_categories_summary_image}"
+        report_owasp_categories_image = f"{SERVER_CONF}{DB_report_query.owasp_categories_summary_image}"
 
 
     # Summary table
@@ -1034,12 +1115,15 @@ def reportdownloadpdf(request,pk):
     template_appendix = _('# Additional Notes') + "\n\n"
 
     # IMAGES
+    print("VVVVVVV" + PETEREPORT_MARKDOWN['martor_upload_method'])
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
         report_executive_summary_image = DB_report_query.executive_summary_image
-        report_executive_categories_image = DB_report_query.categories_summary_image
+        report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
+        report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
     elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
         report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-        report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
+        report_cwe_categories_image = f"{SERVER_CONF}{DB_report_query.cwe_categories_summary_image}"
+        report_owasp_categories_image = f"{SERVER_CONF}{DB_report_query.owasp_categories_summary_image}"
 
     for finding in DB_finding_query:
         # Custom fields
@@ -1137,14 +1221,37 @@ def reportdownloadpdf(request,pk):
 
 
             # finding
-            pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding, 'template_custom_fields': template_custom_fields})
+            pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {  'finding': finding,
+                                                                        'icon_finding': icon_finding,
+                                                                        'severity_color': severity_color,
+                                                                        'severity_color_finding': severity_color_finding,
+                                                                        'template_appendix_in_finding': template_appendix_in_finding,
+                                                                        'template_attackflow_in_finding': template_attackflow_in_finding,
+                                                                        'template_custom_fields': template_custom_fields})
 
             template_findings += ''.join(pdf_finding)
 
 
-    pdf_markdown_report = render_to_string('tpl/pdf/pdf_header.yaml', {'DB_report_query': DB_report_query, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_pdf_language': PETEREPORT_TEMPLATES['report_pdf_language'], 'titlepagecolor': PETEREPORT_TEMPLATES['titlepage-color'], 'titlepagetextcolor': PETEREPORT_TEMPLATES['titlepage-text-color'], 'titlerulecolor': PETEREPORT_TEMPLATES['titlepage-rule-color'], 'titlepageruleheight': PETEREPORT_TEMPLATES['titlepage-rule-height'], 'title_background': title_background_image, 'pages_background': pages_background_image })
+    pdf_markdown_report = render_to_string('tpl/pdf/pdf_header.yaml', { 'DB_report_query': DB_report_query,
+                                                                        'md_author': md_author,
+                                                                        'report_date': report_date,
+                                                                        'md_subject': md_subject,
+                                                                        'md_website': md_website,
+                                                                        'report_pdf_language': PETEREPORT_TEMPLATES['report_pdf_language'],
+                                                                        'titlepagecolor': PETEREPORT_TEMPLATES['titlepage-color'],
+                                                                        'titlepagetextcolor': PETEREPORT_TEMPLATES['titlepage-text-color'],
+                                                                        'titlerulecolor': PETEREPORT_TEMPLATES['titlepage-rule-color'],
+                                                                        'titlepageruleheight': PETEREPORT_TEMPLATES['titlepage-rule-height'],
+                                                                        'title_background': title_background_image,
+                                                                        'pages_background': pages_background_image })
 
-    pdf_markdown_report += render_to_string('tpl/pdf/pdf_report.md', {'DB_report_query': DB_report_query, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image, 'pdf_finding_summary': pdf_finding_summary, 'template_findings': template_findings, 'template_appendix': template_appendix})
+    pdf_markdown_report += render_to_string('tpl/pdf/pdf_report.md', {  'DB_report_query': DB_report_query,
+                                                                        'report_executive_summary_image': report_executive_summary_image,
+                                                                        'report_cwe_categories_image': report_cwe_categories_image,
+                                                                        'report_owasp_categories_image': report_owasp_categories_image,
+                                                                        'pdf_finding_summary': pdf_finding_summary,
+                                                                        'template_findings': template_findings,
+                                                                        'template_appendix': template_appendix})
 
     final_markdown = textwrap.dedent(pdf_markdown_report)
     final_markdown_output = mark_safe(final_markdown)
@@ -1203,10 +1310,12 @@ def reportdownloadjupyter(request,pk):
     # IMAGES
     if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
         report_executive_summary_image = DB_report_query.executive_summary_image
-        report_executive_categories_image = DB_report_query.categories_summary_image
+        report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
+        report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
     elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
         report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-        report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
+        report_cwe_categories_image = f"{SERVER_CONF}{DB_report_query.cwe_categories_summary_image}"
+        report_owasp_categories_image = f"{SERVER_CONF}{DB_report_query.owasp_categories_summary_image}"
 
 
     # FINDINGS
@@ -1262,7 +1371,23 @@ def reportdownloadjupyter(request,pk):
 
             template_findings += ''.join(ipynb_finding)
 
-    render_jupyter = render_to_string('tpl/jupyter/report.ipynb', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'template_attackflow': template_attackflow, 'finding_summary': ipynb_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
+    render_jupyter = render_to_string('tpl/jupyter/report.ipynb', { 'DB_report_query': DB_report_query,
+                                                                    'template_findings': template_findings,
+                                                                    'template_appendix': template_appendix,
+                                                                    'template_attackflow': template_attackflow,
+                                                                    'finding_summary': ipynb_finding_summary,
+                                                                    'md_author': md_author,
+                                                                    'report_date': report_date,
+                                                                    'md_subject': md_subject,
+                                                                    'md_website': md_website,
+                                                                    'counter_finding_critical': counter_finding_critical,
+                                                                    'counter_finding_high': counter_finding_high,
+                                                                    'counter_finding_medium': counter_finding_medium,
+                                                                    'counter_finding_low': counter_finding_low,
+                                                                    'counter_finding_info': counter_finding_info,
+                                                                    'report_executive_summary_image': report_executive_summary_image,
+                                                                    'report_cwe_categories_image': report_cwe_categories_image,
+                                                                    'report_owasp_categories_image': report_owasp_categories_image})
 
     final_markdown = textwrap.dedent(render_jupyter)
     final_markdown_output = mark_safe(final_markdown)
@@ -1298,7 +1423,7 @@ def finding_list(request):
 
 @login_required
 def findings_opened(request):
-    DB_finding_query = DB_Finding.objects.filter(status='Open').order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.filter(status='Opened').order_by('cvss_score').reverse()
     count_finding_query = DB_finding_query.count()
 
     return render(request, 'findings/findings_list.html', {'Status': 'Opened', 'Link': 'opened', 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
@@ -1325,7 +1450,7 @@ def finding_add(request,pk):
             finding.report = DB_report_query
             finding.finding_id = uuid.uuid4()
             finding.save()
-
+            form.save_m2m() # Save tags
             if '_finish' in request.POST:
                 return redirect('reportfindings', pk=pk)
             elif '_next' in request.POST:
@@ -1338,7 +1463,8 @@ def finding_add(request,pk):
         form.fields['impact'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['recommendation'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['references'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['cwe'].initial = '1'
+        form.fields['cwe'].initial = '-1'
+        form.fields['owasp'].initial = '-1'
 
     return render(request, 'findings/finding_add.html', {
         'form': form, 'DB_report': DB_report_query})
@@ -1358,7 +1484,7 @@ def finding_edit(request,pk):
         if form.is_valid():
             finding = form.save(commit=False)
             finding.save()
-
+            form.save_m2m() # Save tags
             if '_finish' in request.POST:
                 return redirect('reportfindings', pk=report.pk)
             elif '_next' in request.POST:
@@ -1413,11 +1539,12 @@ def finding_duplicate(request):
 def finding_view(request,pk):
     finding = get_object_or_404(DB_Finding, pk=pk)
     DB_finding_query = DB_Finding.objects.filter(pk=pk).order_by('cvss_score').reverse()
+    finding_tags = u", ".join(o.name for o in finding.tags.all())
     DB_appendix = DB_Appendix.objects.filter(finding__in=DB_finding_query)
     DB_attackflow = DB_AttackFlow.objects.filter(finding__in=DB_finding_query)
     DB_field = DB_Custom_field.objects.filter(finding__in=DB_finding_query)
 
-    return render(request, 'findings/finding_view.html', {'DB_report': finding.report, 'finding': finding, 'DB_appendix': DB_appendix, 'DB_attackflow': DB_attackflow, 'DB_field': DB_field})
+    return render(request, 'findings/finding_view.html', {'DB_report': finding.report, 'finding': finding, 'DB_appendix': DB_appendix, 'DB_attackflow': DB_attackflow, 'DB_field': DB_field, 'finding_tags': finding_tags})
 
 
 
@@ -1908,7 +2035,7 @@ def template_add(request):
             template = form.save(commit=False)
             template.finding_id = uuid.uuid4()
             template.save()
-
+            form.save_m2m() # Save tags
             if '_finish' in request.POST:
                 return redirect('template_list')
             elif '_next' in request.POST:
@@ -1938,7 +2065,7 @@ def template_edit(request, pk):
         if form.is_valid():
             template = form.save(commit=False)
             template.save()
-
+            form.save_m2m() # Save tags
             if '_finish' in request.POST:
                 return redirect('template_list')
             elif '_next' in request.POST:
@@ -1993,7 +2120,21 @@ def templateaddreport(request,pk,reportpk):
     # save template in DB
     finding_uuid = uuid.uuid4()
     finding_status = "Open"
-    finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_uuid, title=DB_finding_template_query.title, severity=DB_finding_template_query.severity, cvss_base_score=DB_finding_template_query.cvss_base_score, cvss_score=DB_finding_template_query.cvss_score, description=DB_finding_template_query.description, status=finding_status, location=DB_finding_template_query.location, impact=DB_finding_template_query.impact, recommendation=DB_finding_template_query.recommendation, references=DB_finding_template_query.references, cwe=DB_finding_template_query.cwe)
+    finding_to_DB = DB_Finding( report=DB_report_query,
+                                finding_id=finding_uuid,
+                                title=DB_finding_template_query.title,
+                                severity=DB_finding_template_query.severity,
+                                cvss_base_score=DB_finding_template_query.cvss_base_score,
+                                cvss_score=DB_finding_template_query.cvss_score,
+                                description=DB_finding_template_query.description,
+                                status=finding_status,
+                                location=DB_finding_template_query.location,
+                                impact=DB_finding_template_query.impact,
+                                recommendation=DB_finding_template_query.recommendation,
+                                references=DB_finding_template_query.references,
+                                cwe=DB_finding_template_query.cwe,
+                                owasp=DB_finding_template_query.owasp,
+                                tags=DB_finding_template_query.tags)
 
     finding_to_DB.save()
 
@@ -2040,8 +2181,10 @@ def cwe_delete(request):
 
     if request.method == 'POST':
         delete_id = request.POST['delete_id']
-        DB_CWE.objects.filter(pk=delete_id).delete()
+        if delete_id == -1:
+            return HttpResponseServerError('{"status":"fail", "reason": "Cannot delete CWE ID -1"}', content_type='application/json')
 
+        DB_CWE.objects.filter(pk=delete_id).delete()
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
@@ -2066,6 +2209,67 @@ def cwe_edit(request,pk):
         'form': form
     })
 
+# ----------------------------------------------------------------------
+#                           OWASP
+# ----------------------------------------------------------------------
+
+@login_required
+def owasp_list(request):
+
+    DB_owasp_query = DB_OWASP.objects.order_by('pk').all()
+
+    return render(request, 'owasp/owasp_list.html', {'DB_owasp_query': DB_owasp_query})
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def owasp_add(request):
+
+    if request.method == 'POST':
+        form = NewOWASPForm(request.POST)
+        if form.is_valid():
+            owasp = form.save(commit=False)
+            owasp.save()
+            return redirect('owasp_list')
+    else:
+        form = NewOWASPForm()
+
+    return render(request, 'owasp/owasp_add.html', {
+        'form': form
+    })
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def owasp_delete(request):
+
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        if delete_id == -1:
+            return HttpResponseServerError('{"status":"fail", "reason": "Cannot delete OWASP ID -1"}', content_type='application/json')
+
+        DB_OWASP.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def owasp_edit(request,pk):
+
+    owasp = get_object_or_404(DB_OWASP, pk=pk)
+
+    if request.method == 'POST':
+        form = NewOWASPForm(request.POST, instance=owasp)
+        if form.is_valid():
+            form.save()
+            return redirect('owasp_list')
+    else:
+        form = NewOWASPForm(instance=owasp)
+    return render(request, 'owasp/owasp_add.html', {
+        'form': form
+    })
 
 # ----------------------------------------------------------------------
 #                           Attack Flow

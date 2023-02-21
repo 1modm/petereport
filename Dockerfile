@@ -50,6 +50,6 @@ RUN python3 --version
 COPY Pipfile ./
 RUN pipenv install --deploy --ignore-pipfile --python 3.9
 
-RUN apt -y purge wget pipenv
+RUN apt -y purge wget
 RUN apt -y clean
 RUN apt -y autoremove

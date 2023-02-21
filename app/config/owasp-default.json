@@ -1,0 +1,14 @@
+[
+    {
+        "model": "preport.db_owasp",
+        "pk": 0,
+        "fields": {
+            "owasp_id": "-1",
+            "owasp_year": "2021",
+            "owasp_full_id": "-1",
+            "owasp_name": "Not categorized",
+            "owasp_description": "",
+            "owasp_url": ""
+        }
+    }
+]

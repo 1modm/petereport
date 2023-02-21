@@ -202,7 +202,7 @@
           </li>
 
           <li class="nav-item">
-            <a href="/finding/open/" class="nav-link">
+            <a href="/cwe/list/" class="nav-link">
               <i class="nav-icon fas fa-fingerprint text-warning"></i>
               <p>
                 {% translate "CWE" %}
@@ -222,6 +222,34 @@
                 <a href="/cwe/add/" class="nav-link">
                   <i class="fas fa-edit nav-icon"></i>
                   <p>{% translate "Add CWE" %}</p>
+                </a>
+              </li>
+            {% endif %}
+
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="/owasp/list/" class="nav-link">
+              <i class="nav-icon fas fa-fingerprint text-warning"></i>
+              <p>
+                {% translate "OWASP" %}
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/owasp/list/" class="nav-link">
+                  <i class="nav-icon fas fa-radiation-alt"></i>
+                  <p>{% translate "OWASP List" %}</p>
+                </a>
+              </li>
+
+            {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+              <li class="nav-item">
+                <a href="/owasp/add/" class="nav-link">
+                  <i class="fas fa-edit nav-icon"></i>
+                  <p>{% translate "Add OWASP" %}</p>
                 </a>
               </li>
             {% endif %}

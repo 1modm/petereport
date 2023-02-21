@@ -11,20 +11,21 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  
+
 
 <section class="content-header">
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>{{DB_finding_query.title}} {% translate "Finding" %}</h1>
+        <h1>{% translate "Custom Fields" %}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-          <li class="breadcrumb-item"><a href="/product/view/{{ DB_finding_query.report.product.pk}}">{{ DB_finding_query.report.product.name | bleach}}</a></li>
-          <li class="breadcrumb-item"><a href="/report/view/{{ DB_finding_query.report.pk}}">{{ DB_finding_query.report.title}}</a></li>
-          <li class="breadcrumb-item active"><a href="/finding/view/{{ DB_finding_query.pk}}">{{ DB_finding_query.title}}</a></li>
+          <li class="breadcrumb-item"><a href="/customer/view/{{ DB_finding_query.report.product.customer.pk }}">{{ DB_finding_query.report.product.customer.name }}</a></li>
+          <li class="breadcrumb-item"><a href="/product/view/{{ DB_finding_query.report.product.pk }}">{{ DB_finding_query.report.product.name }}</a></li>
+          <li class="breadcrumb-item"><a href="/report/view/{{ DB_finding_query.report.pk }}">{{ DB_finding_query.report.title }}</a></li>
+          <li class="breadcrumb-item active"><a href="/finding/view/{{ DB_finding_query.pk }}">{{ DB_finding_query.title }}</a></li>
         </ol>
       </div>
     </div>
@@ -52,8 +53,8 @@
 
                 </div>
                 <div class="card-body">
-            
-                  <table id="fieldlist" class="table table-bordered table-hover"> 
+
+                  <table id="fieldlist" class="table table-bordered table-hover">
                     <thead>
                       <tr>
                         <th style="width: 55%">{% translate "Custom Field" %}</th>
@@ -72,7 +73,7 @@
 
                         <td align="center">
                             {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                              <a href="/field/edit/{{ field.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                              <a href="/field/edit/{{ field.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                               <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{field.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                             {% endif %}
                         </td>
@@ -105,13 +106,13 @@
 
                     </tbody>
                   </table>
-            
+
 
                 </div>
               </div>
 
         </div>
-      </div> 
+      </div>
 
 
 
@@ -129,8 +130,8 @@
     $("#fieldlist").DataTable({
       "paging": true,
       "searching": true,
-      "responsive": true, 
-      "lengthChange": false, 
+      "responsive": true,
+      "lengthChange": false,
       "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#fieldlist_wrapper .col-md-6:eq(0)');
@@ -149,7 +150,7 @@
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/finding/customfields/{{DB_finding_query.pk}}"; 
+              document.location.href = "/finding/customfields/{{DB_finding_query.pk}}";
             }
         })
   }

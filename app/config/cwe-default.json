@@ -1,0 +1,11 @@
+[
+    {
+        "model": "preport.db_cwe",
+        "pk": 0,
+        "fields": {
+            "cwe_id": "-1",
+            "cwe_name": "Not categorized",
+            "cwe_description": ""
+        }
+    }
+]

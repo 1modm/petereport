@@ -18,7 +18,7 @@
         <div class="row mb-2">
 
           <div class="col-sm-6">
-            <h1>{% translate "Product" %} {{ DB_product_query.name }}</h1>
+            <h1>{% translate "Product" %}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -119,7 +119,20 @@
         </div>
       </div>
 
-
+      <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <dt>{% translate "Tags" %}</dt>
+                  </h3>
+                </div>
+                <ul class="list-group">
+                  <li class="list-group-item">{{ product_tags }}</li>
+                </ul>
+              </div>
+        </div>
+      </div>
 
       <div class="card card-outline card-primary">
         <div class="card-header">
@@ -147,9 +160,9 @@
 
               {% for report in DB_report_query %}
                   <tr>
-                    <td>{{ report.report_id }} </td>
-                    <td>{{ report.title }} </td>
-                    <td>{{ report.creation_date | date:"d-m-Y" }} </td>
+                    <td><a href="/report/view/{{ report.pk }}">{{ report.report_id }}</a></td>
+                    <td><a href="/report/view/{{ report.pk }}">{{ report.title }}</a></td>
+                    <td>{{ report.creation_date | date:"Y-m-d" }} </td>
                     <td>
                       <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
                     </td>

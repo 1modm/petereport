@@ -48,13 +48,13 @@
                           {% translate "Name" %}
                       </th>
                       <th style="width: 20%">
-                          {% translate "Contact List" %}
+                          {% translate "Contacts Emails" %}
                       </th>
                       <th style="width: 20%">
-                          {% translate "Security Partner" %}
+                          {% translate "Security Email" %}
                       </th>
                       <th style="width: 20%">
-                          {% translate "Digital Partner" %}
+                          {% translate "Contract Email" %}
                       </th>
                       <th style="width: 20%" class="text-center">
                           {% translate "Actions" %}
@@ -124,16 +124,16 @@
                           </div>
                         </div>
                       </div>
-                     
+
                   {% endfor %}
 
 
               </tbody>
           </table>
         </div>
-       
+
       </div>
-      
+
     </div>
   </section>
 
@@ -149,8 +149,8 @@
     $("#productlist").DataTable({
       "paging": true,
       "searching": true,
-      "responsive": true, 
-      "lengthChange": false, 
+      "responsive": true,
+      "lengthChange": false,
       "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#productlist_wrapper .col-md-6:eq(0)');
@@ -162,14 +162,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/product/delete/",
+            url: "/en/customer/delete/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/product/list/"; 
+              document.location.href = "/customer/list/";
             }
         })
   }

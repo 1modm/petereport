@@ -24,7 +24,9 @@ website: {{md_website}}
 
 ![Breakdown by Severity]({{report_executive_summary_image}})
 
-![Breakdown by Categories]({{report_executive_categories_image}})
+![Breakdown by CWE Categories]({{report_cwe_categories_image}})
+
+![Breakdown by OWASP Categories]({{report_owasp_categories_image}})
 
 {{finding_summary}}
 

@@ -14,13 +14,15 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>{% translate "Report" %}: {{DB_report.title}}</h1>
+        <h1>{% translate "Finding" %}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+          <li class="breadcrumb-item"><a href="/customer/view/{{ DB_report.product.customer.pk}}">{{ DB_report.product.customer.name }}</a></li>
           <li class="breadcrumb-item"><a href="/product/view/{{ DB_report.product.pk}}">{{ DB_report.product.name }}</a></li>
-          <li class="breadcrumb-item active">{{ DB_report.report_id }}</li>
+          <li class="breadcrumb-item"><a href="/report/view/{{ DB_report.pk}}">{{ DB_report.title}}</a></li>
+          <li class="breadcrumb-item active">{% translate "Add finding" %}</a></li>
         </ol>
       </div>
     </div>
@@ -37,7 +39,7 @@
               <div class="card-header">
                 <h3 class="card-title">{% translate "Finding" %}</h3>
               </div>
-              
+
 
               <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -57,14 +59,13 @@
                       </div>
                   </div>
 
-
                   <div class="form-group row">
                     <label class="col-sm-2 col-form-label">{% translate "Severity" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.severity }}
                     </div>
                   </div>
-   
+
                   <div class="form-group row">
                     <label class="col-sm-2 col-form-label">{% translate "CVSS Score" %}</label>
                     <div class="col-md-8 col-sm-8 col-xs-10">
@@ -83,7 +84,7 @@
                     </div>
                   </div>
 
-                  
+
 <!-- CVSS Calculator content start - add a <base href="http://www.first.org" /> to the head for offline editing -->
 <!--
 https://www.first.org/cvss/v3.1/use-design#techdesign
@@ -256,10 +257,6 @@ The Specification is available in the list of links on the left, along with a Us
 <!-- CVSS Calculator end --></div>
 
 
-
-
-              
-
                 <br>
 
 
@@ -277,9 +274,23 @@ The Specification is available in the list of links on the left, along with a Us
                   </div>
 
                   <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">OWASP</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.owasp}}
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
                     <label class="col-sm-2 col-form-label">Description</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.description }}
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Proof of Concept</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.poc }}
                     </div>
                   </div>
 
@@ -311,11 +322,17 @@ The Specification is available in the list of links on the left, along with a Us
                     </div>
                   </div>
 
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Tags</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.tags }}
+                   </div>
+
                 </div>
 
                 {% if form.errors %}
                    {% for field in form %}
-                       {% for error in field.errors %} 
+                       {% for error in field.errors %}
                           <div class="container">
                             <div class="col-md-12 col-sm-12 col-xs-12">
                               <div class="alert alert-danger alert-dismissible ">
@@ -328,7 +345,7 @@ The Specification is available in the list of links on the left, along with a Us
                        {% endfor %}
                    {% endfor %}
                 {% endif %}
-                
+
                 <div class="card-footer">
                   <button type="submit" class="btn btn-danger" value="Save" name="_finish">Save and finish</button>
                   <button type="submit" class="btn btn-primary" value="Next" name="_next">Save and add a new finding</button>
@@ -608,7 +625,7 @@ cvssCalculator();
 // In your Javascript (external .js resource or <script> tag)
 $(document).ready(function() {
     $('.select2CWE').select2();
+    $('.select2OWASP').select2();
 });
 </script>
 {% endblock javascripts %}
-

@@ -70,7 +70,7 @@
                         <a href="/product/view/{{ product.pk }}">{{ product.name }}</a>
                       </td>
                     <td>
-                        <span class="pull-right badge bg-blue"></span> {{ product.customer }}
+                        <span class="pull-right badge bg-blue"></span> <a href="/customer/view/{{ product.customer.pk }}">{{ product.customer.name }}</a>
                       </td>
                       <td>
                         <span class="pull-right badge bg-blue">{{ product.db_report_set.count }}</span> {% translate "Report" %}{{ product.db_report_set.count|pluralize:"s" }}

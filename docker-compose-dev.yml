@@ -3,6 +3,7 @@ version: '3.7'
 services:
   nginx:
     image: nginx
+    container_name: petereport_nginx
     volumes:
       - ./nginx:/opt/petereport/nginx
       - ./nginx/petereport.conf:/etc/nginx/conf.d/petereport.conf
@@ -18,6 +19,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    container_name: petereport_django
     environment:
       - PETEREPORT_DJANGO_DEBUG=True
       - PETEREPORT_DJANGO_AMIN_MODULE=True
@@ -28,6 +30,10 @@ services:
       pipenv run ./app/manage.py makemigrations &&
       pipenv run ./app/manage.py migrate &&
       pipenv run ./app/manage.py loaddata ./app/config/cwe-list.json &&
+      pipenv run ./app/manage.py loaddata ./app/config/cwe-default.json &&
+      pipenv run ./app/manage.py loaddata ./app/config/owasp-list.json &&
+      pipenv run ./app/manage.py loaddata ./app/config/owasp-default.json &&
+      pipenv run ./app/manage.py loaddata ./app/config/data-test.json &&
       pipenv run gunicorn --chdir ./app petereport.wsgi:application --timeout 120 --graceful-timeout 60 --bind 0.0.0.0:8000 --reload"
     volumes:
       - .:/opt/petereport

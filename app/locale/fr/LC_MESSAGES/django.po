@@ -86,7 +86,7 @@ msgid "(Select status)"
 msgstr ""
 
 #: preport/forms.py:62
-msgid "Open"
+msgid "Opened"
 msgstr ""
 
 #: preport/forms.py:63

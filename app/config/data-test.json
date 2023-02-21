@@ -1,0 +1,185 @@
+[
+{
+    "model": "preport.db_customer",
+    "pk": 1,
+    "fields": {
+        "id": "1",
+        "name": "Banque Nationale de Meudon",
+        "contact_list": "contact@bnm.com",
+        "contact_sp_mail": "security@bnm.com",
+        "contact_dp_mail": "sales@bnm.com",
+        "description": "Banque Nationale de Meudon - The bank for a beautiful world. Located in 65 countries and territories on 5 continents, BNM operates through a number of business lines and activities to meet all your needs, regardless of your profile: private individuals, associations, entrepreneurs, SMEs, large companies or institutions."
+    }
+},
+{
+    "model": "preport.db_customer",
+    "pk": 2,
+    "fields": {
+        "id": "2",
+        "name": "Santtodir",
+        "contact_list": "contact@santtodir.com",
+        "contact_sp_mail": "security@santtodir.com",
+        "contact_dp_mail": "sales@santtodir.com",
+        "description": "Santtodir maintains a leading position in Spain in assets and loans and has a large branch network which continuously works on developing tailored offers to individuals, SMEs and corporates, offering attractive value propositions for our customers. Our focus has been on digital transformation, which allows us to offer for example our remote personalised management service (Santtodir Personal) or grant support packages, moratoria and ICO financing remotely. We are also leaders in the main wholesale banking league tables. As a result, Santtodir received prestigious awards including Bank of the year in Spain, by The Banker in 2019 and The best bank in Spain, by Euromoney in 2020."
+    }
+},
+{
+    "model": "preport.db_customer",
+    "pk": 3,
+    "fields": {
+        "id": "3",
+        "name": "Mozilla Foundation",
+        "contact_list": "contact@mozilla.org",
+        "contact_sp_mail": "security@mozilla.org",
+        "contact_dp_mail": "sales@mozilla.org",
+        "description": "The Mozilla Foundation works to ensure the internet remains a public resource that is open and accessible to us all."
+    }
+},
+
+{
+    "model": "preport.db_product",
+    "pk": 1,
+    "fields": {
+        "id": "1",
+        "name": "Customer Web Site",
+        "customer": 1,
+        "description": "https://mabanque.bnm.com"
+    }
+},
+{
+    "model": "preport.db_product",
+    "pk": 2,
+    "fields": {
+        "id": "2",
+        "name": "Profesional Web Site",
+        "customer": 1,
+        "description": "https://mabanquepro.bnm.com"
+    }
+},
+{
+    "model": "preport.db_product",
+    "pk": 3,
+    "fields": {
+        "id": "3",
+        "name": "Fondation Web Site",
+        "customer": 3,
+        "description": "https://foundation.mozilla.org"
+    }
+},
+
+
+{
+    "model": "preport.db_report",
+    "pk": 1,
+    "fields": {
+        "id": "1",
+        "report_id": "r1",
+        "product": 1,
+        "title": "Pentest of the Customer Web Site - Authentication Perimeter",
+        "scope": "https://mabanque.bnm.com",
+        "outofscope": "All URL out of scope, except API calls for Authentication",
+        "methodology": "CEH methodology",
+        "recommendation": "Patch old services",
+        "creation_date": "2023-01-01T00:00:00Z",
+        "report_date": "2023-02-11T00:00:00Z"
+    }
+},
+{
+    "model": "preport.db_report",
+    "pk": 2,
+    "fields": {
+        "id": "2",
+        "report_id": "r2",
+        "product": 1,
+        "title": "Pentest of the Customer Web Site - Perimeter Consumer Credit",
+        "scope": "https://mabanque.bnm.com",
+        "outofscope": "All URL out of scope, except API calls for Consumer Credit",
+        "methodology": "CEH methodology",
+        "recommendation": "Patch old services",
+        "creation_date": "2023-01-02T00:00:00Z",
+        "report_date": "2023-02-12T00:00:00Z"
+    }
+},
+{
+    "model": "preport.db_report",
+    "pk": 3,
+    "fields": {
+        "id": "3",
+        "report_id": "r3",
+        "product": 3,
+        "title": "Pentest of the Fondation Web Site",
+        "scope": "https://foundation.mozilla.org",
+        "outofscope": "None, check everything",
+        "methodology": "CEH methodology",
+        "recommendation": "TODO",
+        "creation_date": "2023-01-03T00:00:00Z",
+        "report_date": "2023-02-13T00:00:00Z"
+    }
+},
+
+{
+    "model": "preport.db_finding",
+    "pk": 1,
+    "fields": {
+        "report": 1,
+        "finding_id": "1",
+        "status": "Opened",
+        "created_at": "2023-01-01T00:00:00Z",
+        "title": "Improper field check on /api/auth",
+        "severity": "High",
+        "cvss_base_score": "AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:H/A:L",
+        "cvss_score": "8.6",
+        "cwe": "0",
+        "owasp" : "3"
+    }
+},
+{
+    "model": "preport.db_finding",
+    "pk": 2,
+    "fields": {
+        "report": 1,
+        "finding_id": "2",
+        "status": "Opened",
+        "created_at": "2023-01-01T00:00:00Z",
+        "title": "Improper field check on /api/auth",
+        "severity": "Critical",
+        "cvss_base_score": "8.3 (CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:L/I:L/A:L)",
+        "cvss_score": "9.6",
+        "cwe": "0",
+        "owasp" : "3"
+    }
+},
+{
+    "model": "preport.db_finding",
+    "pk": 3,
+    "fields": {
+        "report": 1,
+        "finding_id": "3",
+        "status": "Opened",
+        "created_at": "2023-01-01T00:00:00Z",
+        "title": "Improper field check on /api/auth",
+        "severity": "High",
+        "cvss_base_score": "8.3 (CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:L/I:L/A:L)",
+        "cvss_score": "8.6",
+        "cwe": "0",
+        "owasp" : "3"
+    }
+},
+{
+    "model": "preport.db_finding",
+    "pk": 4,
+    "fields": {
+        "report": 1,
+        "finding_id": "4",
+        "status": "Closed",
+        "created_at": "2023-01-01T00:00:00Z",
+        "closed_at": "2023-01-29T00:00:00Z",
+        "title": "Improper field check on /api/close",
+        "severity": "High",
+        "cvss_base_score": "8.3 (CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:L/I:L/A:L)",
+        "cvss_score": "7.8",
+        "cwe": "0",
+        "owasp" : "2"
+    }
+}
+]

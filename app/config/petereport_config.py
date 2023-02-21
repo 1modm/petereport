@@ -14,6 +14,7 @@ PETEREPORT_CONFIG = {
     'viewer_email': env.str('PETEREPORT_VIEWER_EMAIL', default='viewer@petereport.pentest'),
     'company_name': env.str('PETEREPORT_COMPANY_NAME', default='Pentest company'),
     'company_website': env.str('PETEREPORT_COMPANY_WEBSITE', default='https://github.com/1modm/petereport'),
+    'company_picture': env.str('PETEREPORT_COMPANY_PICTURE', default='images/company_picture.png'),
     'company_address': env.str('PETEREPORT_COMPANY_ADDRESS', default='Spain'),
     'application_name': env.str('PETEREPORT_APPLICATION_NAME', default='PeTeReport'),
     'application_license': env.str('PETEREPORT_APPLICATION_LICENSE', default='BSD 3-Clause Copyright ©')

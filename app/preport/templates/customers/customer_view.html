@@ -18,7 +18,7 @@
         <div class="row mb-2">
 
           <div class="col-sm-6">
-            <h1>{% translate "Customer" %} {{ DB_customer_query.name }}</h1>
+            <h1>{% translate "Customer" %}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -126,7 +126,7 @@
             <div class="card card-outline card-primary">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <dt>{% translate "Contact list" %}</dt>
+                    <dt>{% translate "Contacts Emails" %}</dt>
                   </h3>
                 </div>
                 <ul class="list-group">
@@ -144,7 +144,7 @@
             <div class="card card-outline card-primary">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <dt>{% translate "Security partner" %}</dt>
+                    <dt>{% translate "Security Email" %}</dt>
                   </h3>
                 </div>
                 <ul class="list-group">
@@ -159,11 +159,26 @@
             <div class="card card-outline card-primary">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <dt>{% translate "Digital partner" %}</dt>
+                    <dt>{% translate "Contract Email" %}</dt>
                   </h3>
                 </div>
                 <ul class="list-group">
                   <li class="list-group-item">{{ DB_customer_query.contact_dp_mail }}</li>
+                </ul>
+              </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <dt>{% translate "Tags" %}</dt>
+                  </h3>
+                </div>
+                <ul class="list-group">
+                  <li class="list-group-item">{{ customer_tags }}</li>
                 </ul>
               </div>
         </div>
@@ -195,7 +210,7 @@
 
               {% for report in DB_report_query %}
                   <tr>
-                    <td>{{ report.product.name }} </td>
+                    <td><a href="/product/view/{{ report.product.pk }}">{{ report.product.name }}</a></td>
                     <td>{{ report.title }} </td>
                     <td>{{ report.creation_date | date:"d-m-Y" }} </td>
                     <td>

@@ -58,8 +58,8 @@
                   <tr>
                     <td>{{ report.report_id }} </td>
                     <td>{{ report.title }} </td>
-                    <td>{{ report.product.name }} </td>
-                    <td>{{ report.product.customer.name }} </td>
+                    <td><a href="/product/view/{{ report.product.pk }}">{{ report.product.name }}</a></td>
+                    <td><a href="/customer/view/{{ report.product.customer.pk }}">{{ report.product.customer.name }}</a></td>
                     <td>
                       <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
                     </td>

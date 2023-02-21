@@ -38,7 +38,7 @@
               <div class="card-header">
                 <h3 class="card-title">{% translate "Customer details" %}</h3>
               </div>
-              
+
               <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card-body">
@@ -48,36 +48,43 @@
                         {{ form.name }}
                       </div>
                   </div>
-                    <div class="form-group row">
-                      <label class="col-sm-2 col-form-label">Email contact list</label>
-                      <div class="col-md-10 col-sm-10 col-xs-12">
-                        {{ form.contact_list }}
-                      </div>
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Contacts Emails" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.contact_list }}
                     </div>
-                    <div class="form-group row">
-                      <label class="col-sm-2 col-form-label">Security partner email</label>
-                      <div class="col-md-10 col-sm-10 col-xs-12">
-                        {{ form.contact_sp_mail }}
-                      </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Security Email" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.contact_sp_mail }}
                     </div>
-                    <div class="form-group row">
-                      <label class="col-sm-2 col-form-label">Digital partner email</label>
-                      <div class="col-md-10 col-sm-10 col-xs-12">
-                        {{ form.contact_dp_mail }}
-                      </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Contract Email" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.contact_dp_mail }}
                     </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Tags" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.tags }}
+                    </div>
+                  </div>
                   <div class="form-group row">
                     <label class="col-sm-2 col-form-label">{% translate "Customer Description" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.description }}
                     </div>
                   </div>
-   
+
+
                 </div>
 
                 {% if form.errors %}
                    {% for field in form %}
-                       {% for error in field.errors %} 
+                       {% for error in field.errors %}
                           <div class="container">
                             <div class="col-md-12 col-sm-12 col-xs-12">
                               <div class="alert alert-danger alert-dismissible ">
@@ -90,7 +97,7 @@
                        {% endfor %}
                    {% endfor %}
                 {% endif %}
-                
+
                 <div class="card-footer">
                   <button type="submit" class="btn btn-primary">{% translate "Save Customer" %}</button>
                 </div>

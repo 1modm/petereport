@@ -38,7 +38,7 @@
               <div class="card-header">
                 <h3 class="card-title">{% translate "Settings" %}</h3>
               </div>
-              
+
               <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card-body">
@@ -64,13 +64,13 @@
                     <label class="col-sm-2 col-form-label">{% translate "Company picture" %}</label>
                       <div class="col-md-10 col-sm-10 col-xs-12">
                         {{ form.company_picture }}
-                      </div>
+                      </div> {{ company_picture }}
                   </div>
                 </div>
 
                 {% if form.errors %}
                    {% for field in form %}
-                       {% for error in field.errors %} 
+                       {% for error in field.errors %}
                           <div class="container">
                             <div class="col-md-12 col-sm-12 col-xs-12">
                               <div class="alert alert-danger alert-dismissible ">
@@ -83,7 +83,7 @@
                        {% endfor %}
                    {% endfor %}
                 {% endif %}
-                
+
                 <div class="card-footer">
                   <button type="submit" class="btn btn-primary">{% translate "Save" %}</button>
                 </div>

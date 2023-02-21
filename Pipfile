@@ -17,6 +17,7 @@ cairosvg				= ">=2.6.0"
 django-bleach           = ">=3.0.1"
 django-extensions       = "*"
 gunicorn                = "*"
+django-taggit           = ">=3.1.0"
 
 [dev-packages]
 werkzeug = "*"

@@ -11,7 +11,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  
+
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -55,8 +55,8 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    
-      
+
+
                   <div class="row">
                       <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
@@ -66,21 +66,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-12 col-sm-6">
-                        <div class="info-box bg-light">
-                          <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">{% translate "CWE" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cwe.cwe_id }} - {{DB_Template.cwe.cwe_name }}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
 
-
-
-        
-                    <div class="row">
-     
                       <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
@@ -89,8 +75,24 @@
                           </span></span></div>
                         </div>
                       </div>
+                    </div>
 
-                        <div class="col-12 col-sm-6">
+                    <div class="row">
+                      <div class="col-12 col-sm-8">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "CWE" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cwe.cwe_id }} - {{DB_Template.cwe.cwe_name }}</span>
+                          </div>
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "OWASP" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.owasp.owasp_id }} - {{DB_Template.owasp.owasp_name }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+
+                        <div class="col-12 col-sm-4">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "Severity" %}</span>
@@ -121,7 +123,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
 
 
 
@@ -146,7 +148,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
 
 
       {% if DB_Template.description %}
@@ -171,7 +173,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
       {% endif %}
 
 
@@ -198,7 +200,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
       {% endif %}
 
       {% if DB_Template.impact %}
@@ -223,7 +225,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
       {% endif %}
 
       {% if DB_Template.recommendation %}
@@ -248,7 +250,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
       {% endif %}
 
       {% if DB_Template.references %}
@@ -273,9 +275,8 @@
               </div>
 
         </div>
-      </div> 
+      </div>
       {% endif %}
-
 
       </div>
     </section>
