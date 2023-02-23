@@ -647,7 +647,8 @@ def report_edit(request,pk):
     if request.method == 'POST':
         form = NewReportForm(request.POST, instance=report)
         if form.is_valid():
-            form.save()
+            report = form.save(commit=False)
+            report.save()
             form.save_m2m() # Save tags
             return redirect('report_view', pk=report.pk)
     else:
@@ -1311,7 +1312,9 @@ def report_download_pdf(request, cst, pk):
                                                                             'pages_background': pages_background_image })
 
         pdf_markdown_report += render_to_string(os.path.join('tpl', 'pdf', cst, 'pdf_report.md'),
-                                                                         {  'DB_report_query': DB_report_query,
+                                                                         {  'md_author': md_author,
+                                                                            'md_address': DB_Settings.objects.get().company_address,
+                                                                            'DB_report_query': DB_report_query,
                                                                             'report_executive_summary_image': report_executive_summary_image,
                                                                             'report_cwe_categories_image': report_cwe_categories_image,
                                                                             'report_owasp_categories_image': report_owasp_categories_image,
@@ -1326,7 +1329,6 @@ def report_download_pdf(request, cst, pk):
         header_file = os.path.join(tpl_dir, cst, 'pdf_header.tex')
         petereport_latex_tpl = os.path.join(tpl_dir, cst, 'petereport.latex')
 
-        print("pypandoc")
         pypandoc.convert_text(  final_markdown_output,
                                 to='pdf',
                                 outputfile=pdf_file_output,

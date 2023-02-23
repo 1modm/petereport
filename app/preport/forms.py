@@ -70,12 +70,14 @@ class NewReportForm(forms.ModelForm):
         today = datetime.date.today().strftime('%Y-%m-%d')
         nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
         model = DB_Report
-        fields = ('product', 'report_id', 'title', 'executive_summary', 'scope', 'outofscope', 'methodology', 'recommendation', 'report_date', 'tags')
+        fields = ('product', 'report_id', 'title', 'report_date', 'audit_start', 'audit_end', 'executive_summary', 'scope', 'outofscope', 'methodology', 'recommendation', 'tags')
 
         widgets = {
             'report_id': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required"}),
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Report Name')}),
             'report_date': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'yyyy-mm-dd'", 'data-mask':'', 'required': "required"}),
+            'audit_start': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'yyyy-mm-dd'", 'data-mask':''}),
+            'audit_end': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'yyyy-mm-dd'", 'data-mask':''}),
         }
 
 class CWEModelChoiceField(ModelChoiceField):

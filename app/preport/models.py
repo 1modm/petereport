@@ -103,6 +103,8 @@ class DB_Report(models.Model):
 	recommendation = MartorField()
 	creation_date = models.DateTimeField(auto_now_add=True)
 	report_date = models.DateTimeField(blank=False)
+	audit_start = models.DateTimeField(blank=True, null=True)
+	audit_end = models.DateTimeField(blank=True, null=True)
 	tags = TaggableManager(blank=True)
 	def __str__(self):
 		return self.title

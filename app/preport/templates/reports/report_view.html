@@ -212,8 +212,9 @@
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
                         <div class="info-box-content">
-                          <span class="info-box-number text-center text-muted">{% translate "Report date" %}</span>
-                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_date|date:"d-m-Y" | safe | bleach}}</span>
+                          <span class="info-box-number text-center text-muted">{% translate "Report Dates" %}</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_date|date:"Y-m-d" | safe | bleach}}</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.audit_start|date:"Y-m-d" | safe | bleach}} → {{ DB_report_query.audit_end|date:"Y-m-d" | safe | bleach}}</span>
                         </div>
                       </div>
                     </div>

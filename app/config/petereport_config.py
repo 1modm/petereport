@@ -49,8 +49,8 @@ PETEREPORT_TEMPLATES = {
     'report_pdf_name': env.str('PETEREPORT_REPORT_PDF_NAME', default='PEN-PDF'),
     'report_jupyter_name': env.str('PETEREPORT_REPORT_JUPYTER_NAME', default='PEN-JUPYTER'),
     'report_pdf_language': "en",
-    'report_pdf_title_background': "title.png", # title.png, blank.png - location: app/preport/templates/tpl/pdf/default
-    'report_pdf_pages_background': "title.png", # title.png, blank.png - location: app/preport/templates/tpl/pdf/default
+    'report_pdf_title_background': "title.png", # Location: app/preport/templates/tpl/pdf/default
+    'report_pdf_pages_background': "pages.png", # Location: app/preport/templates/tpl/pdf/default
     'initial_text': 'TBC',
     'titlepage-color': "e6e2e2",
     'titlepage-text-color': "000000",
