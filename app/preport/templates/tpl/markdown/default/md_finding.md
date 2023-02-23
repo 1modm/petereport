@@ -3,40 +3,38 @@
 
 **{% translate "Severity" %}:** {{finding.severity|safe}}
 
+**{% translate "Status" %}:** {{finding.status|safe}}
+
 {% if finding.cvss_base_score != "0" %}
 **{% translate "CVSS Score" %}:** {{finding.cvss_base_score|safe}}
 {% endif %}
 
 **{% translate "CWE" %}:** {{finding.cwe.cwe_id|safe}} - {{finding.cwe.cwe_name|safe}}
 
-{% if finding.description %}
-**{% translate "Description" %}**
+**{% translate "OWASP" %}:** {{finding.owasp.owasp_full_id|safe}} - {{finding.owasp.owasp_name|safe}}
 
-{{finding.description|safe}}
+{% if finding.description %}
+**{% translate "Description" %}** {{finding.description|safe}}
+{% endif %}
+
+{% if finding.poc %}
+**{% translate "Proof of Concept" %}** {{finding.poc|safe}}
 {% endif %}
 
 {% if finding.location %}
-**{% translate "Location" %}**
-
-{{finding.location|safe}}
+**{% translate "Location" %}** {{finding.location|safe}}
 {% endif %}
 
 {% if finding.impact %}
-**{% translate "Impact" %}**
-
-{{finding.impact|safe}}
+**{% translate "Impact" %}** {{finding.impact|safe}}
 {% endif %}
 
 {% if finding.recommendation %}
-**{% translate "Recommendation" %}**
-
-{{finding.recommendation|safe}}
+**{% translate "Recommendation" %}** {{finding.recommendation|safe}}
 {% endif %}
 
 {% if finding.references %}
-**{% translate "References" %}**
-
-{{finding.references|safe}}
+**{% translate "References" %}** {{finding.references|safe}}
 {% endif %}
 
 {% if template_custom_fields %}

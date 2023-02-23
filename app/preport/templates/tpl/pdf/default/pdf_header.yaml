@@ -37,6 +37,7 @@ pandoc-latex-environment:
     infoblock: [infonote]
     debugblock: [debugnote]
     descriptionblock: [descriptionnote]
+    pocblock: [pocnote]
     locationblock: [locationnote]
     impactblock: [impactnote]
     recommendationblock: [recommendationnote]

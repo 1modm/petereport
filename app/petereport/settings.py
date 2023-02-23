@@ -250,6 +250,20 @@ MAX_IMAGE_UPLOAD_SIZE = 5242880  # 5MB
 
 SERVER_CONF = DJANGO_CONFIG['server_host']
 TEMPLATES_ROOT = os.path.join(BASE_DIR, PETEREPORT_TEMPLATES['templates_root'])
+
+TEMPLATES_DIRECTORIES = {}
+TPLS_ROOT = os.path.join(TEMPLATES_ROOT, 'tpl')
+for tpl in os.listdir(TPLS_ROOT):
+    tpl_path = os.path.join(TPLS_ROOT, tpl)
+    if os.path.isdir(tpl_path):
+        cst_list = []
+        for cst in os.listdir(tpl_path):
+            cst_path = os.path.join(tpl_path, cst)
+            if os.path.isdir(cst_path):
+                cst_list.append(cst)
+        TEMPLATES_DIRECTORIES[tpl] = cst_list
+
+
 REPORTS_MEDIA_ROOT = os.path.join(BASE_DIR, PETEREPORT_TEMPLATES['storage_reports'])
 
 

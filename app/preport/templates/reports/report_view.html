@@ -42,31 +42,61 @@
             </div>
 
             <div class="input-group col-md-7 text-right">
-
-                <div class="input-group-prepend" >
-                  <label class="input-group-text" for="inputGroupSelect01">Template</label>
-                </div>
-                <select style="margin-right: 2px" class="custom-select" id="inputGroupSelect01">
-                  <option selected>Choose PDF Template XXXXXXXXXX ...</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                <select style="margin-right: 2px" class="custom-select" id="exportSelect">
+                  <option value="" selected="selected" id="chooseOptionSelect">Choose your Export...</option>
+                  <option value="CSV">CSV</option>
+                  {% if 'pdf' in templates_directories %}
+                  <optgroup label="PDF">
+                    {% for cst in templates_directories.pdf %}
+                    <option value="{{ cst }}" export-type="pdf">PDF > {{ cst }}</option>
+                    {% endfor %}
+                  </optgroup>
+                  {% endif %}
+                  {% if 'markdown' in templates_directories %}
+                  <optgroup label="Markdown">
+                    {% for cst in templates_directories.markdown %}
+                    <option value="{{ cst }}" export-type="markdown">Markdown > {{ cst }}</option>
+                    {% endfor %}
+                  </optgroup>
+                  {% endif %}
+                  {% if 'jupyter' in templates_directories %}
+                  <optgroup label="Jupyter">
+                    {% for cst in templates_directories.jupyter %}
+                    <option value="{{ cst }}" export-type="jupyter">Jupyter > {{ cst }}</option>
+                    {% endfor %}
+                  </optgroup>
+                  {% endif %}
+                  {% if 'html' in templates_directories %}
+                  <optgroup label="HTML">
+                    {% for cst in templates_directories.html %}
+                    <option value="{{ cst }}" export-type="html">HTML > {{ cst }}</option>
+                    {% endfor %}
+                  </optgroup>
+                  {% endif %}
                 </select>
-
-
-              <button style="margin-right: 2px" type="button" onclick="SaveSummaryImage('Markdown');" class="btn btn-info"><i class="fa fa-download"></i> {% translate "Markdown" %}</button>
-
-
-
-              <button style="margin-right: 2px" type="button" onclick="SaveSummaryImage('PDF');" class="btn btn-warning"><i class="fa fa-download"></i> {% translate "PDF" %}</button>
-              <a href="/report/download/html/{{ DB_report_query.pk }}"><button style="margin-right: 2px" type="button" class="btn btn-primary"><i class="fa fa-download"></i> {% translate "HTML" %}</button></a>
-              <a href="/finding/csv/{{ DB_report_query.pk }}"><button style="margin-right: 2px" type="button" class="btn btn-success"><i class="fa fa-download"></i> {% translate "CSV" %}</button></a>
-              <a href="/report/download/jupyter/{{ DB_report_query.pk }}"><button style="margin-right: 2px" type="button" class="btn btn-secondary"><i class="fa fa-download"></i> {% translate "Jupyter" %}</button></a>
+                <button style="margin-right: 2px" type="button" class="btn btn-info" id="exportButton">{% translate "Export" %}</button>
             </div>
         </div>
 
-        <br>
+        <div class="modal modal-danger fade mm-savereport-modal" id="pleaseWaitDialogSaveReport" data-backdrop="static" data-keyboard="false" role="dialog">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h4 class="modal-title">Please wait...</h4>
+                  </div>
+                  <div class="modal-body">
+                      <div class="progress">
+                        <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
+                        aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%; height: 40px">
+                        </div>
+                      </div>
+                  </div>
 
+              </div>
+          </div>
+      </div>
+
+      <br>
 
       </div>
     </section>
@@ -170,7 +200,6 @@
                       </div>
 
                   <hr>
->
                   <div class="row">
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
@@ -554,14 +583,14 @@
                                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
                                         <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                                         <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{finding.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
-                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
+                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                       {% endif %}
 
                                   </td>
 
                           </tr>
 
-                          <div class="modal modal-danger fade mm-modal-{{finding.pk}}" id="modal-danger">
+                          <div class="modal modal-danger fade mm-modal-del-{{finding.pk}}" id="modal-danger">
                             <div class="modal-dialog">
                               <div class="modal-content bg-danger">
                                 <div class="modal-header">
@@ -1108,7 +1137,30 @@
 
 <script>
 
-  function SaveSummaryImage(doc_type) {
+  $(function() {
+    $('#exportButton').hide();
+
+    $('#exportSelect').on('change', function() {
+        if ($('#exportSelect').find(':selected').attr('id') == 'chooseOptionSelect') {
+          $('#exportButton').hide();
+        } else {
+          $('#exportButton').show();
+        }
+    });
+
+    $('#exportButton').on('click', function() {
+      var cst = $('#exportSelect').find(':selected').val();
+      if (cst == 'CSV') {
+        document.location.href = "/finding/csv/{{ DB_report_query.pk }}";
+      } else {
+        var export_type = $('#exportSelect').find(':selected').attr('export-type');
+        SaveReport(export_type, cst);
+      }
+    });
+  });
+
+  function SaveReport(export_type, cst) {
+        $("#pleaseWaitDialogSaveReport").modal("show");
 
         var imgSeveritybar = new Image();
         imgSeveritybar.src = chartSeveritybar.getDataURL({
@@ -1130,29 +1182,19 @@
 
         $.ajax({
             type: 'POST',
-            url: "/en/report/uploadsummaryfindings/" + {{ DB_report_query.pk }}, // prepend a language code or even better: use window.location.href
-            headers:{
-              "X-CSRFToken": '{{ csrf_token }}'
-            },
+            url: "/en/report/uploadsummaryfindings/{{ DB_report_query.pk }}", // prepend a language code or even better: use window.location.href
+            headers:{ "X-CSRFToken": '{{ csrf_token }}' },
             data : { 'fileSeveritybar': imgSeveritybar.src, 'file_cwe': imgCWE.src, 'file_owasp': imgOWASP.src },
-
             success : function(json) {
                 //console.log("requested complete");
                 if (json.status == 'success'){
-                  if (doc_type == 'PDF'){
-                    document.location.href = "/report/download/pdf/{{ DB_report_query.pk }}";
                     //window.open('/report/download/pdf/{{ DB_report_query.pk }}', '_blank');
+                    document.location.href = "/report/download/" + export_type + "/" +  cst + "/{{ DB_report_query.pk }}";
+                    $("#pleaseWaitDialogSaveReport").modal("hide");
                   }
-                  else if (doc_type == 'Markdown'){
-                    document.location.href = "/report/download/markdown/{{ DB_report_query.pk }}";
-                    //window.open('/report/download/markdown/{{ DB_report_query.pk }}', '_blank');
-                  }
-
-                }
             }
-        })
-
-  }
+        });
+  };
 
 </script>
 
@@ -1168,11 +1210,10 @@
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/list/";
+              document.location.href = "/report/view/{{DB_report_query.pk}}";
             }
         })
   }
-}
 </script>
 <script>
 function DuplicateID(dup_id) {

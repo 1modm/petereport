@@ -5,6 +5,7 @@ from martor.models import MartorField
 from multi_email_field.fields import MultiEmailField
 from django.core.validators import validate_image_file_extension
 from taggit.managers import TaggableManager
+import datetime
 
 import pathlib
 
@@ -136,7 +137,7 @@ class DB_Finding(models.Model):
 
 	def save(self, *args, **kwargs):
 		if self.status == "Closed":
-			self.closed_at = timezone.now()
+			self.closed_at = datetime.datetime.now()
 		super().save(*args, **kwargs)
 
 	class Meta:

@@ -21,7 +21,7 @@ def createSettings():
 
     try:
         if not DB_Settings.objects.count():
-            company_settings =DB_Settings(
+            company_settings = DB_Settings(
                 company_name = PETEREPORT_CONFIG['company_name'],
                 company_website = PETEREPORT_CONFIG['company_website'],
                 company_address = PETEREPORT_CONFIG['company_address'],

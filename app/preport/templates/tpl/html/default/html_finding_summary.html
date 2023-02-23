@@ -1,0 +1,8 @@
+{% load martortags %}
+{% load bleach_tags %}
+<tr>
+  <td style="width: 5%">{{counter_finding}}</td>
+  <td style="width: 75%">{{finding.title|safe| bleach}}</td>
+  <td style="width: 10%">**<span style="color:#{{color_text_severity}}">{{finding.severity|safe| bleach}} </span>**</td>
+  <td style="width: 10%">{{finding.status|safe| bleach}}</td>
+</tr>

@@ -8,18 +8,28 @@
 <tbody>
 
 <tr>
-<td style="width: 15%">**{% translate "Severity" %}**</td>
-<td>**<span style="color:#{{color_text_severity}}">{{finding.severity | safe | bleach}} </span>**</td>
+    <td style="width: 15%">**{% translate "Severity" %}**</td>
+    <td>**<span style="color:#{{color_text_severity}}">{{finding.severity | safe | bleach}} </span>**</td>
 </tr>
 
 <tr>
-<td style="width: 15%">**{% translate "CVSS Score" %}**</td>
-<td>**<span style="color:#{{color_text_severity}}">{{finding.cvss_score | safe | bleach}} </span>**</td>
+    <td style="width: 15%">**{% translate "Status" %}**</td>
+    <td>**<span style="color:#{{color_text_severity}}">{{finding.status | safe | bleach}} </span>**</td>
+    </tr>
+
+<tr>
+    <td style="width: 15%">**{% translate "CVSS Score" %}**</td>
+    <td>**<span style="color:#{{color_text_severity}}">{{finding.cvss_score | safe | bleach}} </span>**</td>
 </tr>
 
 <tr>
-<td style="width: 15%">**CWE**</td>
-<td>{{finding.cwe.cwe_id}} - {{finding.cwe.cwe_name | safe | bleach}}</td>
+    <td style="width: 15%">**CWE**</td>
+    <td>{{finding.cwe.cwe_id}} - {{finding.cwe.cwe_name | safe | bleach}}</td>
+</tr>
+
+<tr>
+    <td style="width: 15%">**OWASP**</td>
+    <td>{{finding.owasp.owasp_full_id}} - {{finding.owasp.owasp_name | safe | bleach}}</td>
 </tr>
 
 {% if finding.description %}
@@ -28,6 +38,17 @@
 <td>
 
 {{finding.description | safe_markdown | bleach}}
+
+</td>
+</tr>
+{% endif %}
+
+{% if finding.poc %}
+<tr>
+<td style="width: 15%">**{% translate "Proof of Concept" %}**</td>
+<td>
+
+{{finding.poc | safe_markdown | bleach}}
 
 </td>
 </tr>
@@ -68,7 +89,7 @@
 {% if template_attackflow_in_finding %}
 <tr>
 {{template_attackflow_in_finding | safe }}
-</tr> 
+</tr>
 {% endif %}
 
 </tbody> </table>
