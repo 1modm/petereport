@@ -1,8 +1,9 @@
-import environ
-
 # Review Django settings (https://djangostars.com/blog/configuring-django-settings-best-practices/)
 
 # Read variables only from OS environment, not from file
+import environ
+
+
 env = environ.Env()
 
 PETEREPORT_CONFIG = {

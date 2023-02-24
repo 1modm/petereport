@@ -18,7 +18,7 @@ import django.db
 from .forms import NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm
 
 # Model
-from .models import DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow
+from .models import DB_Deliverable, DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow
 
 # Decorators
 from .decorators import allowed_users
@@ -37,12 +37,14 @@ import os
 import pathlib
 from collections import Counter
 import pypandoc
+import mimetypes
 
 # Martor
 from petereport.settings import MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, SERVER_CONF, TEMPLATES_DIRECTORIES
 
 # PeTeReport config
 from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_CONFIG, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG
+
 
 # Not all Django output can be passed unmodified to json. In particular, lazy
 # translation objects need a special encoder written for them.
@@ -945,13 +947,15 @@ def report_download_markdown(request, cst, pk):
 
         markdown_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'markdown', name_file)
         with open(markdown_file_output, 'w') as fh:
-                   fh.write(final_markdown_output)
+            fh.write(final_markdown_output)
+            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='markdown')
+            deliverable.save()
 
         if os.path.exists(markdown_file_output):
-                with open(markdown_file_output, 'rb') as fh:
-                    response = HttpResponse(fh.read(), content_type="text/markdown")
-                    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
-                    return response
+            with open(markdown_file_output, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type="text/markdown")
+                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
+                return response
 
     raise Http404
 
@@ -1126,6 +1130,9 @@ def report_download_html(request, cst, pk):
                                             '--number-sections',
                                             '--top-level-division=chapter',
                                             '--self-contained'])
+
+        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='html')
+        deliverable.save()
 
         if os.path.exists(html_file_output):
                 with open(html_file_output, 'rb') as fh:
@@ -1344,6 +1351,9 @@ def report_download_pdf(request, cst, pk):
                                             '--listings'])
         #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
 
+        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='pdf')
+        deliverable.save()
+
         if os.path.exists(pdf_file_output):
                 with open(pdf_file_output, 'rb') as fh:
                     response = HttpResponse(fh.read(), content_type="application/pdf")
@@ -1475,22 +1485,67 @@ def report_download_jupyter(request, cst, pk):
         final_markdown = textwrap.dedent(render_jupyter)
         final_markdown_output = mark_safe(final_markdown)
 
-        # Create the HttpResponse object with the appropriate header.
-        response = HttpResponse(final_markdown_output, content_type='application/x-ipynb+json')
-        response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
-
         jupyter_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'jupyter', name_file)
         with open(jupyter_file_output, 'w') as fh:
-                   fh.write(final_markdown_output)
+            fh.write(final_markdown_output)
+            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='jupyter')
+            deliverable.save()
 
         if os.path.exists(jupyter_file_output):
-                with open(jupyter_file_output, 'rb') as fh:
-                    response = HttpResponse(fh.read(), content_type="application/x-ipynb+json")
-                    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
-                    return response
+            with open(jupyter_file_output, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type="application/x-ipynb+json")
+                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
+                return response
 
     raise Http404
 
+
+# ----------------------------------------------------------------------
+#                           Deliverables
+# ----------------------------------------------------------------------
+
+@login_required
+def deliverable_list(request):
+    DB_deliverable_query = DB_Deliverable.objects.order_by('pk').all()
+    return render(request, 'deliverable/deliverable_list.html', {'DB_deliverable_query': DB_deliverable_query})
+
+@login_required
+def deliverable_download(request, pk):
+    deliverable = get_object_or_404(DB_Deliverable, pk=pk)
+    file_path = os.path.join(REPORTS_MEDIA_ROOT, deliverable.filetype, deliverable.filename )
+
+    if os.path.exists(file_path):
+            with open(file_path, 'rb') as fh:
+                if deliverable.filetype == 'jupyter':
+                    content_type="application/x-ipynb+json"
+                elif deliverable.filetype == 'pdf':
+                    content_type="application/pdf"
+                elif deliverable.filetype == 'html':
+                    content_type="text/html; charset=utf-8"
+                elif deliverable.filetype == 'markdown':
+                    content_type="text/markdown"
+                else:
+                    content_type="text/plain"
+                response = HttpResponse(fh.read(), content_type=content_type)
+                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+                return response
+
+    raise Http404
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def deliverable_delete(request):
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        deliverable = get_object_or_404(DB_Deliverable, pk=delete_id)
+        file_path = os.path.join(REPORTS_MEDIA_ROOT, deliverable.filetype, deliverable.filename )
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        DB_Deliverable.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 # ----------------------------------------------------------------------

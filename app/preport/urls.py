@@ -74,6 +74,10 @@ urlpatterns = [
     path('template/view/<int:pk>', views.template_view, name='template_view'),
     path('template/delete/', views.template_delete, name='template_delete'),
     path('template/edit/<int:pk>', views.template_edit, name='template_edit'),
+    # Deliverables
+    path('deliverable/list/', views.deliverable_list, name='deliverable_list'),
+    path('deliverable/delete/', views.deliverable_delete, name='deliverable_delete'),
+    path('deliverable/download/<int:pk>', views.deliverable_download, name='deliverable_download'),
     # CWE
     path('cwe/list/', views.cwe_list, name='cwe_list'),
     path('cwe/add/', views.cwe_add, name='cwe_add'),

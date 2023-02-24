@@ -19,6 +19,7 @@ from preport.models import (DB_Customer,
                             DB_CWE,
                             DB_OWASP,
                             DB_Settings,
+                            DB_Deliverable,
                             )
 
 
@@ -91,6 +92,7 @@ def main():
         DB_CWE.objects.all().delete()
         DB_OWASP.objects.all().delete()
         DB_Settings.objects.all().delete()
+        DB_Deliverable.objects.all().delete()
 
         remove_folder(MEDIA_ROOT)
         create_media_folders(MEDIA_ROOT)

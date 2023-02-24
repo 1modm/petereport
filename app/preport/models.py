@@ -111,6 +111,17 @@ class DB_Report(models.Model):
 	class Meta:
 		verbose_name_plural = "Reports"
 
+# ---------- Deliverable ------------
+class DB_Deliverable(models.Model):
+	report = models.ForeignKey(DB_Report, on_delete=models.CASCADE)
+	filename = models.CharField(max_length=2048, blank=False, unique=False)
+	generation_date = models.DateTimeField(blank=False)
+	filetype = models.CharField(max_length=32, blank=False, unique=False)
+	filetemplate = models.CharField(max_length=64, blank=False, unique=False)
+	def __str__(self):
+		return self.file
+	class Meta:
+		verbose_name_plural = "Deliverables"
 
 # ---------- Finding ------------
 
