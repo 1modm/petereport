@@ -13,12 +13,15 @@ from django.utils.functional import Promise
 from django.utils.encoding import force_str
 from django.core.serializers.json import DjangoJSONEncoder
 
+import preport.utils.fts as ufts
+import preport.utils.urls as uurls
+
 import django.db
 # Forms
-from .forms import NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm
+from .forms import NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm, NewFTSForm
 
 # Model
-from .models import DB_Deliverable, DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow
+from .models import DB_Deliverable, DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow, DB_FTSModel
 
 # Decorators
 from .decorators import allowed_users
@@ -37,7 +40,6 @@ import os
 import pathlib
 from collections import Counter
 import pypandoc
-import mimetypes
 
 # Martor
 from petereport.settings import MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, SERVER_CONF, TEMPLATES_DIRECTORIES
@@ -1610,7 +1612,7 @@ def finding_add(request,pk):
         form.fields['location'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['impact'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['recommendation'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['references'].initial = PETEREPORT_TEMPLATES['initial_text']
+        form.fields['ref'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['cwe'].initial = '-1'
         form.fields['owasp'].initial = '-1'
 
@@ -1732,7 +1734,7 @@ def findings_download_csv(request,pk):
         finding_location_encoded = finding.location.encode("ascii", "ignore").decode()
         finding_impact_encoded = finding.impact.encode("ascii", "ignore").decode()
         finding_recommendation_encoded = finding.recommendation.encode("ascii", "ignore").decode()
-        finding_references_encoded = finding.references.encode("ascii", "ignore").decode()
+        finding_references_encoded = finding.ref.encode("ascii", "ignore").decode()
         appendix_title_encoded = appendix_title.encode("ascii", "ignore").decode()
         appendix_description_encoded = appendix_description.encode("ascii", "ignore").decode()
 
@@ -1783,7 +1785,7 @@ def findings_upload_csv(request,pk):
         f_location = header.index("Location")
         f_impact = header.index("Impact")
         f_recommendation = header.index("Recommendation")
-        f_references = header.index("References")
+        f_ref = header.index("References")
         f_appendix = header.index("Appendix")
         f_appendix_description = header.index("Appendix Description")
 
@@ -1797,20 +1799,22 @@ def findings_upload_csv(request,pk):
             fcvss_score = row[f_cvss_score]
             fcvss = row[f_cvss]
             fcwe = row[f_cwe]
+            fowasp = row[f_owasp]
             fdescription = row[f_description]
             flocation = row[f_location]
             fimpact = row[f_impact]
             frecommendation = row[f_recommendation]
-            freferences = row[f_references]
+            fref = row[f_ref]
             fappendix = row[f_appendix]
             fappendixdescription = row[f_appendix_description]
 
-            List.append([fid,ftitle,fstatus,fseverity,fcvss_score,fcvss,fcwe,fdescription,flocation,fimpact,frecommendation,freferences,fappendix,fappendixdescription])
+            List.append([fid,ftitle,fstatus,fseverity,fcvss_score,fcvss,fcwe,fowasp,fdescription,flocation,fimpact,frecommendation,fref,fappendix,fappendixdescription])
 
             DB_cwe = get_object_or_404(DB_CWE, cwe_id=fcwe)
+            DB_owasp = get_object_or_404(DB_OWASP, owasp_id=fowasp)
 
             # Save finding
-            finding_to_DB = DB_Finding(report=DB_report_query, finding_id=fid, title=ftitle, status=fstatus, severity=fseverity, cvss_base_score=fcvss_score, cvss_score=fcvss, description=fdescription, location=flocation, impact=fimpact, recommendation=frecommendation, references=freferences, cwe=DB_cwe)
+            finding_to_DB = DB_Finding(report=DB_report_query, finding_id=fid, title=ftitle, status=fstatus, severity=fseverity, cvss_base_score=fcvss_score, cvss_score=fcvss, description=fdescription, location=flocation, impact=fimpact, recommendation=frecommendation, ref=fref, cwe=DB_cwe, owasp=DB_owasp)
             finding_to_DB.save()
 
             # Save appendix
@@ -1933,7 +1937,7 @@ def defectdojo_import(request,pk,ddpk):
         finding_mitigation= jsondata['mitigation'] or ""
         finding_impact = jsondata['impact'] or ""
         finding_steps_to_reproduce = jsondata['steps_to_reproduce'] or ""
-        finding_references = jsondata['references'] or ""
+        finding_ref = jsondata['references'] or ""
         finding_hash_code = jsondata['hash_code'] or uuid.uuid4()
         finding_file_path = jsondata['file_path'] or ""
 
@@ -1942,7 +1946,7 @@ def defectdojo_import(request,pk,ddpk):
         cweDB = DB_CWE.objects.filter(cwe_id=finding_cwe).first() or DB_CWE.objects.filter(cwe_id=0).first()
 
         #Save Finding
-        finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_hash_code, status = 'Open', title=finding_title, severity=finding_severity, cvss_base_score=finding_cvssv3, cvss_score=finding_cvssv3_score, description=finding_final_description, location=finding_file_path, impact=finding_impact, recommendation=finding_mitigation, references=finding_references, cwe=cweDB)
+        finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_hash_code, status = 'Open', title=finding_title, severity=finding_severity, cvss_base_score=finding_cvssv3, cvss_score=finding_cvssv3_score, description=finding_final_description, location=finding_file_path, impact=finding_impact, recommendation=finding_mitigation, ref=finding_ref, cwe=cweDB)
         finding_to_DB.save()
 
     return redirect('report_view', pk=pk)
@@ -1977,7 +1981,7 @@ def defectdojo_import_finding(request,pk,ddpk):
     finding_mitigation= jsondata['mitigation'] or ""
     finding_impact = jsondata['impact'] or ""
     finding_steps_to_reproduce = jsondata['steps_to_reproduce'] or ""
-    finding_references = jsondata['references'] or ""
+    finding_ref = jsondata['references'] or ""
     finding_hash_code = jsondata['hash_code'] or uuid.uuid4()
     finding_file_path = jsondata['file_path'] or ""
 
@@ -1987,7 +1991,7 @@ def defectdojo_import_finding(request,pk,ddpk):
     cweDB = DB_CWE.objects.filter(cwe_id=finding_cwe).first() or DB_CWE.objects.filter(cwe_id=0).first()
 
     #Save Finding
-    finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_hash_code, status = 'Open', title=finding_title, severity=finding_severity, cvss_base_score=finding_cvssv3, cvss_score=finding_cvssv3_score, description=finding_final_description, location=finding_file_path, impact=finding_impact, recommendation=finding_mitigation, references=finding_references, cwe=cweDB)
+    finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_hash_code, status = 'Open', title=finding_title, severity=finding_severity, cvss_base_score=finding_cvssv3, cvss_score=finding_cvssv3_score, description=finding_final_description, location=finding_file_path, impact=finding_impact, recommendation=finding_mitigation, ref=finding_ref, cwe=cweDB)
     finding_to_DB.save()
 
     return redirect('report_view', pk=pk)
@@ -2208,7 +2212,7 @@ def template_add(request):
         form.fields['location'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['impact'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['recommendation'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['references'].initial = PETEREPORT_TEMPLATES['initial_text']
+        form.fields['ref'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['cwe'].initial = '1'
 
     return render(request, 'findings/template_add.html', {
@@ -2293,7 +2297,7 @@ def templateaddreport(request,pk,reportpk):
                                 location=DB_finding_template_query.location,
                                 impact=DB_finding_template_query.impact,
                                 recommendation=DB_finding_template_query.recommendation,
-                                references=DB_finding_template_query.references,
+                                ref=DB_finding_template_query.ref,
                                 cwe=DB_finding_template_query.cwe,
                                 owasp=DB_finding_template_query.owasp,
                                 tags=DB_finding_template_query.tags)
@@ -2551,3 +2555,40 @@ def attackflow_delete(request):
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+
+# ----------------------------------------------------------------------
+#                           FTS Search
+# ----------------------------------------------------------------------
+
+@login_required
+def fts(request):
+    search_results = [] # item link, model type, item label, search result
+    if request.method == 'POST':
+        form = NewFTSForm(request.POST)
+        if form.is_valid():
+            query = request.POST.get('q')
+            models = request.POST.getlist('models')
+            for model in models:
+                try:
+                    db_model = DB_FTSModel.objects.get(pk=model)
+                    table_model_name = 'preport_' + db_model.model_name.lower()
+                    search_model_res = ufts.search_into_model(table_model_name=table_model_name, query=query)
+                    if search_model_res is not None and len(search_model_res) > 0:
+                        model = globals()[db_model.model_name]()
+                        model_label = db_model.get_label().lower()
+                        for res in search_model_res:
+                            try:
+                                item = model.__class__.objects.get(pk=res[0])
+                                item_link = uurls.get_object_url(item)
+                                search_results.append((item_link, model_label, item.get_label(), res[1]))
+                            except DB_FTSModel.DoesNotExist:
+                                pass
+                except DB_FTSModel.DoesNotExist:
+                    pass
+    else:
+        form = NewFTSForm()
+
+    return render(request, 'fts/fts.html', {
+        'form': form, 'search_results': search_results, 'search_results_count': len(search_results)
+    })

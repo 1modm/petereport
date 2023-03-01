@@ -75,10 +75,10 @@
 </tr>
 {% endif %}
 
-{% if finding.references %}
+{% if finding.ref %}
 <tr>
 <td style="width: 15%">**{% translate "References" %}**</td>
-<td>{{finding.references | safe_markdown | bleach}}</td>
+<td>{{finding.ref | safe_markdown | bleach}}</td>
 </tr>
 {% endif %}
 

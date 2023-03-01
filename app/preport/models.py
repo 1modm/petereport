@@ -9,7 +9,6 @@ import datetime
 
 import pathlib
 
-
 # ---------- OWASP ------------
 
 class DB_OWASP(models.Model):
@@ -19,6 +18,7 @@ class DB_OWASP(models.Model):
 	owasp_description = models.TextField(blank=True)
 	owasp_url = models.CharField(max_length=255, blank=True)
 	owasp_full_id = models.CharField(max_length=20, blank=True)
+	fts_enabled = True
 	class Meta:
 		verbose_name_plural = "OWASPs"
 	def __str__(self):
@@ -31,6 +31,9 @@ class DB_OWASP(models.Model):
 			prefix += '0'
 		self.owasp_full_id = prefix + str(self.owasp_id) + ':' + str(self.owasp_year)
 		super().save(*args, **kwargs)
+	def get_label (self):
+		return "%s - %s" % (self.owasp_full_id, self.owasp_name)
+
 
 # ---------- CWE ------------
 
@@ -38,10 +41,13 @@ class DB_CWE(models.Model):
 	cwe_id = models.IntegerField(blank=False, unique=True)
 	cwe_name = models.CharField(max_length=255, blank=True)
 	cwe_description = models.TextField(blank=True)
+	fts_enabled = True
 	class Meta:
 		verbose_name_plural = "CWEs"
 	def __str__(self):
 		return str(self.cwe_id)
+	def get_label (self):
+		return "%s - %s" % (self.cwe_id, self.cwe_name)
 
 # ---------- Customer ------------
 
@@ -52,9 +58,12 @@ class DB_Customer(models.Model):
 	contact_dp_mail = models.EmailField(max_length=255, blank=True)
 	description = MartorField()
 	tags = TaggableManager(blank=True)
+	fts_enabled = True
 	class Meta:
 		verbose_name_plural = "Customers"
 	def __str__(self):
+		return self.name
+	def get_label (self):
 		return self.name
 
 # ---------- Product ------------
@@ -64,9 +73,13 @@ class DB_Product(models.Model):
 	name = models.CharField(max_length=255, blank=False)
 	description = MartorField()
 	tags = TaggableManager(blank=True)
+	fts_enabled = True
+	fts_excluded_fields = ['customer']
 	class Meta:
 		verbose_name_plural = "Products"
 	def __str__(self):
+		return self.name
+	def get_label (self):
 		return self.name
 
 # ---------- Settings ------------
@@ -80,12 +93,17 @@ class DB_Settings(models.Model):
 	company_address = models.CharField(max_length=255, blank=True)
 	# File will be uploaded to MEDIA_ROOT/images/<filename>
 	company_picture = models.ImageField(upload_to=logo_dst, blank=True)
+	fts_enabled = True
+	fts_excluded_fields = ['company_picture']
+
 	def save(self, *args, **kwargs):
 		if self.__class__.objects.count():
 			self.pk = self.__class__.objects.first().pk
 		super().save(*args, **kwargs)
 	class Meta:
 		verbose_name_plural = "Settings"
+	def get_label (self):
+		return self.company_name
 
 # ---------- Report ------------
 
@@ -106,7 +124,11 @@ class DB_Report(models.Model):
 	audit_start = models.DateTimeField(blank=True, null=True)
 	audit_end = models.DateTimeField(blank=True, null=True)
 	tags = TaggableManager(blank=True)
+	fts_enabled = True
+	fts_excluded_fields = ['report_id', 'product']
 	def __str__(self):
+		return self.title
+	def get_label (self):
 		return self.title
 	class Meta:
 		verbose_name_plural = "Reports"
@@ -118,8 +140,12 @@ class DB_Deliverable(models.Model):
 	generation_date = models.DateTimeField(blank=False)
 	filetype = models.CharField(max_length=32, blank=False, unique=False)
 	filetemplate = models.CharField(max_length=64, blank=False, unique=False)
+	fts_enabled = True
+	fts_excluded_fields = ['report']
+	def get_label (self):
+		return self.filename
 	def __str__(self):
-		return self.file
+		return self.filename
 	class Meta:
 		verbose_name_plural = "Deliverables"
 
@@ -139,13 +165,17 @@ class DB_Finding(models.Model):
 	location = MartorField(blank=True)
 	impact = MartorField(blank=True)
 	recommendation = MartorField(blank=True)
-	references = MartorField(blank=True)
+	ref = MartorField(blank=True)
 	poc = MartorField(blank=True)
 	cwe = models.ForeignKey(DB_CWE, default=0, on_delete=models.SET_DEFAULT, null=False, blank=False)
 	owasp = models.ForeignKey(DB_OWASP, default=0, on_delete=models.SET_DEFAULT, null=False, blank=False)
 	tags = TaggableManager(blank=True)
+	fts_enabled = True
+	fts_excluded_fields = ['report', 'finding_id', 'cwe', 'owasp']
 
 	def __str__(self):
+		return self.title
+	def get_label (self):
 		return self.title
 
 	def save(self, *args, **kwargs):
@@ -168,10 +198,15 @@ class DB_Finding_Template(models.Model):
 	location = MartorField(blank=True)
 	impact = MartorField(blank=True)
 	recommendation = MartorField(blank=True)
-	references = MartorField(blank=True)
+	ref = MartorField(blank=True)
 	cwe = models.ForeignKey(DB_CWE, default=0, on_delete=models.SET_DEFAULT, null=False, blank=False)
 	owasp = models.ForeignKey(DB_OWASP, default=0, on_delete=models.SET_DEFAULT, null=False, blank=False)
 	tags = TaggableManager(blank=True)
+	fts_enabled = True
+	fts_excluded_fields = ['finding_id', 'cwe', 'owasp',]
+
+	def get_label (self):
+		return self.title
 
 # ---------- Appendix ------------
 
@@ -179,6 +214,8 @@ class DB_Appendix(models.Model):
 	finding = models.ManyToManyField(DB_Finding, related_name='appendix_finding', blank=True)
 	title = models.CharField(blank=False, max_length=200)
 	description = MartorField()
+	def get_label (self):
+		return self.title
 
 
 # ---------- Attack Tree ------------
@@ -188,6 +225,8 @@ class DB_AttackTree(models.Model):
 	title = models.CharField(blank=False, max_length=200)
 	attacktree = models.TextField(blank=True, null=True)
 	svg_file = models.TextField(blank=True, null=True)
+	def get_label (self):
+		return self.title
 
 # ---------- Custom Field ------------
 
@@ -196,6 +235,10 @@ class DB_Custom_field(models.Model):
 	finding = models.ForeignKey(DB_Finding, related_name='custom_field_finding', blank=True, on_delete=models.CASCADE)
 	title = models.CharField(blank=False, max_length=200)
 	description = MartorField(blank=True, null=True)
+	fts_enabled = True
+	fts_excluded_fields = ['finding']
+	def get_label (self):
+		return self.title
 
 # ---------- Attack Flow ------------
 
@@ -204,3 +247,18 @@ class DB_AttackFlow(models.Model):
 	title = models.CharField(blank=False, max_length=200)
 	attackflow_afb = models.TextField(blank=True, null=True)
 	attackflow_png = models.TextField(blank=True, null=True)
+	def get_label (self):
+		return self.title
+
+
+# ---------- FTS Model ------------
+
+class DB_FTSModel(models.Model):
+	model_name = models.CharField(max_length = 64)
+	fts_fields = models.CharField(max_length = 1024)
+
+	def get_label(self):
+		return f'{self.model_name.replace("DB_", "", 1)}'
+
+	def __str__(self):
+		return f'{self.model_name.replace("DB_", "", 1)} ({self.fts_fields})'

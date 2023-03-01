@@ -40,7 +40,7 @@
               <div class="card-header">
                 <h3 class="card-title">{% translate "CWE details" %}</h3>
               </div>
-              
+
               <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
@@ -70,7 +70,7 @@
 
                 {% if form.errors %}
                    {% for field in form %}
-                       {% for error in field.errors %} 
+                       {% for error in field.errors %}
                           <div class="container">
                             <div class="col-md-12 col-sm-12 col-xs-12">
                               <div class="alert alert-danger alert-dismissible ">

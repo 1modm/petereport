@@ -6,6 +6,8 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
+    # Search
+    path("fts", views.fts, name="fts"),
     # Auth
     path('accounts/', include('django.contrib.auth.urls')),
     # Configuration
@@ -87,7 +89,7 @@ urlpatterns = [
     path('owasp/list/', views.owasp_list, name='owasp_list'),
     path('owasp/add/', views.owasp_add, name='owasp_add'),
     path('owasp/edit/<int:pk>', views.owasp_edit, name='owasp_edit'),
-    path('cowaspwe/delete/', views.owasp_delete, name='owasp_delete'),
+    path('owasp/delete/', views.owasp_delete, name='owasp_delete'),
     # Attack Flows
     path('report/attackflow/<int:pk>', views.reportattackflow, name='reportattackflow'),
     path('attackflow/add/<int:pk>', views.attackflow_add, name='attackflow_add'),

@@ -12,9 +12,9 @@
 **{% translate "Status" %}:** {{finding.status}}
 :::
 
-**{% translate "CWE" %}** CWE-{{finding.cwe.cwe_id}} - {{finding.cwe.cwe_name|safe}}
+**{% translate "CWE" %}** CWE-{{finding.cwe.cwe_id}} - {{finding.cwe.title|safe}}
 
-**{% translate "OWASP" %}** OWASP-{{finding.owasp.owasp_full_id}} - {{finding.owasp.owasp_name|safe}}
+**{% translate "OWASP" %}** OWASP-{{finding.owasp.owasp_full_id}} - {{finding.owasp.title|safe}}
 
 {% if finding.description %}
 **{% translate "Description" %}** {{finding.description|safe}}
@@ -36,8 +36,8 @@
 **{% translate "Recommendation" %}** {{finding.recommendation|safe}}
 {% endif %}
 
-{% if finding.references %}
-**{% translate "References" %}** {{finding.references|safe}}
+{% if finding.ref %}
+**{% translate "References" %}** {{finding.ref|safe}}
 {% endif %}
 
 {% if template_custom_fields %}

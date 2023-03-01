@@ -1,11 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
-from django.forms import ModelForm, Textarea, TextInput, DateField, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, PasswordInput, EmailField, BooleanField, FileInput, ModelMultipleChoiceField
-from .models import DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_AttackTree, DB_Custom_field
-from martor.fields import MartorFormField
+from django.forms import Textarea, TextInput, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, EmailField, BooleanField, FileInput, ModelMultipleChoiceField
+from .models import DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_AttackTree, DB_Custom_field, DB_FTSModel
 from django.utils.translation import gettext_lazy as _
-from multi_email_field.forms import MultiEmailField
+import preport.utils.fts as ufts
 
 import datetime
 
@@ -113,7 +112,7 @@ class NewFindingForm(forms.ModelForm):
 
     class Meta:
         model = DB_Finding
-        fields = ('title', 'status', 'severity', 'cvss_score', 'cvss_base_score', 'description', 'poc', 'location', 'impact', 'recommendation', 'references', 'cwe', 'tags')
+        fields = ('title', 'status', 'severity', 'cvss_score', 'cvss_base_score', 'description', 'poc', 'location', 'impact', 'recommendation', 'ref', 'cwe', 'tags')
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Finding title")}),
@@ -134,15 +133,13 @@ class NewFindingTemplateForm(forms.ModelForm):
         ('None', _('None')),
     )
 
-
-
     severity = forms.ChoiceField(choices=severity_choices, required=True, widget=forms.Select(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Critical/High/Medium/Low/Info/None")}))
     cwe = CWEModelChoiceField(queryset=DB_CWE.objects.all(), empty_label=_("(Select a CW ID)"), widget=forms.Select(attrs={'class': 'form-control select2CWE'}))
     owasp = OWASPModelChoiceField(queryset=DB_OWASP.objects.all(), empty_label=_("(Select an OWASP ID)"), widget=forms.Select(attrs={'class': 'form-control select2OWASP'}))
 
     class Meta:
         model = DB_Finding_Template
-        fields = ('title', 'severity', 'cvss_score', 'cvss_base_score', 'description', 'location', 'impact', 'recommendation', 'references', 'cwe', 'tags')
+        fields = ('title', 'severity', 'cvss_score', 'cvss_base_score', 'description', 'location', 'impact', 'recommendation', 'ref', 'cwe', 'tags')
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Finding title")}),
@@ -257,3 +254,16 @@ class NewFieldForm(forms.ModelForm):
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Title")}),
         }
+
+class NewFTSForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(NewFTSForm, self).__init__(*args, **kwargs)
+        self.fields['models'] = ModelMultipleChoiceField(
+                                    widget = CheckboxSelectMultiple(),
+                                    queryset=DB_FTSModel.objects.all().order_by("model_name"))
+        self.fields['models'].initial = DB_FTSModel.objects.all()
+        self.fields['q'] = forms.CharField(
+                widget = forms.TextInput(
+                    attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("FTS Query")}),)
+    class Meta:
+        fields = ('models', 'q')

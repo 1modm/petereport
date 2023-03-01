@@ -33,8 +33,8 @@
 **{% translate "Recommendation" %}** {{finding.recommendation|safe}}
 {% endif %}
 
-{% if finding.references %}
-**{% translate "References" %}** {{finding.references|safe}}
+{% if finding.ref %}
+**{% translate "References" %}** {{finding.ref|safe}}
 {% endif %}
 
 {% if template_custom_fields %}

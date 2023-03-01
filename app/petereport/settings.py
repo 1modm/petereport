@@ -100,6 +100,7 @@ DATABASES = {
     }
 }
 
+ATOMIC_REQUESTS = True
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -156,7 +157,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ###################### PETEREPORT ######################
 
 MAIN_PROJECT = os.path.dirname(__file__)
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'petereport')
 
 
 STATICFILES_DIRS = (
@@ -166,11 +167,9 @@ STATICFILES_DIRS = (
     os.path.join(MAIN_PROJECT, 'static'),
 )
 
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 
-
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = '/media/'
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/'
@@ -188,7 +187,7 @@ MARTOR_THEME = 'bootstrap'
 # Global martor settings
 # Input: string boolean, `true/false`
 MARTOR_ENABLE_CONFIGS = {
-    'emoji': 'false',        # to enable/disable emoji icons.
+    'emoji': 'false',       # to enable/disable emoji icons.
     'imgur': 'true',        # to enable/disable imgur/custom uploader.
     'mention': 'false',     # to enable/disable mention
     'jquery': 'true',       # to include/revoke jquery (require for admin default django)

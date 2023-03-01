@@ -324,7 +324,7 @@
       </div>
       {% endif %}
 
-      {% if finding.references %}
+      {% if finding.ref %}
       <div class="row">
         <div class="col-md-12">
 
@@ -341,7 +341,7 @@
 
                 </div>
                 <div class="card-body">
-                  {{ finding.references| safe_markdown | bleach }}
+                  {{ finding.ref| safe_markdown | bleach }}
                 </div>
               </div>
 
