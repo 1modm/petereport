@@ -38,7 +38,7 @@
         <div class="row">
             <div class="col-md-7">
                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                  <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Edit Finding" %}</button></a>
+                  <a href="/finding/edit/{{ finding.pk }}#{{ finding.get_cvss_score_anchor }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Edit Finding" %}</button></a>
                   <a href="/finding/customfields/{{ finding.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Finding custom fields" %}</button></a>
                   <a href="/field/add/{{ finding.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-edit"></i> {% translate "Add custom field" %}</button></a>
                 {% endif %}

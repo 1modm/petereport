@@ -112,7 +112,7 @@ class NewFindingForm(forms.ModelForm):
 
     class Meta:
         model = DB_Finding
-        fields = ('title', 'status', 'severity', 'cvss_score', 'cvss_base_score', 'description', 'poc', 'location', 'impact', 'recommendation', 'ref', 'cwe', 'tags')
+        fields = ('title', 'status', 'severity', 'cvss_score', 'cvss_base_score', 'description', 'poc', 'location', 'impact', 'recommendation', 'ref', 'cwe', 'owasp', 'tags')
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Finding title")}),

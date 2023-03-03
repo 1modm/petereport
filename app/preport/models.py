@@ -6,8 +6,11 @@ from multi_email_field.fields import MultiEmailField
 from django.core.validators import validate_image_file_extension
 from taggit.managers import TaggableManager
 import datetime
+import re
 
 import pathlib
+
+cvss_regex = re.compile('.+ \((CVSS:.+)\)$')
 
 # ---------- OWASP ------------
 
@@ -183,6 +186,10 @@ class DB_Finding(models.Model):
 			self.closed_at = datetime.datetime.now()
 		super().save(*args, **kwargs)
 
+	def get_cvss_score_anchor(self):
+		m = cvss_regex.search(self.cvss_base_score)
+		if m:
+			return m.group(1)
 	class Meta:
 		verbose_name_plural = "Findings"
 
@@ -207,6 +214,11 @@ class DB_Finding_Template(models.Model):
 
 	def get_label (self):
 		return self.title
+
+	def get_cvss_score_anchor(self):
+		m = cvss_regex.search(self.cvss_base_score)
+		if m:
+			return m.group(1)
 
 # ---------- Appendix ------------
 

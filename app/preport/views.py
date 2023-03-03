@@ -1646,9 +1646,6 @@ def finding_edit(request,pk):
         'form': form, 'DB_report': DB_report_query
     })
 
-
-
-
 @login_required
 @allowed_users(allowed_roles=['administrator'])
 def finding_delete(request):
@@ -1766,8 +1763,8 @@ def findings_upload_csv(request,pk):
     if request.method == 'POST':
         csv_file = request.FILES['file'].file
 
-        #csv_file_string = io.TextIOWrapper(csv_file, encoding='utf-8')
-        csv_file_string = io.TextIOWrapper(csv_file, encoding='ISO-8859-1')
+        csv_file_string = io.TextIOWrapper(csv_file, encoding='UTF-8')
+        #csv_file_string = io.TextIOWrapper(csv_file, encoding='ISO-8859-1')
 
         csvReader = csv.reader(csv_file_string, dialect='excel')
 
@@ -1781,6 +1778,7 @@ def findings_upload_csv(request,pk):
         f_cvss_score = header.index("CVSS Base Score")
         f_cvss = header.index("CVSS Score")
         f_cwe = header.index("CWE ID")
+        f_owasp = header.index("OWASP ID")
         f_description = header.index("Description")
         f_location = header.index("Location")
         f_impact = header.index("Impact")
@@ -2074,10 +2072,6 @@ def appendix_edit(request,pk):
         'form': form, 'DB_report_query': DB_report_query
     })
 
-
-
-
-
 @login_required
 @allowed_users(allowed_roles=['administrator'])
 def appendix_delete(request):
@@ -2099,9 +2093,6 @@ def appendix_view(request,pk):
     DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
 
     return render(request, 'appendix/appendix_view.html', {'DB_finding_query': DB_finding_query, 'DB_appendix_query': appendix})
-
-
-
 
 
 # ----------------------------------------------------------------------
