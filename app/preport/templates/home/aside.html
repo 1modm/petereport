@@ -193,7 +193,7 @@
               </li>
               <li class="nav-item">
                 <a href="/template/list/" class="nav-link">
-                  <i class="far fa-file-alt nav-icon"></i>
+                  <i class="nav-ico fas fa-file-alt"></i>
                   <p>{% translate "Finding templates" %}</p>
                 </a>
               </li>
@@ -229,7 +229,7 @@
             {% if user.groups.all.0|stringformat:'s' == "administrator" %}
               <li class="nav-item">
                 <a href="/cwe/add/" class="nav-link">
-                  <i class="fas fa-edit nav-icon"></i>
+                  <i class="nav-icon fas fa-edit"></i>
                   <p>{% translate "Add CWE" %}</p>
                 </a>
               </li>
@@ -268,7 +268,7 @@
 
           <li class="nav-item">
             <a href="/fts" class="nav-link">
-              <i class="nav-icon fa-search text-light"></i>
+              <i class="nav-icon fa fa-search text-light"></i>
               <p>
                 {% translate "Search" %}
               </p>

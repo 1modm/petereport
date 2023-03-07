@@ -29,7 +29,7 @@ services:
       pip freeze &&
       pipenv run ./app/manage.py makemigrations &&
       pipenv run ./app/manage.py migrate &&
-      pipenv run ./app/manage.py updateftsmodels &&
+      pipenv run ./app/manage.py createfts &&
       pipenv run ./app/manage.py loaddata ./app/config/cwe-list.json &&
       pipenv run ./app/manage.py loaddata ./app/config/cwe-default.json &&
       pipenv run ./app/manage.py loaddata ./app/config/owasp-list.json &&

@@ -29,6 +29,8 @@ def sql_delete_table_fts(model_name):
         table_name = 'preport_' + model_name.lower()
 
         fts_sql = 'DROP TABLE IF EXISTS fts_' + table_name + ';\n'
+        for ext in ['config', 'data', 'docsize', 'idx']:
+             fts_sql += 'DROP TABLE IF EXISTS fts_' + table_name + '_' + ext + ';\n'
 
         sql_events = ['INSERT', 'DELETE', 'UPDATE']
         for event in sql_events:
@@ -43,6 +45,10 @@ def sql_create_table_fts(model_name, fts_fields):
                         ' USING fts5(' + ', '.join(fts_fields) + ', content="' + table_name + '",' + \
                             ' content_rowid="id", prefix=2, prefix=3, prefix=4,' + \
                             ' tokenize="porter unicode61 remove_diacritics 1");\n'
+        
+        # Rebuild index to avoid error: Content in the virtual table is corrupt
+        # https://www.sqlite.org/fts5.html#the_integrity_check_command
+        fts_sql += 'INSERT INTO fts_' + table_name + '(fts_' + table_name + ') VALUES("rebuild");\n';
 
         fts_sql += 'CREATE TRIGGER fts_ai_' + table_name + ' AFTER INSERT ON ' + table_name + ' BEGIN\n' + \
                         'INSERT INTO fts_' + table_name + ' (rowid, ' + ', '.join(fts_fields) + ') ' + \

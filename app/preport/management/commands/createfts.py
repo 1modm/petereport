@@ -21,5 +21,11 @@ class Command(BaseCommand):
             model = DB_FTSModel(model_name=model_name, fts_fields=', '.join(model_fields))
             model.save()
 
+            print("-- FTS " + model_name + " -----------------------")
+            #print("-- DELETE " + model_name)
+            #print(ufts.sql_delete_table_fts(model_name))
             ufts.execute_script_sql(ufts.sql_delete_table_fts(model_name))
+
+            #print("-- CREATE " + model_name)
+            #print(ufts.sql_create_table_fts(model_name, model_fields))
             ufts.execute_script_sql(ufts.sql_create_table_fts(model_name, model_fields))

@@ -61,16 +61,41 @@
         <table id="searchresultslist" class="table table-bordered table-hover">
             <thead>
                 <tr>
-                  <th style="width: 7%">{% translate "Type" %}</th>
+                  <th style="width: 15%">{% translate "Type" %}</th>
                   <th style="width: 50%">{% translate "Label" %}</th>
-                  <th style="width: 43%">{% translate "Data" %}</th>
+                  <th style="width: 35%">{% translate "Data" %}</th>
                 </tr>
             </thead>
             <tbody>
 
             {% for result in search_results %}
               <tr>
-                <td>{{ result.1 }}</td>
+                <td>
+                {% if result.1 == "settings" %}
+                  <p class="nav-icon fas fa-cogs text-info"> Configuration</p>
+                {% elif result.1 == "customer" %}
+                  <p class="nav-icon fas fa-building text-purple"> Customer</p>
+                {% elif result.1 == "product" %}
+                  <p class="nav-icon fa fa-cube text-primary"> Product</p>
+                {% elif result.1 == "report" %}
+                  <p class="nav-icon fa fa-file-code text-success"> Report</p>
+                {% elif result.1 == "deliverable" %}
+                  <p class="nav-icon fas fa-download text-success"> Deliverable</p>
+                {% elif result.1 == "finding" %}
+                  <p class="nav-icon fas fa-bug text-danger"> Finding</p>
+                {% elif result.1 == "finding_template" %}
+                  <p class="nav-icon fas fa-bug text-danger"> Fdg Tpl</p>
+                {% elif result.1 == "custom_field" %}
+                  <p class="nav-icon fas fa-bug text-danger"> Custom Fld</p>
+                {% elif result.1 == "cwe" %}
+                  <p class="nav-icon fas fa-fingerprint text-warning"> CWE</p>
+                {% elif result.1 == "owasp" %}
+                  <p class="nav-icon fas fa-fingerprint text-warning"> OWASP</p>
+
+                {% else %}
+                  {{ result.1 }}
+                {% endif %}
+                </td>
                 <td><a href="{{result.0}}">{{ result.2 }}</a></td>
                 <td>{% autoescape off %}{{ result.3 }}{% endautoescape %}</td>
               </tr>
