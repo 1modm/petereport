@@ -1,14 +1,34 @@
 version: '3.8'
 
+volumes:
+  media:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './app/media'
+  sqlite_db:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './app/db'
+  storage_reports:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './app/storage_reports'
+
 services:
   nginx:
-    image: nginx
-    container_name: petereport_nginx
+    build:
+      context: .
+      dockerfile: ./Dockerfile.nginx.complete
+    image: petereport_nginx_complete
+    container_name: petereport_nginx_complete
     volumes:
-      - ./nginx:/opt/petereport/nginx
-      - ./nginx/petereport.conf:/etc/nginx/conf.d/petereport.conf
-      - ./app/petereport/static:/opt/petereport/app/petereport/static
-      - ./app/media:/opt/petereport/app/media
+      - media:/opt/petereport/app/media:ro
     ports:
       - 80:80
       - 443:443
@@ -18,12 +38,13 @@ services:
   petereport:
     build:
       context: .
-      dockerfile: ./Dockerfile
-    image: petereport_django
-    container_name: petereport_django
+      dockerfile: ./Dockerfile.petereport.complete
+    image: petereport_django_complete
+    container_name: petereport_django_complete
     environment:
       - PETEREPORT_DJANGO_DEBUG=False
       - PETEREPORT_DJANGO_AMIN_MODULE=False
+    user: www-data
     command: bash -c "
       sleep 1 &&
       pipenv install --deploy --ignore-pipfile --python 3.9 &&
@@ -35,10 +56,11 @@ services:
       pipenv run ./app/manage.py loaddata ./app/config/cwe-default.json &&
       pipenv run ./app/manage.py loaddata ./app/config/owasp-list.json &&
       pipenv run ./app/manage.py loaddata ./app/config/owasp-default.json &&
-      pipenv run ./app/manage.py loaddata ./app/config/data-test.json &&
       pipenv run gunicorn --chdir ./app petereport.wsgi:application --timeout 120 --graceful-timeout 60 --bind 0.0.0.0:8000"
     volumes:
-      - .:/opt/petereport
+      - sqlite_db:/opt/petereport/app/db:rw
+      - media:/opt/petereport/app/media:rw
+      - storage_reports:/opt/petereport/app/storage_reports:rw
     expose:
       - 8000
     restart: unless-stopped
