@@ -52,6 +52,9 @@ ADD ./app ./app
 RUN rm -r ./app/db
 RUN rm -r ./app/media
 RUN rm -r ./app/storage_reports
+ADD ./docker ./docker
 
 RUN chown -R root:www-data /opt/petereport
 RUN chmod -R 750 /var/www/.local /opt/petereport
+
+USER www-data
