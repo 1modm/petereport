@@ -1,7 +1,11 @@
 #!/bin/sh
 
 cd /opt/petereport && {
-    mkdir -p ./app/storage_reports/{html,images,jupyter,markdown,pdf} &&
+    mkdir -p ./app/storage_reports/html &&
+    mkdir -p ./app/storage_reports/images &&
+    mkdir -p ./app/storage_reports/jupyter &&
+    mkdir -p ./app/storage_reports/markdown &&
+    mkdir -p ./app/storage_reports/pdf &&
     pipenv install --deploy --ignore-pipfile --python 3.9 &&
     pip freeze &&
     pipenv run ./app/manage.py makemigrations &&
