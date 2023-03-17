@@ -18,7 +18,7 @@ import preport.utils.urls as uurls
 
 import django.db
 # Forms
-from .forms import NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm, NewFTSForm
+from .forms import CustomDeliverableReportForm, NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm, NewFTSForm
 
 # Model
 from .models import DB_Deliverable, DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow, DB_FTSModel
@@ -644,6 +644,18 @@ def report_findings_duplicate(request):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
+def report_upload_custom_report(request,pk):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(request.FILES['file'])
+            return HttpResponseRedirect('/success/url/')
+    else:
+        form = UploadFileForm()
+    return render(request, 'upload.html', {'form': form})
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
 def report_edit(request,pk):
 
     report = get_object_or_404(DB_Report, pk=pk)
@@ -675,6 +687,9 @@ def report_view(request,pk):
 
     DB_attackflow_query = DB_AttackFlow.objects.filter(finding__in=DB_finding_query)
     count_attackflow_query = DB_attackflow_query.count()
+
+    DB_deliverable_query = DB_Deliverable.objects.filter(report=pk)
+    count_deliverable_query = DB_deliverable_query.count()
 
     count_findings_critical = 0
     count_findings_high = 0
@@ -747,6 +762,8 @@ def report_view(request,pk):
                                                         'owasp_categories': owasp_categories,
                                                         'DB_attackflow_query': DB_attackflow_query,
                                                         'count_attackflow_query': count_attackflow_query,
+                                                        'DB_deliverable_query': DB_deliverable_query,
+                                                        'count_deliverable_query': count_deliverable_query,
                                                         'reports_tags': report_tags,
                                                         'templates_directories': TEMPLATES_DIRECTORIES})
 
@@ -1527,12 +1544,42 @@ def deliverable_download(request, pk):
                 elif deliverable.filetype == 'markdown':
                     content_type="text/markdown"
                 else:
-                    content_type="text/plain"
+                    content_type="application/octet-stream"
                 response = HttpResponse(fh.read(), content_type=content_type)
                 response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
                 return response
 
     raise Http404
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def deliverable_report_add(request, pk):
+    report = get_object_or_404(DB_Report, pk=pk)
+
+    if request.method == 'POST':
+        form = CustomDeliverableReportForm(request.POST, request.FILES)
+        if form.is_valid():
+            cst = 'custom'
+            now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+            files = request.FILES.getlist('custom_deliverables')
+            for f in files:
+                file_path = pathlib.PurePath(f.name)
+                name_file = PETEREPORT_TEMPLATES['report_custom_name'] + '_' + report.title + '_' + file_path.stem + '_' + str(now) + file_path.suffix
+                file_path = pathlib.PurePath(REPORTS_MEDIA_ROOT, 'custom', name_file)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                with open(file_path, 'wb+') as destination:
+                    for chunk in f.chunks():
+                        destination.write(chunk)
+                    deliverable = DB_Deliverable(report=report, filename=file_path.name,
+                                                generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(),
+                                                filetemplate=file_path.suffix.replace('.','').lower(),
+                                                filetype=cst)
+                    deliverable.save()
+            return HttpResponse('{"status":"success"}', content_type='application/json')
+
+    return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
@@ -1540,7 +1587,7 @@ def deliverable_delete(request):
     if request.method == 'POST':
         delete_id = request.POST['delete_id']
         deliverable = get_object_or_404(DB_Deliverable, pk=delete_id)
-        file_path = os.path.join(REPORTS_MEDIA_ROOT, deliverable.filetype, deliverable.filename )
+        file_path = os.path.join(REPORTS_MEDIA_ROOT, deliverable.filetype, deliverable.filename)
         if os.path.exists(file_path):
             os.remove(file_path)
         DB_Deliverable.objects.filter(pk=delete_id).delete()

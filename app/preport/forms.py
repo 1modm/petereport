@@ -267,3 +267,6 @@ class NewFTSForm(forms.Form):
                     attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("FTS Query")}),)
     class Meta:
         fields = ('models', 'q')
+
+class CustomDeliverableReportForm(forms.Form):
+    pass

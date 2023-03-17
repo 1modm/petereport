@@ -193,16 +193,15 @@
               </li>
               <li class="nav-item">
                 <a href="/template/list/" class="nav-link">
-                  <i class="nav-ico fas fa-file-alt"></i>
-                  <p>{% translate "Finding templates" %}</p>
+                  <i class="nav-icon fas fa-file-alt"></i>
+                  <p>{% translate "Finding Templates" %}</p>
                 </a>
               </li>
-
             {% if user.groups.all.0|stringformat:'s' == "administrator" %}
               <li class="nav-item">
                 <a href="/template/add/" class="nav-link">
                   <i class="fas fa-file-code nav-icon"></i>
-                  <p>{% translate "Add Finding template" %}</p>
+                  <p>{% translate "Add Finding Template" %}</p>
                 </a>
               </li>
             {% endif %}

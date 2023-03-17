@@ -80,6 +80,8 @@ urlpatterns = [
     path('deliverable/list/', views.deliverable_list, name='deliverable_list'),
     path('deliverable/delete/', views.deliverable_delete, name='deliverable_delete'),
     path('deliverable/download/<int:pk>', views.deliverable_download, name='deliverable_download'),
+    path('deliverable/report/add/<int:pk>', views.deliverable_report_add, name='deliverable_report_add'),
+
     # CWE
     path('cwe/list/', views.cwe_list, name='cwe_list'),
     path('cwe/add/', views.cwe_add, name='cwe_add'),

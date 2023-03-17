@@ -49,6 +49,7 @@ PETEREPORT_TEMPLATES = {
     'report_html_name': env.str('PETEREPORT_REPORT_HTML_NAME', default='PEN-HTML'),
     'report_pdf_name': env.str('PETEREPORT_REPORT_PDF_NAME', default='PEN-PDF'),
     'report_jupyter_name': env.str('PETEREPORT_REPORT_JUPYTER_NAME', default='PEN-JUPYTER'),
+    'report_custom_name': env.str('PETEREPORT_REPORT_CUSTOMR_NAME', default='PEN-CUSTOM'),
     'report_pdf_language': "en",
     'report_pdf_title_background': "title.png", # Location: app/preport/templates/tpl/pdf/default
     'report_pdf_pages_background': "pages.png", # Location: app/preport/templates/tpl/pdf/default

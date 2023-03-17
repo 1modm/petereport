@@ -649,8 +649,6 @@
         </div>
       </div>
 
-
-
       <div class="row">
         <div class="col-md-12">
 
@@ -754,10 +752,6 @@
 
         </div>
       </div>
-
-
-
-
 
 
       <div class="row">
@@ -864,10 +858,115 @@
         </div>
       </div>
 
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-info">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>{{ DB_deliverable_query.count }} Deliverable{{ DB_deliverable_query.count|pluralize:"s" }}</b>
+                    <td class="text-center">
+                      {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                        <button type="button" class="btn btn-info btn-x" data-toggle="modal" data-target=".mm-modal-add-deliverable"><i class="fas fa-add"></i> {% translate "Add Custom Deliverables" %} </button>
+                      {% endif %}
+                    </td>
+                  </h3>
+                  <div class="modal modal-info fade mm-modal-add-deliverable" id="modal-info">
+                    <div class="modal-dialog">
+                      <div class="modal-content bg-info">
+                        <div class="modal-header">
+                          <h4 class="modal-title">{% translate "Add Custom Deliverables" %}</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form name="formACD" id="formACD">
+                        <div class="modal-body">
+                          <p>{% translate "Choose Custom Deliverables" %}&hellip;</p>
+                          <input type="file" multiple="multiple" placeholder="Custom Deliverables" name="custom_deliverables" />
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                          <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Cancel" %}</button>
+                          <button type="button" onclick="AddCustomDeliverable();" class="btn btn-outline-light">{% translate "Send Deliverable" %}</button>
+                        </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
 
 
+                  <div class="row">
+                    <div class="col-md-12">
+
+                      <table id="deliverablelist" class="table table-bordered table-hover">
+
+                        <thead>
+                          <tr>
+                            <th style="width: 10%">{% translate "Date" %}</th>
+                            <th style="width: 750%">{% translate "File" %}</th>
+                            <th style="width: 10%">{% translate "Type" %}</th>
+                            <th style="width: 5%"class="text-center">{% translate "Actions" %}</th>
+                          </tr>
+                        </thead>
 
 
+                        <tbody>
+                          {% for deliverable in DB_deliverable_query %}
+                          <tr>
+                            <td>{{ deliverable.generation_date|date:"Y-m-d" }}</td>
+                            <td><a href="/deliverable/download/{{ deliverable.pk }}">{{ deliverable.filename }}</a></td>
+                            <td>{{ deliverable.filetype }}/{{ deliverable.filetemplate }}</td>
+                            <td class="text-center">
+                              {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{deliverable.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
+                              {% endif %}
+                            </td>
+                          </tr>
+
+                          <div class="modal modal-danger fade mm-modal-del-{{deliverable.pk}}" id="modal-danger">
+                            <div class="modal-dialog">
+                              <div class="modal-content bg-danger">
+                                <div class="modal-header">
+                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <p>{% translate "Delete Deliverable" %}&hellip;</p>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                  <button type="button" onclick="DeleteID_D({{deliverable.pk}});" class="btn btn-outline-light">{% translate "Delete Deliverable" %}</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          {% endfor %}
+
+                        </tbody>
+                      </table>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
+        </div>
+      </div>
 
       </div>
     </section>
@@ -1199,7 +1298,6 @@
 
 </script>
 
-
 <script>
   function DeleteID(del_id) {
         $.ajax({
@@ -1249,8 +1347,6 @@ function DuplicateID(dup_id) {
         })
   }
 </script>
-
-
 <script>
   function DeleteID_AT(del_id) {
         $.ajax({
@@ -1265,6 +1361,45 @@ function DuplicateID(dup_id) {
               document.location.href = "/report/view/{{DB_report_query.pk}}";
             }
         })
+  }
+</script>
+
+<script>
+function DeleteID_D(del_id) {
+  $.ajax({
+      type: 'POST',
+      url: "/en/deliverable/delete/",
+      headers:{
+        "X-CSRFToken": '{{ csrf_token }}'
+      },
+      data : { 'delete_id': del_id},
+
+      success : function(json) {
+        document.location.href = "/report/view/{{DB_report_query.pk}}";
+      }
+  })
+}
+</script>
+
+<script>
+  function AddCustomDeliverable() {
+    var form_data = new FormData($('#formACD')[0]);
+    $.ajax({
+        type: 'POST',
+        async: false,
+        cache: false,
+        contentType: false,
+        processData: false,
+        url: "/en/deliverable/report/add/{{ DB_report_query.pk }}",
+        headers:{
+          "X-CSRFToken": '{{ csrf_token }}'
+        },
+        data: form_data,
+
+        success : function(json) {
+          document.location.href = "/report/view/{{DB_report_query.pk}}";
+        }
+    })
   }
 </script>
 

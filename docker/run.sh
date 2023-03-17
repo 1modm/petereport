@@ -1,6 +1,7 @@
 #!/bin/sh
 
 cd /opt/petereport && {
+    mkdir -p ./app/storage_reports/custom &&
     mkdir -p ./app/storage_reports/html &&
     mkdir -p ./app/storage_reports/images &&
     mkdir -p ./app/storage_reports/jupyter &&
