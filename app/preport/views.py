@@ -372,7 +372,7 @@ def customer_add(request):
             return redirect('customer_list')
     else:
         form = NewCustomerForm()
-        form.fields['description'].initial = PETEREPORT_TEMPLATES['initial_text']
+        form.fields['description'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['contact_list'].initial = ""
 
     return render(request, 'customers/customer_add.html', {
@@ -477,7 +477,7 @@ def product_add(request):
             return redirect('product_list')
     else:
         form = NewProductForm()
-        form.fields['description'].initial = PETEREPORT_TEMPLATES['initial_text']
+        form.fields['description'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
 
     return render(request, 'products/product_add.html', {
         'form': form
@@ -579,11 +579,11 @@ def report_add(request):
     else:
         form = NewReportForm()
         form.fields['report_id'].initial = report_id_format
-        form.fields['executive_summary'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['scope'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['outofscope'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['methodology'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['recommendation'].initial = PETEREPORT_TEMPLATES['initial_text']
+        form.fields['executive_summary'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['scope'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['outofscope'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['methodology'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['recommendation'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['report_date'].initial = today
     return render(request, 'reports/report_add.html', {
         'form': form
@@ -1655,11 +1655,11 @@ def finding_add(request,pk):
 
     else:
         form = NewFindingForm()
-        form.fields['description'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['location'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['impact'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['recommendation'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['ref'].initial = PETEREPORT_TEMPLATES['initial_text']
+        form.fields['description'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['location'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['impact'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['recommendation'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['ref'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['cwe'].initial = '-1'
         form.fields['owasp'].initial = '-1'
 
@@ -2246,11 +2246,11 @@ def template_add(request):
                 return redirect('template_add')
     else:
         form = NewFindingTemplateForm()
-        form.fields['description'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['location'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['impact'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['recommendation'].initial = PETEREPORT_TEMPLATES['initial_text']
-        form.fields['ref'].initial = PETEREPORT_TEMPLATES['initial_text']
+        form.fields['description'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['location'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['impact'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['recommendation'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['ref'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['cwe'].initial = '1'
 
     return render(request, 'findings/template_add.html', {

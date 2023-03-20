@@ -96,8 +96,7 @@
         </div>
       </div>
 
-
-
+      {% if DB_customer_query.description %}
       <div class="row">
         <div class="col-md-12">
 
@@ -115,11 +114,10 @@
                 <div class="card-body">
                     <p>{{ DB_customer_query.description | safe_markdown | bleach }}</p>
                 </div>
-
-
               </div>
         </div>
       </div>
+      {% endif %}
 
       <div class="row">
         <div class="col-md-12">
@@ -139,6 +137,7 @@
         </div>
       </div>
 
+      {% if DB_customer_query.contact_sp_mail %}
       <div class="row">
         <div class="col-md-12">
             <div class="card card-outline card-primary">
@@ -153,7 +152,9 @@
               </div>
         </div>
       </div>
+      {% endif %}
 
+      {% if DB_customer_query.contact_dp_mail %}
       <div class="row">
         <div class="col-md-12">
             <div class="card card-outline card-primary">
@@ -168,7 +169,9 @@
               </div>
         </div>
       </div>
+      {% endif %}
 
+      {% if customer_tags %}
       <div class="row">
         <div class="col-md-12">
             <div class="card card-outline card-primary">
@@ -183,6 +186,7 @@
               </div>
         </div>
       </div>
+      {% endif %}
 
       <div class="card card-outline card-primary">
         <div class="card-header">

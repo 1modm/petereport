@@ -96,9 +96,9 @@
 
 
 
+      {% if DB_product_query.description %}
       <div class="row">
         <div class="col-md-12">
-
             <div class="card card-outline card-primary">
                 <div class="card-header">
                   <h3 class="card-title">
@@ -113,12 +113,12 @@
                 <div class="card-body">
                     <p>{{ DB_product_query.description | safe_markdown | bleach }}</p>
                 </div>
-
-
               </div>
         </div>
       </div>
+      {% endif%}
 
+      {% if product_tags %}
       <div class="row">
         <div class="col-md-12">
             <div class="card card-outline card-primary">
@@ -133,6 +133,7 @@
               </div>
         </div>
       </div>
+      {% endif%}
 
       <div class="card card-outline card-primary">
         <div class="card-header">

@@ -256,7 +256,7 @@
                     </div>
                   </div>
 
-
+                  {% if DB_report_query.executive_summary %}
                   <div class="row">
                     <div class="col-md-12">
                         <div class="card card-outline">
@@ -266,6 +266,7 @@
                         </div>
                     </div>
                   </div>
+                  {% endif %}
 
 
                 </div>
@@ -273,9 +274,6 @@
 
         </div>
       </div>
-
-
-
 
       <!-- ---------------------------------------- -->
 
@@ -305,9 +303,6 @@
 
         </div>
       </div>
-
-
-
 
       <div class="row">
         <div class="col-md-12">
@@ -365,7 +360,7 @@
 
       <!-- ---------------------------------------- -->
 
-
+      {% if DB_report_query.scope %}
       <div class="row">
         <div class="col-md-12">
 
@@ -390,7 +385,9 @@
 
         </div>
       </div>
+      {% endif %}
 
+      {% if DB_report_query.outofscope %}
       <div class="row">
         <div class="col-md-12">
 
@@ -415,7 +412,9 @@
 
         </div>
       </div>
+      {% endif %}
 
+      {% if DB_report_query.methodology %}
       <div class="row">
         <div class="col-md-12">
 
@@ -440,9 +439,9 @@
 
         </div>
       </div>
+      {% endif %}
 
-
-
+      {% if DB_report_query.recommendation %}
       <div class="row">
         <div class="col-md-12">
 
@@ -466,9 +465,10 @@
               </div>
         </div>
       </div>
+      {% endif %}
 
 
-
+      {% if report_tags %}
       <div class="row">
         <div class="col-md-12">
 
@@ -493,6 +493,7 @@
 
         </div>
       </div>
+      {% endif %}
 
       <div class="row">
         <div class="col-md-12">
@@ -953,7 +954,6 @@
                             </div>
                           </div>
 
-
                           {% endfor %}
 
                         </tbody>
@@ -970,10 +970,6 @@
 
       </div>
     </section>
-
-
-
-
 
 {% endblock content %}
 

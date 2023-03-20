@@ -5,6 +5,7 @@
 
 {% block stylesheets %}
   {{ block.super }}
+  <link rel="stylesheet" href="/static/plugins/jquery-ui/jquery-ui.theme.min.css" />
 {% endblock stylesheets %}
 
 {% block content %}
@@ -151,5 +152,27 @@
     </div>
 </section>
 
-
 {% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+<script src="/static/plugins/jquery-ui/jquery-ui.min.js"></script>
+<script>
+  $(document).ready(function() {
+     $('#id_report_date').datepicker({firstDay: 1,
+        dateFormat: "yy-mm-dd"});
+  });
+</script>
+<script>
+  $(document).ready(function() {
+     $('#id_audit_start').datepicker({firstDay: 1,
+        dateFormat: "yy-mm-dd"});
+  });
+</script>
+<script>
+  $(document).ready(function() {
+     $('#id_audit_end').datepicker({firstDay: 1,
+        dateFormat: "yy-mm-dd"});
+  });
+</script>
+{% endblock javascripts %}

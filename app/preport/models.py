@@ -59,7 +59,7 @@ class DB_Customer(models.Model):
 	contact_list = MultiEmailField()
 	contact_sp_mail = models.EmailField(max_length=255, blank=True)
 	contact_dp_mail = models.EmailField(max_length=255, blank=True)
-	description = MartorField()
+	description = MartorField(blank=True)
 	tags = TaggableManager(blank=True)
 	fts_enabled = True
 	class Meta:
@@ -72,9 +72,9 @@ class DB_Customer(models.Model):
 # ---------- Product ------------
 
 class DB_Product(models.Model):
-	customer = models.ForeignKey(DB_Customer, blank=True, null=True, on_delete=models.CASCADE)
+	customer = models.ForeignKey(DB_Customer, blank=False, on_delete=models.CASCADE)
 	name = models.CharField(max_length=255, blank=False)
-	description = MartorField()
+	description = MartorField(blank=True)
 	tags = TaggableManager(blank=True)
 	fts_enabled = True
 	fts_excluded_fields = ['customer']
@@ -114,14 +114,14 @@ class DB_Report(models.Model):
 	product = models.ForeignKey(DB_Product, on_delete=models.CASCADE)
 	report_id = models.CharField(max_length=255, blank=False, unique=True)
 	title = models.CharField(max_length=255, blank=False)
-	executive_summary_image = models.TextField(blank=True, null=True)
-	cwe_categories_summary_image = models.TextField(blank=True, null=True)
-	owasp_categories_summary_image = models.TextField(blank=True, null=True)
-	executive_summary = MartorField()
-	scope = MartorField()
-	outofscope = MartorField()
-	methodology = MartorField()
-	recommendation = MartorField()
+	executive_summary_image = models.TextField(blank=True)
+	cwe_categories_summary_image = models.TextField(blank=True)
+	owasp_categories_summary_image = models.TextField(blank=True)
+	executive_summary = MartorField(blank=True)
+	scope = MartorField(blank=True)
+	outofscope = MartorField(blank=True)
+	methodology = MartorField(blank=True)
+	recommendation = MartorField(blank=True)
 	creation_date = models.DateTimeField(auto_now_add=True)
 	report_date = models.DateTimeField(blank=False)
 	audit_start = models.DateTimeField(blank=True, null=True)
@@ -135,6 +135,8 @@ class DB_Report(models.Model):
 		return self.title
 	class Meta:
 		verbose_name_plural = "Reports"
+
+
 
 # ---------- Deliverable ------------
 class DB_Deliverable(models.Model):
@@ -235,8 +237,8 @@ class DB_Appendix(models.Model):
 class DB_AttackTree(models.Model):
 	finding = models.ManyToManyField(DB_Finding, related_name='attacktree_finding', blank=True)
 	title = models.CharField(blank=False, max_length=200)
-	attacktree = models.TextField(blank=True, null=True)
-	svg_file = models.TextField(blank=True, null=True)
+	attacktree = models.TextField(blank=True)
+	svg_file = models.TextField(blank=True)
 	def get_label (self):
 		return self.title
 
@@ -246,7 +248,7 @@ class DB_Custom_field(models.Model):
 	#finding = models.ManyToManyField(DB_Finding, related_name='custom_field_finding', blank=True)
 	finding = models.ForeignKey(DB_Finding, related_name='custom_field_finding', blank=True, on_delete=models.CASCADE)
 	title = models.CharField(blank=False, max_length=200)
-	description = MartorField(blank=True, null=True)
+	description = MartorField(blank=True)
 	fts_enabled = True
 	fts_excluded_fields = ['finding']
 	def get_label (self):
@@ -257,8 +259,8 @@ class DB_Custom_field(models.Model):
 class DB_AttackFlow(models.Model):
 	finding = models.ManyToManyField(DB_Finding, related_name='attackflow_finding', blank=True)
 	title = models.CharField(blank=False, max_length=200)
-	attackflow_afb = models.TextField(blank=True, null=True)
-	attackflow_png = models.TextField(blank=True, null=True)
+	attackflow_afb = models.TextField(blank=True)
+	attackflow_png = models.TextField(blank=True)
 	def get_label (self):
 		return self.title
 
