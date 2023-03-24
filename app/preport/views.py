@@ -871,6 +871,7 @@ def report_download_markdown(request, cst, pk):
         # INIT
         template_findings = template_appendix = md_finding_summary = md_finding = "\n"
         counter_finding = 0
+        counter_appendix = 0
         md_author = PETEREPORT_CONFIG['company_name']
         md_subject = PETEREPORT_MARKDOWN['subject']
         md_website = PETEREPORT_CONFIG['company_website']
@@ -921,6 +922,7 @@ def report_download_markdown(request, cst, pk):
                     template_appendix_in_finding = _('**Additional notes**') + "\n"
 
                     for appendix_in_finding in finding.appendix_finding.all():
+                        counter_appendix += 1
                         md_appendix = render_to_string(os.path.join('tpl', 'markdown', cst, 'md_appendix.md'),
                                                                     {'appendix_in_finding': appendix_in_finding})
 
@@ -952,6 +954,7 @@ def report_download_markdown(request, cst, pk):
                                                                 {   'DB_report_query': DB_report_query,
                                                                     'template_findings': template_findings,
                                                                     'template_appendix': template_appendix,
+                                                                    'counter_appendix': counter_appendix,
                                                                     'finding_summary': md_finding_summary,
                                                                     'md_author': md_author,
                                                                     'report_date': report_date,
@@ -1010,6 +1013,7 @@ def report_download_html(request, cst, pk):
 
         # INIT
         template_findings = template_appendix = md_finding_summary = finding_summary_table = ''
+        counter_appendix = 0
 
         finding_summary_table = render_to_string(os.path.join('tpl', 'html', cst, 'html_finding_summary_table.html'))
         md_author = PETEREPORT_CONFIG['company_name']
@@ -1088,6 +1092,7 @@ def report_download_html(request, cst, pk):
                     template_appendix_in_finding = "<td style=\"width: 15%\">" + _('**Additional notes**') + "</td><td>\n"
 
                     for appendix_in_finding in finding.appendix_finding.all():
+                        counter_appendix += 1
                         html_appendix = render_to_string(os.path.join('tpl', 'html', cst, 'md_appendix.md'),
                                                          {'appendix_in_finding': appendix_in_finding})
 
@@ -1128,6 +1133,7 @@ def report_download_html(request, cst, pk):
                                                     {'DB_report_query': DB_report_query,
                                                     'template_findings': mark_safe(template_findings),
                                                     'template_appendix': mark_safe(template_appendix),
+                                                    'counter_appendix': counter_appendix,
                                                     'finding_summary': md_finding_summary,
                                                     'md_author': md_author,
                                                     'report_date': report_date,
@@ -1202,7 +1208,7 @@ def report_download_pdf(request, cst, pk):
         # INIT
         vulnerabilities = []
         template_findings = template_appendix = pdf_finding_summary = ''
-        template_appendix_check = False
+        counter_appendix = 0
         md_author = DB_settings_query.company_name
         md_subject = PETEREPORT_MARKDOWN['subject']
         md_website = DB_settings_query.company_website
@@ -1273,7 +1279,9 @@ def report_download_pdf(request, cst, pk):
 
                 # Summary table
                 pdf_finding_summary += render_to_string(os.path.join('tpl', 'pdf', cst, 'pdf_finding_summary.md'),
-                                                         {'finding': finding, 'counter_finding': counter_finding, 'severity_box': severity_box})
+                                                         {'finding': finding,
+                                                          'counter_finding': counter_finding,
+                                                          'severity_box': severity_box})
 
                 severity_color_finding = "\\textcolor{" + f"{severity_color}" +"}{" + f"{finding.severity}" + "}"
 
@@ -1291,7 +1299,7 @@ def report_download_pdf(request, cst, pk):
                     template_appendix_in_finding = _('**Additional notes**') + "\n\n"
 
                     for appendix_in_finding in finding.appendix_finding.all():
-
+                        counter_appendix += 1
                         pdf_appendix = render_to_string(os.path.join('tpl', 'pdf', cst, 'pdf_appendix.md'),
                                                         {'appendix_in_finding': appendix_in_finding})
 
@@ -1357,7 +1365,8 @@ def report_download_pdf(request, cst, pk):
                                                                             'report_owasp_categories_image': report_owasp_categories_image,
                                                                             'pdf_finding_summary': pdf_finding_summary,
                                                                             'template_findings': template_findings,
-                                                                            'template_appendix': template_appendix})
+                                                                            'template_appendix': template_appendix,
+                                                                            'counter_appendix': counter_appendix})
 
         final_markdown = textwrap.dedent(pdf_markdown_report)
         final_markdown_output = mark_safe(final_markdown)
@@ -2103,12 +2112,12 @@ def appendix_add(request,pk):
             appendix.finding.add(finding_pk)
 
             if '_finish' in request.POST:
-                return redirect('reportappendix', pk=pk)
+                return redirect('report_appendix', pk=pk)
             elif '_next' in request.POST:
                 return redirect('appendix_add', pk=pk)
     else:
         form = NewAppendixForm(reportpk=pk)
-        form.fields['description'].initial = 'TBD'
+        form.fields['description'].initial = ''
 
 
     return render(request, 'appendix/appendix_add.html', {
@@ -2138,7 +2147,7 @@ def appendix_edit(request,pk):
             appendix.finding.set(New_DB_finding, clear=True)
 
             if '_finish' in request.POST:
-                return redirect('reportappendix', pk=report.pk)
+                return redirect('report_appendix', pk=report.pk)
             elif '_next' in request.POST:
                 return redirect('appendix_add', pk=report.pk)
     else:
@@ -2205,7 +2214,7 @@ def field_add(request,pk):
                 return redirect('field_add', pk=pk)
     else:
         form = NewFieldForm()
-        form.fields['description'].initial = 'TBD'
+        form.fields['description'].initial = ''
 
 
     return render(request, 'findings/custom_field_add.html', {

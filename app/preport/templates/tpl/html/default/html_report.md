@@ -61,4 +61,6 @@ colorlinks: true
 
 {{template_findings}}
 
+{% if counter_appendix > 0 %}
 {{template_appendix}}
+{% endif %}

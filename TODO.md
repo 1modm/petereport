@@ -1,3 +1,5 @@
+# 2023-03-22
+
 Un champs vide: on peut pas valider la page
     Resolved
 
@@ -17,3 +19,15 @@ Generation du rapport failed
 
 Bug sur l export en html
     Resolved
+
+# 2023-03-24
+
+Additional notes je ne sais pas ou delete cette partie dans le rapport
+    C’est dans un template, je le mets en conditionnel
+    Resolved
+
+CONFIDENCIAL -> CONFIDENTIAL ?
+    Resolved
+
+et je ne suis pas tre fan du gris page 1 ? en fond d eran
+    Resolved --> sans couleur

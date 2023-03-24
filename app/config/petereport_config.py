@@ -53,7 +53,7 @@ PETEREPORT_TEMPLATES = {
     'report_pdf_title_background': "title.png", # Location: app/preport/templates/tpl/pdf/default
     'report_pdf_pages_background': "pages.png", # Location: app/preport/templates/tpl/pdf/default
     'initial_text': 'TBC',
-    'titlepage-color': "e6e2e2",
+    'titlepage-color': env.str('PETEREPORT_REPORT_TITLEPAGE_COLOR', default='e6e2e2'),
     'titlepage-text-color': "000000",
     'titlepage-rule-color': "cc0000",
     'titlepage-rule-height': 2

@@ -20,6 +20,7 @@
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+          <li class="breadcrumb-item"><a href="/customer/view/{{ DB_report_query.product.customer.pk}}">{{ DB_report_query.product.customer.name}}</a></li>
           <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
           <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
         </ol>
@@ -39,7 +40,7 @@
               <div class="card-header">
                 <h3 class="card-title">{% translate "Appendix" %}</h3>
               </div>
-              
+
               <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card-body">
@@ -69,7 +70,7 @@
 
                 {% if form.errors %}
                    {% for field in form %}
-                       {% for error in field.errors %} 
+                       {% for error in field.errors %}
                           <div class="container">
                             <div class="col-md-12 col-sm-12 col-xs-12">
                               <div class="alert alert-danger alert-dismissible ">
@@ -82,7 +83,7 @@
                        {% endfor %}
                    {% endfor %}
                 {% endif %}
-                
+
                 <div class="card-footer">
                   <button type="submit" class="btn btn-danger" value="Save" name="_finish">{% translate "Save and finish" %}</button>
                   <button type="submit" class="btn btn-primary" value="Next" name="_next">{% translate "Save and add a new appendix" %}</button>

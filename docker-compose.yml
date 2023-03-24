@@ -24,6 +24,9 @@ services:
     environment:
       - PETEREPORT_DJANGO_DEBUG=False
       - PETEREPORT_DJANGO_AMIN_MODULE=False
+      - PETEREPORT_MEDIA_HOST=https://127.0.0.1
+      - PETEREPORT_MARTOR_UPLOAD_METHOD=MEDIA
+      - PETEREPORT_REPORT_TITLEPAGE_COLOR=ffffff
     command: bash -c "
       sleep 1 &&
       pipenv install --deploy --ignore-pipfile --python 3.9 &&
