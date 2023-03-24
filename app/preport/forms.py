@@ -119,8 +119,6 @@ class NewFindingForm(forms.ModelForm):
             'cvss_base_score': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Base Score")}),
            }
 
-
-
 class NewFindingTemplateForm(forms.ModelForm):
 
     severity_choices = (
@@ -134,19 +132,17 @@ class NewFindingTemplateForm(forms.ModelForm):
     )
 
     severity = forms.ChoiceField(choices=severity_choices, required=True, widget=forms.Select(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Critical/High/Medium/Low/Info/None")}))
-    cwe = CWEModelChoiceField(queryset=DB_CWE.objects.all(), empty_label=_("(Select a CW ID)"), widget=forms.Select(attrs={'class': 'form-control select2CWE'}))
+    cwe = CWEModelChoiceField(queryset=DB_CWE.objects.all(), empty_label=_("(Select a CWE ID)"), widget=forms.Select(attrs={'class': 'form-control select2CWE'}))
     owasp = OWASPModelChoiceField(queryset=DB_OWASP.objects.all(), empty_label=_("(Select an OWASP ID)"), widget=forms.Select(attrs={'class': 'form-control select2OWASP'}))
 
     class Meta:
         model = DB_Finding_Template
-        fields = ('title', 'severity', 'cvss_score', 'cvss_base_score', 'description', 'location', 'impact', 'recommendation', 'ref', 'cwe', 'tags')
+        fields = ('title', 'severity', 'cvss_score', 'cvss_base_score', 'description', 'location', 'impact', 'recommendation', 'ref', 'cwe', 'owasp', 'tags')
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Finding title")}),
             'cvss_base_score': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Base Score")}),
         }
-
-
 
 
 class FindingModelChoiceField(ModelChoiceField):

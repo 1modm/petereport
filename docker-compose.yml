@@ -35,7 +35,6 @@ services:
       pipenv run ./app/manage.py loaddata ./app/config/cwe-default.json &&
       pipenv run ./app/manage.py loaddata ./app/config/owasp-list.json &&
       pipenv run ./app/manage.py loaddata ./app/config/owasp-default.json &&
-      pipenv run ./app/manage.py loaddata ./app/config/data-test.json &&
       pipenv run gunicorn --chdir ./app petereport.wsgi:application --timeout 120 --graceful-timeout 60 --bind 0.0.0.0:8000"
     volumes:
       - .:/opt/petereport

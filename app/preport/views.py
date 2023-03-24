@@ -12,6 +12,8 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.functional import Promise
 from django.utils.encoding import force_str
 from django.core.serializers.json import DjangoJSONEncoder
+import uuid, time
+import traceback
 
 import preport.utils.fts as ufts
 import preport.utils.urls as uurls
@@ -42,7 +44,7 @@ from collections import Counter
 import pypandoc
 
 # Martor
-from petereport.settings import MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, SERVER_CONF, TEMPLATES_DIRECTORIES
+from petereport.settings import STATIC_ROOT, MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MARTOR_MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, TEMPLATES_DIRECTORIES
 
 # PeTeReport config
 from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_CONFIG, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG
@@ -105,16 +107,13 @@ def markdown_uploader(request):
                     })
 
             elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-                img_uuid = "{0}-{1}".format(uuid.uuid4().hex[:10], image.name.replace(' ', '-'))
-                tmp_file = os.path.join(MARTOR_UPLOAD_PATH, img_uuid)
+                img_uuid = "{0}-{1}".format(uuid.uuid4().hex[:32], image.name.replace(' ', '-'))
+                tmp_file = os.path.join(MARTOR_UPLOAD_PATH, '{}'.format(time.strftime("%Y/%m/%d/")), img_uuid)
                 def_path = default_storage.save(tmp_file, ContentFile(image.read()))
                 # Modified to include server host and port
-                MEDIA_URL_COMPLETE = PETEREPORT_MARKDOWN['media_host'] + MEDIA_URL
-                img_url_complete = os.path.join(MEDIA_URL_COMPLETE, def_path)
-
+                img_url_complete = os.path.join(MARTOR_MEDIA_URL, def_path)
                 data = json.dumps({
                     'status': 200,
-                    #'link': img_url,
                     'link': img_url_complete,
                     'name': image.name
                 })
@@ -566,9 +565,8 @@ def report_list(request):
 @allowed_users(allowed_roles=['administrator'])
 def report_add(request):
 
-    today = datetime.date.today().strftime('%Y-%m-%d')
-    report_id_format = PETEREPORT_TEMPLATES['report_id_format'] + str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))
-
+    today = datetime.date.today().strftime('%Y%m%d')
+    report_id_format = str(today) + '-' + uuid.uuid4().hex[:10]
     if request.method == 'POST':
         form = NewReportForm(request.POST)
         if form.is_valid():
@@ -793,15 +791,16 @@ def report_uploadsummaryfindings(request, pk):
         owasp_ext = formatf.split('/')[-1]
         dataOWASP = ContentFile(base64.b64decode(owasp_summary_categories_finding_file_str))
 
-        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
+        # Force base64 encoding even for MEDIA otherwise pandoc into Docker cannot retrieve media
+        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64' or PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
             DB_report_query.executive_summary_image = summary_finding_file_base64
             DB_report_query.cwe_categories_summary_image = cwe_summary_categories_file_base64
             DB_report_query.owasp_categories_summary_image = owasp_summary_categories_file_base64
             DB_report_query.save()
-        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
+        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'OLD_MEDIA':
             # Severity chart
             file_name_severity = DB_report_query.report_id + "_severity_summary_finding." + summary_ext
-            img_url_severity = os.path.join(MARTOR_UPLOAD_PATH, file_name_severity)
+            img_url_severity = os.path.join('{}'.format(time.strftime("%Y/%m/%d/")), file_name_severity)
             media_url_severity = os.path.join(MEDIA_ROOT, img_url_severity)
 
             if os.path.exists(media_url_severity):
@@ -816,7 +815,7 @@ def report_uploadsummaryfindings(request, pk):
 
             # CWE
             file_name_categories = DB_report_query.report_id + "_cwe_categories_summary_finding." + cwe_ext
-            img_url_categories = os.path.join(MARTOR_UPLOAD_PATH, file_name_categories)
+            img_url_categories = os.path.join('{}'.format(time.strftime("%Y/%m/%d/")), file_name_categories)
             media_url_categories = os.path.join(MEDIA_ROOT, img_url_categories)
 
             if os.path.exists(media_url_categories):
@@ -830,7 +829,7 @@ def report_uploadsummaryfindings(request, pk):
 
             # OWASP
             file_name_categories = DB_report_query.report_id + "_owasp_categories_summary_finding." + owasp_ext
-            img_url_categories = os.path.join(MARTOR_UPLOAD_PATH, file_name_categories)
+            img_url_categories = os.path.join('{}'.format(time.strftime("%Y/%m/%d/")), file_name_categories)
             media_url_categories = os.path.join(MEDIA_ROOT, img_url_categories)
 
             if os.path.exists(media_url_categories):
@@ -877,14 +876,15 @@ def report_download_markdown(request, cst, pk):
         md_website = PETEREPORT_CONFIG['company_website']
 
         # IMAGES
-        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
+        # Force base64 encoding even for MEDIA otherwise pandoc into Docker cannot retrieve media
+        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64' or PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
             report_executive_summary_image = DB_report_query.executive_summary_image
             report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
             report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
-        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-            report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-            report_cwe_categories_image = f"{SERVER_CONF}{DB_report_query.cwe_categories_summary_image}"
-            report_owasp_categories_image = f"{SERVER_CONF}{DB_report_query.owasp_categories_summary_image}"
+        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'OLD_MEDIA':
+            report_executive_summary_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")), DB_report_query.executive_summary_image)
+            report_cwe_categories_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")), DB_report_query.cwe_categories_summary_image)
+            report_owasp_categories_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")), DB_report_query.owasp_categories_summary_image)
 
         # Appendix
         template_appendix = _('# Additional Notes') + "\n\n"
@@ -964,6 +964,11 @@ def report_download_markdown(request, cst, pk):
         final_markdown = textwrap.dedent(render_md)
         final_markdown_output = mark_safe(final_markdown)
 
+        # Replace media with base64 local data in order to have all media into the file
+        if  PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
+            final_markdown_output = uurls.replace_media_url_local_base64(final_markdown_output)
+
+
         markdown_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'markdown', name_file)
         with open(markdown_file_output, 'w') as fh:
             fh.write(final_markdown_output)
@@ -1005,6 +1010,8 @@ def report_download_html(request, cst, pk):
 
         # INIT
         template_findings = template_appendix = md_finding_summary = finding_summary_table = ''
+
+        finding_summary_table = render_to_string(os.path.join('tpl', 'html', cst, 'html_finding_summary_table.html'))
         md_author = PETEREPORT_CONFIG['company_name']
         md_subject = PETEREPORT_MARKDOWN['subject']
         md_website = PETEREPORT_CONFIG['company_website']
@@ -1013,14 +1020,15 @@ def report_download_html(request, cst, pk):
         counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
 
         # IMAGES
-        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
+        # Force base64 encoding even for MEDIA otherwise pandoc into Docker cannot retrieve media
+        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64' or PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
             report_executive_summary_image = DB_report_query.executive_summary_image
             report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
             report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
-        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-            report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-            report_cwe_categories_image = f"{SERVER_CONF}{DB_report_query.cwe_categories_summary_image}"
-            report_owasp_categories_image = f"{SERVER_CONF}{DB_report_query.owasp_categories_summary_image}"
+        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'OLD_MEDIA':
+            report_executive_summary_image = f"{MARTOR_MEDIA_URL}{DB_report_query.executive_summary_image}"
+            report_cwe_categories_image = f"{MARTOR_MEDIA_URL}{DB_report_query.cwe_categories_summary_image}"
+            report_owasp_categories_image = f"{MARTOR_MEDIA_URL}{DB_report_query.owasp_categories_summary_image}"
 
         # Appendix
         template_appendix = _('# Additional Notes') + "\n\n"
@@ -1135,6 +1143,10 @@ def report_download_html(request, cst, pk):
         final_markdown = textwrap.dedent(render_md)
         final_markdown_output = mark_safe(final_markdown)
 
+        # Replace media with base64 local data in order to have all media into the file
+        if  PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
+            final_markdown_output = uurls.replace_media_url_local_base64(final_markdown_output)
+
         html_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'html', name_file)
         petereport_html_tpl = os.path.join(TEMPLATES_ROOT, 'tpl', PETEREPORT_TEMPLATES['html_template'])
 
@@ -1160,8 +1172,6 @@ def report_download_html(request, cst, pk):
                     return response
 
     raise Http404
-
-
 
 
 @login_required
@@ -1204,14 +1214,15 @@ def report_download_pdf(request, cst, pk):
         template_appendix = _('# Additional Notes') + "\n\n"
 
         # IMAGES
-        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
+        # Force base64 encoding even for MEDIA otherwise pandoc into Docker cannot retrieve media
+        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64' or PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
             report_executive_summary_image = DB_report_query.executive_summary_image
             report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
             report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
-        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-            report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-            report_cwe_categories_image = f"{SERVER_CONF}{DB_report_query.cwe_categories_summary_image}"
-            report_owasp_categories_image = f"{SERVER_CONF}{DB_report_query.owasp_categories_summary_image}"
+        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'OLD_MEDIA':
+            report_executive_summary_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")), DB_report_query.executive_summary_image)
+            report_cwe_categories_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")), DB_report_query.cwe_categories_summary_image)
+            report_owasp_categories_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")), DB_report_query.owasp_categories_summary_image)
 
         for finding in DB_finding_query:
             # Custom fields
@@ -1351,33 +1362,46 @@ def report_download_pdf(request, cst, pk):
         final_markdown = textwrap.dedent(pdf_markdown_report)
         final_markdown_output = mark_safe(final_markdown)
 
+        # Replace media with base64 local data in order to have all media into the file
+        if  PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
+            final_markdown_output = uurls.replace_media_url_local_base64(final_markdown_output)
+
         pdf_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'pdf', name_file)
         header_file = os.path.join(tpl_dir, cst, 'pdf_header.tex')
         petereport_latex_tpl = os.path.join(tpl_dir, cst, 'petereport.latex')
 
-        pypandoc.convert_text(  final_markdown_output,
-                                to='pdf',
-                                outputfile=pdf_file_output,
-                                format='md',
-                                extra_args=['-H', header_file,
-                                            '--from', 'markdown+yaml_metadata_block+raw_html',
-                                            '--template', petereport_latex_tpl,
-                                            '--table-of-contents',
-                                            '--toc-depth', '4',
-                                            '--number-sections',
-                                            '--highlight-style', 'breezedark',
-                                            '--filter', 'pandoc-latex-environment',
-                                            '--listings'])
-        #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
+        try:
+            # Remove Unicode characters, not parsed by pdflatex
+            final_markdown_output = final_markdown_output.encode(encoding="utf-8", errors="ignore").decode()
 
-        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='pdf')
-        deliverable.save()
+            pypandoc.convert_text(  final_markdown_output,
+                                    to='pdf',
+                                    outputfile=pdf_file_output,
+                                    format='md',
+                                    extra_args=['-H', header_file,
+                                                '--from', 'markdown+yaml_metadata_block+raw_html',
+                                                '--template', petereport_latex_tpl,
+                                                '--table-of-contents',
+                                                '--toc-depth', '4',
+                                                '--number-sections',
+                                                '--highlight-style', 'breezedark',
+                                                '--filter', 'pandoc-latex-environment',
+                                                '--pdf-engine', 'xelatex',
+                                                '--listings'])
+            #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
 
-        if os.path.exists(pdf_file_output):
-                with open(pdf_file_output, 'rb') as fh:
-                    response = HttpResponse(fh.read(), content_type="application/pdf")
-                    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
-                    return response
+
+            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='pdf')
+            deliverable.save()
+
+            if os.path.exists(pdf_file_output):
+                    with open(pdf_file_output, 'rb') as fh:
+                        response = HttpResponse(fh.read(), content_type="application/pdf")
+                        response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
+                        return response
+        except:
+            traceback.print_exc()
+            return HttpResponseServerError()
 
     raise Http404
 
@@ -1413,14 +1437,15 @@ def report_download_jupyter(request, cst, pk):
         template_attackflow = render_to_string(os.path.join('tpl', 'jupyter', cst, 'attackflows.ipynb'))
 
         # IMAGES
-        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
+        # Force base64 encoding even for MEDIA otherwise pandoc into Docker cannot retrieve media
+        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64' or PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
             report_executive_summary_image = DB_report_query.executive_summary_image
             report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
             report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
-        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-            report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-            report_cwe_categories_image = f"{SERVER_CONF}{DB_report_query.cwe_categories_summary_image}"
-            report_owasp_categories_image = f"{SERVER_CONF}{DB_report_query.owasp_categories_summary_image}"
+        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'OLD_MEDIA':
+            report_executive_summary_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")),DB_report_query.executive_summary_image)
+            report_cwe_categories_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")),DB_report_query.cwe_categories_summary_image)
+            report_owasp_categories_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")),DB_report_query.owasp_categories_summary_image)
 
 
         # FINDINGS
@@ -1503,6 +1528,10 @@ def report_download_jupyter(request, cst, pk):
 
         final_markdown = textwrap.dedent(render_jupyter)
         final_markdown_output = mark_safe(final_markdown)
+
+        # Replace media with base64 local data in order to have all media into the file
+        if  PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
+            final_markdown_output = uurls.replace_media_url_local_base64(final_markdown_output)
 
         jupyter_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'jupyter', name_file)
         with open(jupyter_file_output, 'w') as fh:

@@ -26,8 +26,8 @@ RUN apt -y install python3-distutils
 RUN apt -y purge python3-gunicorn gunicorn
 
 ARG TARGETARCH
-RUN wget https://github.com/jgm/pandoc/releases/download/2.19.2/pandoc-2.19.2-1-${TARGETARCH}.deb
-RUN dpkg -i pandoc-2.19.2-1-${TARGETARCH}.deb && rm -f pandoc-2.19.2-1-${TARGETARCH}.deb
+RUN wget https://github.com/jgm/pandoc/releases/download/3.1.1/pandoc-3.1.1-1-${TARGETARCH}.deb
+RUN dpkg -i pandoc-3.1.1-1-${TARGETARCH}.deb && rm -f pandoc-3.1.1-1-${TARGETARCH}.deb
 
 RUN python3 -m pip install pipenv pandoc-latex-environment
 

@@ -43,7 +43,6 @@ PETEREPORT_TEMPLATES = {
     'tpl_default_directory': 'default',
     'storage_reports': 'storage_reports',
     'html_template': 'bootstrap-4-pandoc-template/template.html',
-    'report_id_format': 'PEN-DOC-',
     'report_csv_name': env.str('PETEREPORT_REPORT_CSV_NAME', default='PEN-CSV'),
     'report_markdown_name': env.str('PETEREPORT_REPORT_MARKDOWN_NAME', default='PEN-MD'),
     'report_html_name': env.str('PETEREPORT_REPORT_HTML_NAME', default='PEN-HTML'),

@@ -140,3 +140,4 @@ dmypy.json
 /petereport.code-workspace
 /app/db/petereport.sqlite3
 /app/storage_reports/*
+/app/media/uploads/*

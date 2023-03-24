@@ -16,7 +16,7 @@ from pathlib import Path
 import time
 import os
 from config.startup import *
-from config.petereport_config import PETEREPORT_TEMPLATES, DJANGO_CONFIG
+from config.petereport_config import PETEREPORT_MARKDOWN, DJANGO_CONFIG,PETEREPORT_TEMPLATES
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -146,7 +146,7 @@ LANGUAGES = (
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -157,7 +157,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ###################### PETEREPORT ######################
 
 MAIN_PROJECT = os.path.dirname(__file__)
-STATIC_ROOT = os.path.join(BASE_DIR, 'petereport')
+STATIC_ROOT = os.path.join(BASE_DIR, 'petereport', 'collectstatic')
 
 
 STATICFILES_DIRS = (
@@ -187,11 +187,11 @@ MARTOR_THEME = 'bootstrap'
 # Global martor settings
 # Input: string boolean, `true/false`
 MARTOR_ENABLE_CONFIGS = {
-    'emoji': 'false',       # to enable/disable emoji icons.
+    'emoji': 'true',        # to enable/disable emoji icons.
     'imgur': 'true',        # to enable/disable imgur/custom uploader.
     'mention': 'false',     # to enable/disable mention
     'jquery': 'true',       # to include/revoke jquery (require for admin default django)
-    'living': 'false',      # to enable/disable live updates in preview
+    'living': 'false',       # to enable/disable live updates in preview
     'spellcheck': 'false',  # to enable/disable spellcheck in form textareas
     'hljs': 'true',         # to enable/disable hljs highlighting in preview
 }
@@ -200,7 +200,7 @@ MARTOR_ENABLE_CONFIGS = {
 MARTOR_TOOLBAR_BUTTONS = [
     'bold', 'italic', 'horizontal', 'heading', 'pre-code',
     'blockquote', 'unordered-list', 'ordered-list',
-    'link', 'image-link', 'image-upload',
+    'link', 'image-link', 'image-upload', 'emoji',
     'direct-mention', 'toggle-maximize', 'help'
 ]
 
@@ -233,8 +233,14 @@ MARTOR_MARKDOWN_EXTENSION_CONFIGS = {}
 CSRF_COOKIE_HTTPONLY = False
 
 # Upload to locale storage
-MARTOR_UPLOAD_PATH = '/images/uploads/{}'.format(time.strftime("%Y/%m/%d/"))
+MARTOR_UPLOAD_PATH = os.path.join(MEDIA_ROOT, 'uploads')
 MARTOR_UPLOAD_URL = '/api/uploader/'  # change to local uploader
+
+MARTOR_MEDIA_URL = os.path.join(PETEREPORT_MARKDOWN['media_host'], MEDIA_URL)
+
+# Markdown Extensions
+# MARTOR_MARKDOWN_BASE_EMOJI_URL = 'https://www.webfx.com/tools/emoji-cheat-sheet/graphics/emojis/'     # from webfx
+MARTOR_MARKDOWN_BASE_EMOJI_URL = 'https://github.githubassets.com/images/icons/emoji/'                  # default from github
 
 # Maximum Upload Image
 # 2.5MB - 2621440
