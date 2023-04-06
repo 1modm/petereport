@@ -123,9 +123,9 @@ class DB_Report(models.Model):
 	methodology = MartorField(blank=True)
 	recommendation = MartorField(blank=True)
 	creation_date = models.DateTimeField(auto_now_add=True)
-	report_date = models.DateTimeField(blank=False)
-	audit_start = models.DateTimeField(blank=True, null=True)
-	audit_end = models.DateTimeField(blank=True, null=True)
+	report_date = models.DateField(blank=False)
+	audit_start = models.DateField(blank=True, null=True)
+	audit_end = models.DateField(blank=True, null=True)
 	tags = TaggableManager(blank=True)
 	fts_enabled = True
 	fts_excluded_fields = ['report_id', 'product']

@@ -74,9 +74,9 @@ class NewReportForm(forms.ModelForm):
         widgets = {
             'report_id': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required"}),
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Report Name')}),
-            'report_date': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'yyyy-mm-dd'", 'data-mask':'', 'required': "required"}),
-            'audit_start': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'yyyy-mm-dd'", 'data-mask':''}),
-            'audit_end': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'yyyy-mm-dd'", 'data-mask':''}),
+            'report_date': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'YYYY-MM-DD'", 'data-mask':'', 'required': "required"}),
+            'audit_start': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'YYYY-MM-DD'", 'data-mask':''}),
+            'audit_end': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'YYYY-MM-DDd'", 'data-mask':''}),
         }
 
 class CWEModelChoiceField(ModelChoiceField):

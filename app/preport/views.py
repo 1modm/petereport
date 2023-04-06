@@ -565,8 +565,8 @@ def report_list(request):
 @allowed_users(allowed_roles=['administrator'])
 def report_add(request):
 
-    today = datetime.date.today().strftime('%Y%m%d')
-    report_id_format = str(today) + '-' + uuid.uuid4().hex[:10]
+    today = datetime.date.today().strftime('%Y-%m-%d')
+    report_id_format = str(today) + '_' + uuid.uuid4().hex[:10]
     if request.method == 'POST':
         form = NewReportForm(request.POST)
         if form.is_valid():
@@ -1395,7 +1395,7 @@ def report_download_pdf(request, cst, pk):
                                                 '--number-sections',
                                                 '--highlight-style', 'breezedark',
                                                 '--filter', 'pandoc-latex-environment',
-                                                '--pdf-engine', 'xelatex',
+                                                '--pdf-engine', 'pdflatex',
                                                 '--listings'])
             #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
 

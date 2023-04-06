@@ -80,10 +80,10 @@
         "outofscope": "All URL out of scope, except API calls for Authentication",
         "methodology": "CEH methodology",
         "recommendation": "Patch old services",
-        "creation_date": "2023-01-01T00:00:00Z",
-        "report_date": "2023-02-11T00:00:00Z",
-        "audit_start": "2023-02-01T00:00:00Z",
-        "audit_end": "2023-02-10T00:00:00Z"
+        "creation_date": "2023-01-01",
+        "report_date": "2023-02-11",
+        "audit_start": "2023-02-01",
+        "audit_end": "2023-02-10"
     }
 },
 {
@@ -98,9 +98,9 @@
         "outofscope": "All URL out of scope, except API calls for Consumer Credit",
         "methodology": "CEH methodology",
         "recommendation": "Patch old services",
-        "creation_date": "2023-01-02T00:00:00Z",
-        "report_date": "2023-02-12T00:00:00Z",
-        "audit_start": "2023-02-01T00:00:00Z"
+        "creation_date": "2023-01-02",
+        "report_date": "2023-02-12",
+        "audit_start": "2023-02-01"
     }
 },
 {
@@ -115,8 +115,8 @@
         "outofscope": "None, check everything",
         "methodology": "CEH methodology",
         "recommendation": "TODO",
-        "creation_date": "2023-01-03T00:00:00Z",
-        "report_date": "2023-02-13T00:00:00Z"
+        "creation_date": "2023-01-03",
+        "report_date": "2023-02-13"
     }
 },
 

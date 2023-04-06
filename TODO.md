@@ -1,3 +1,18 @@
+# 2023-04-06
+le format de date quand on choisi c'est 2023-04-12 alors que le format demandé c'est 20/04/2023
+    Resolved
+# 2023-03-24
+
+Additional notes je ne sais pas ou delete cette partie dans le rapport
+    C’est dans un template, je le mets en conditionnel
+    Resolved
+
+CONFIDENCIAL -> CONFIDENTIAL ?
+    Resolved
+
+et je ne suis pas tre fan du gris page 1 ? en fond d eran
+    Resolved --> sans couleur
+
 # 2023-03-22
 
 Un champs vide: on peut pas valider la page
@@ -18,16 +33,4 @@ Generation du rapport failed
     Resolved (encoding pb)
 
 Bug sur l export en html
-    Resolved
-
-# 2023-03-24
-
-Additional notes je ne sais pas ou delete cette partie dans le rapport
-    C’est dans un template, je le mets en conditionnel
-    Resolved
-
-CONFIDENCIAL -> CONFIDENTIAL ?
-    Resolved
-
-et je ne suis pas tre fan du gris page 1 ? en fond d eran
-    Resolved --> sans couleur
+    Resolve
