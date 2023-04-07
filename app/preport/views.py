@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.functional import Promise
 from django.utils.encoding import force_str
 from django.core.serializers.json import DjangoJSONEncoder
+from django_sendfile import sendfile
 import uuid, time
 import traceback
 
@@ -62,6 +63,12 @@ class LazyEncoder(DjangoJSONEncoder):
 # ----------------------------------------------------------------------
 # https://github.com/agusmakmun/django-markdown-editor/wiki
 # ----------------------------------------------------------------------
+
+@login_required
+def media_uploads_sendfile(request, upload_path):
+    print("== upload_path =" + upload_path)
+    return sendfile(request, upload_path)
+    #sendfile(request, upload_path, attachment=False, attachment_filename=None, mimetype=None, encoding=None)
 
 @login_required
 def markdown_uploader(request):

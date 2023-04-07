@@ -22,11 +22,12 @@ services:
     image: petereport_django
     container_name: petereport_django
     environment:
-      - PETEREPORT_DJANGO_DEBUG=True
+      - PETEREPORT_DJANGO_DEBUG=False
       - PETEREPORT_DJANGO_AMIN_MODULE=True
-      - PETEREPORT_MEDIA_HOST=https://127.0.0.1
+      - PETEREPORT_MEDIA_HOST=https://localhost
       - PETEREPORT_MARTOR_UPLOAD_METHOD=MEDIA
       - PETEREPORT_REPORT_TITLEPAGE_COLOR=b3e6ff
+      - PETEREPORT_DJANGO_SENDFILE_BACKEND=django_sendfile.backends.nginx
     command: bash -c "
       sleep 1 &&
       pipenv install --deploy --ignore-pipfile --python 3.9 &&

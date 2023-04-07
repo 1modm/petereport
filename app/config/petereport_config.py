@@ -32,10 +32,10 @@ DJANGO_CONFIG = {
     'admin_module': env.bool('PETEREPORT_DJANGO_AMIN_MODULE', default=False),
     'allowed_hosts': env.list('PETEREPORT_DJANGO_ALLOWED_HOSTS', default=['*','localhost']),
     'csrf_trusted_origins': env.list('PETEREPORT_DJANGO_CSRF_TRUSTED_ORIGINS', default=['https://localhost']),
-    'server_host': env.str('PETEREPORT_DJANGO_SERVER_HOST', default='http://127.0.0.1:8000'),
+    'server_host': env.str('PETEREPORT_DJANGO_SERVER_HOST', default='http://localhost:8000'),
     'time_zone': env.str('PETEREPORT_DJANGO_TIME_ZONE', default='UTC'),
-    'upload_memory_size': env.int('PETEREPORT_DJANGO_UPLOAD_MEMORY_SIZE', default=10485760) # 10MB
-
+    'upload_memory_size': env.int('PETEREPORT_DJANGO_UPLOAD_MEMORY_SIZE', default=10485760), # 10MB
+    'sendfile_backend': env.str('PETEREPORT_DJANGO_SENDFILE_BACKEND', default='django_sendfile.backends.simple')
 }
 
 PETEREPORT_TEMPLATES = {
@@ -62,5 +62,5 @@ PETEREPORT_TEMPLATES = {
 PETEREPORT_MARKDOWN = {
     'subject': env.str('PETEREPORT_SUBJECT', default='Pentest Report'),
     'martor_upload_method': env.str('PETEREPORT_MARTOR_UPLOAD_METHOD', default='BASE64'), # BASE64 (stored in DB) or MEDIA (path not protected, must be set 'debug': True. This is highly insecure and not encouraged for production use. Should be configured the web server (apache, nginx, etc) to serve the media content using a protected link)
-    'media_host': env.str('PETEREPORT_MEDIA_HOST', default='http://127.0.0.1:8000') # If docker deployment, set https://<HOST IP>, else for django deployment http://<HOST IP>:8000
+    'media_host': env.str('PETEREPORT_MEDIA_HOST', default='http://localhost:8000') # If docker deployment, set https://<HOST IP>, else for django deployment http://<HOST IP>:8000
 }

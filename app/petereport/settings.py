@@ -16,7 +16,7 @@ from pathlib import Path
 import time
 import os
 from config.startup import *
-from config.petereport_config import PETEREPORT_MARKDOWN, DJANGO_CONFIG,PETEREPORT_TEMPLATES
+from config.petereport_config import PETEREPORT_MARKDOWN, DJANGO_CONFIG, PETEREPORT_TEMPLATES
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'multi_email_field',
     'django_extensions',
     'taggit',
+    'django_sendfile',
 ]
 
 MIDDLEWARE = [
@@ -235,8 +236,12 @@ CSRF_COOKIE_HTTPONLY = False
 # Upload to locale storage
 MARTOR_UPLOAD_PATH = os.path.join(MEDIA_ROOT, 'uploads')
 MARTOR_UPLOAD_URL = '/api/uploader/'  # change to local uploader
-
 MARTOR_MEDIA_URL = os.path.join(PETEREPORT_MARKDOWN['media_host'], MEDIA_URL)
+
+# SendFile configuration
+SENDFILE_BACKEND = DJANGO_CONFIG['sendfile_backend']
+SENDFILE_ROOT = MARTOR_UPLOAD_PATH
+SENDFILE_URL = os.path.join('/', MEDIA_URL, 'protected')
 
 # Markdown Extensions
 # MARTOR_MARKDOWN_BASE_EMOJI_URL = 'https://www.webfx.com/tools/emoji-cheat-sheet/graphics/emojis/'     # from webfx
@@ -292,7 +297,6 @@ ALLOWED_HTML_ATTRIBUTES = [
     "height", "href", "id", "name", "reversed", "rowspan",
     "scope", "src", "style", "title", "type", "width"
 ]
-
 
 # BLEACH
 

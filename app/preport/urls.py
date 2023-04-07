@@ -81,7 +81,6 @@ urlpatterns = [
     path('deliverable/delete/', views.deliverable_delete, name='deliverable_delete'),
     path('deliverable/download/<int:pk>', views.deliverable_download, name='deliverable_download'),
     path('deliverable/report/add/<int:pk>', views.deliverable_report_add, name='deliverable_report_add'),
-
     # CWE
     path('cwe/list/', views.cwe_list, name='cwe_list'),
     path('cwe/add/', views.cwe_add, name='cwe_add'),
@@ -100,4 +99,6 @@ urlpatterns = [
     path('attackflow/add_afb/<int:pk>/<int:finding_pk>', views.attackflow_add_afb, name='attackflow_add_afb'),
     path('attackflow/edit_afb/<int:pk>', views.attackflow_edit_afb, name='attackflow_edit_afb'),
     path('attackflow/delete/', views.attackflow_delete, name='attackflow_delete'),
+    # Serving media/uploads files with sendfile
+    path('media/uploads/<path:upload_path>', views.media_uploads_sendfile, name='media_uploads_sendfile'),
 ]
