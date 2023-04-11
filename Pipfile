@@ -19,6 +19,8 @@ django-extensions       = ">=3.2.1"
 gunicorn                = ">=20.1.0"
 django-taggit           = ">=3.1.0"
 django-sendfile2        = ">=0.7.0"
+django-autocomplete-light = "*"
+django-grappelli = "*"
 
 [dev-packages]
 werkzeug = "*"

@@ -5,6 +5,7 @@ from django.forms import Textarea, TextInput, DateInput, ModelChoiceField, Check
 from .models import DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_AttackTree, DB_Custom_field, DB_FTSModel
 from django.utils.translation import gettext_lazy as _
 import preport.utils.fts as ufts
+from dal import autocomplete
 
 import datetime
 
@@ -23,6 +24,7 @@ class NewCustomerForm(forms.ModelForm):
             'contact_list': Textarea(attrs={'class': 'form-control', 'type':'textarea', 'placeholder': _('Enter multiple email line by line')}),
             'contact_sp_mail': TextInput(attrs={'class': 'form-control', 'type':'email', 'aria-describedby':'emailHelp', 'placeholder': 'Enter Email'}),
             'contact_dp_mail': TextInput(attrs={'class': 'form-control', 'type':'email', 'aria-describedby':'emailHelp', 'placeholder': 'Enter Email'}),
+            'tags': autocomplete.TaggitSelect2('tag_autocomplete'),
         }
 
 
@@ -40,6 +42,7 @@ class NewProductForm(forms.ModelForm):
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Product Name')}),
+            'tags': autocomplete.TaggitSelect2('tag_autocomplete'),
         }
 
 
@@ -55,8 +58,6 @@ class NewSettingsForm(forms.ModelForm):
             'company_address': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Company address')}),
             'company_picture': FileInput(attrs={'class': 'form-control', 'type': "file", 'placeholder': _('Company picture')}),
         }
-
-
 
 
 class NewReportForm(forms.ModelForm):
@@ -77,6 +78,7 @@ class NewReportForm(forms.ModelForm):
             'report_date': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'YYYY-MM-DD'", 'data-mask':'', 'required': "required"}),
             'audit_start': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'YYYY-MM-DD'", 'data-mask':''}),
             'audit_end': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'YYYY-MM-DDd'", 'data-mask':''}),
+            'tags': autocomplete.TaggitSelect2('tag_autocomplete'),
         }
 
 class CWEModelChoiceField(ModelChoiceField):
@@ -117,6 +119,7 @@ class NewFindingForm(forms.ModelForm):
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Finding title")}),
             'cvss_base_score': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Base Score")}),
+            'tags': autocomplete.TaggitSelect2('tag_autocomplete'),
            }
 
 class NewFindingTemplateForm(forms.ModelForm):
@@ -142,6 +145,7 @@ class NewFindingTemplateForm(forms.ModelForm):
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Finding title")}),
             'cvss_base_score': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Base Score")}),
+            'tags': autocomplete.TaggitSelect2('tag_autocomplete')
         }
 
 

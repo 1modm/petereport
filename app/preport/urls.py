@@ -1,7 +1,8 @@
 from django.conf.urls import include
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
+from .views import TagAutoComplete
 
 
 urlpatterns = [
@@ -101,4 +102,6 @@ urlpatterns = [
     path('attackflow/delete/', views.attackflow_delete, name='attackflow_delete'),
     # Serving media/uploads files with sendfile
     path('media/uploads/<path:upload_path>', views.media_uploads_sendfile, name='media_uploads_sendfile'),
+    # Tags taggit
+    re_path(r'^tag/autocomplete/$', TagAutoComplete.as_view(), name='tag_autocomplete'),
 ]

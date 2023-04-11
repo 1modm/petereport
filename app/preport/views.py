@@ -13,6 +13,8 @@ from django.utils.functional import Promise
 from django.utils.encoding import force_str
 from django.core.serializers.json import DjangoJSONEncoder
 from django_sendfile import sendfile
+from dal import autocomplete
+from taggit.models import Tag
 import uuid, time
 import traceback
 
@@ -60,10 +62,18 @@ class LazyEncoder(DjangoJSONEncoder):
             return force_str(obj)
         return super(LazyEncoder, self).default(obj)
 
+class TagAutoComplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Tag.objects.none()
+        qs = Tag.objects.all()
+        if self.q:
+            qs = qs.filter(name__contains=self.q)
+        return qs
+
 # ----------------------------------------------------------------------
 # https://github.com/agusmakmun/django-markdown-editor/wiki
 # ----------------------------------------------------------------------
-
 @login_required
 def media_uploads_sendfile(request, upload_path):
     print("== upload_path =" + upload_path)
@@ -769,7 +779,7 @@ def report_view(request,pk):
                                                         'count_attackflow_query': count_attackflow_query,
                                                         'DB_deliverable_query': DB_deliverable_query,
                                                         'count_deliverable_query': count_deliverable_query,
-                                                        'reports_tags': report_tags,
+                                                        'report_tags': report_tags,
                                                         'templates_directories': TEMPLATES_DIRECTORIES})
 
 
@@ -1783,7 +1793,12 @@ def finding_view(request,pk):
     DB_attackflow = DB_AttackFlow.objects.filter(finding__in=DB_finding_query)
     DB_field = DB_Custom_field.objects.filter(finding__in=DB_finding_query)
 
-    return render(request, 'findings/finding_view.html', {'DB_report': finding.report, 'finding': finding, 'DB_appendix': DB_appendix, 'DB_attackflow': DB_attackflow, 'DB_field': DB_field, 'finding_tags': finding_tags})
+    return render(request, 'findings/finding_view.html', {'DB_report': finding.report,
+                                                          'finding': finding,
+                                                          'DB_appendix': DB_appendix,
+                                                          'DB_attackflow': DB_attackflow,
+                                                          'DB_field': DB_field,
+                                                          'finding_tags': finding_tags})
 
 
 

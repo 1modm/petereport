@@ -43,6 +43,9 @@ CSRF_TRUSTED_ORIGINS =  DJANGO_CONFIG['csrf_trusted_origins']
 # Application definition
 
 INSTALLED_APPS = [
+    'dal',
+    'dal_select2',
+    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

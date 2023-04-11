@@ -34,5 +34,6 @@ urlpatterns += i18n_patterns(
 if settings.ADMIN_ENABLED:
     from django.contrib import admin
     urlpatterns += [
+        path('grappelli/', include('grappelli.urls')),
         path('admin/', admin.site.urls)
     ]

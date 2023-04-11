@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c6ecfd95d6bd9ae464bfbebb1a6a2f6bcd9d29251853b49f4a376ec71cb29ec6"
+            "sha256": "4d5deb4bf6474da9a53d0d194e3ba8b72b401f79471e757ed34d3cbc99a2129b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -232,6 +232,13 @@
             "index": "pypi",
             "version": "==4.2"
         },
+        "django-autocomplete-light": {
+            "hashes": [
+                "sha256:0f6da75c1c7186698b867a467a8cdb359f0513fdd8e09288a0c2fb018ae3d94e"
+            ],
+            "index": "pypi",
+            "version": "==3.9.4"
+        },
         "django-bleach": {
             "hashes": [
                 "sha256:093973e02e02f88bbe38f6bbc903d28ef762ba9f3f84aafb3823f27922e819ed",
@@ -255,6 +262,14 @@
             ],
             "index": "pypi",
             "version": "==3.2.1"
+        },
+        "django-grappelli": {
+            "hashes": [
+                "sha256:c299a91551320eebe8fd1bb3e9224a248e72c0b3b90d69f6646a3b683079bd6f",
+                "sha256:f466c484e04309ac7b7a3591ba37b9b49d3055858f2b3739405b2c18d1e975b7"
+            ],
+            "index": "pypi",
+            "version": "==3.0.5"
         },
         "django-sendfile2": {
             "hashes": [
@@ -837,11 +852,11 @@
         },
         "pygments": {
             "hashes": [
-                "sha256:b3ed06a9e8ac9a9aae5a6f5dbe78a8a58655d17b43b93c078f094ddc476ae297",
-                "sha256:fa7bd7bd2771287c0de303af8bfdfc731f51bd2c6a47ab69d117138893b82717"
+                "sha256:77a3299119af881904cd5ecd1ac6a66214b6e9bed1f2db16993b54adede64094",
+                "sha256:f7e36cffc4c517fbc252861b9a6e4644ca0e5abadf9a113c72d1358ad09b9500"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==2.14.0"
+            "markers": "python_version >= '3.7'",
+            "version": "==2.15.0"
         },
         "pylint": {
             "hashes": [
