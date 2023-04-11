@@ -82,16 +82,15 @@
           <div class="modal-dialog">
               <div class="modal-content">
                   <div class="modal-header">
-                      <h4 class="modal-title">Please wait...</h4>
+                      <h4 class="modal-title">Please wait, the deliverable is under preparation...</h4>
                   </div>
-                  <div class="modal-body">
-                      <div class="progress">
-                        <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
-                        aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%; height: 40px">
-                        </div>
-                      </div>
+                  <div class="modal-body" style="width: 300px; height: 220px">
+                    <div class="circle"></div>
+                    <div class="circle-small"></div>
+                    <div class="circle-big"></div>
+                    <div class="circle-inner-inner"></div>
+                    <div class="circle-inner"></div>
                   </div>
-
               </div>
           </div>
       </div>
@@ -1229,10 +1228,7 @@
 
 </script>
 
-
-
 <script>
-
   $(function() {
     $('#exportButton').hide();
 
@@ -1256,8 +1252,6 @@
   });
 
   function SaveReport(export_type, cst) {
-        $("#pleaseWaitDialogSaveReport").modal("show");
-
         var imgSeveritybar = new Image();
         imgSeveritybar.src = chartSeveritybar.getDataURL({
             pixelRatio: 2,
@@ -1278,16 +1272,21 @@
 
         $.ajax({
             type: 'POST',
-            url: "/en/report/uploadsummaryfindings/{{ DB_report_query.pk }}", // prepend a language code or even better: use window.location.href
+            url: "/en/report/uploadsummaryfindings/{{ DB_report_query.pk }}",
             headers:{ "X-CSRFToken": '{{ csrf_token }}' },
             data : { 'fileSeveritybar': imgSeveritybar.src, 'file_cwe': imgCWE.src, 'file_owasp': imgOWASP.src },
-            success : function(json) {
-                //console.log("requested complete");
-                if (json.status == 'success'){
-                    //window.open('/report/download/pdf/{{ DB_report_query.pk }}', '_blank');
-                    document.location.href = "/report/download/" + export_type + "/" +  cst + "/{{ DB_report_query.pk }}";
-                    $("#pleaseWaitDialogSaveReport").modal("hide");
-                  }
+            beforeSend: function () {
+              $("#pleaseWaitDialogSaveReport").modal("show");
+            },
+            complete: function () {
+              $("#pleaseWaitDialogSaveReport").modal("hide");
+            },
+            success: function(json) {
+              //console.log("requested complete");
+              if (json.status == 'success'){
+                //window.open('/report/download/pdf/{{ DB_report_query.pk }}', '_blank');
+                document.location.href = "/report/download/" + export_type + "/" +  cst + "/{{ DB_report_query.pk }}";
+              }
             }
         });
   };
