@@ -76,7 +76,6 @@ class TagAutoComplete(autocomplete.Select2QuerySetView):
 # ----------------------------------------------------------------------
 @login_required
 def media_uploads_sendfile(request, upload_path):
-    print("== upload_path =" + upload_path)
     return sendfile(request, upload_path)
     #sendfile(request, upload_path, attachment=False, attachment_filename=None, mimetype=None, encoding=None)
 
