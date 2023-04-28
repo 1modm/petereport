@@ -60,6 +60,7 @@ PETEREPORT_TEMPLATES = {
 }
 
 PETEREPORT_MARKDOWN = {
+    'pdf_engine': env.str('PETEREPORT_PDF_ENGINE', default='pdflatex'),
     'subject': env.str('PETEREPORT_SUBJECT', default='Pentest Report'),
     'martor_upload_method': env.str('PETEREPORT_MARTOR_UPLOAD_METHOD', default='BASE64'), # BASE64 (stored in DB) or MEDIA (path not protected, must be set 'debug': True. This is highly insecure and not encouraged for production use. Should be configured the web server (apache, nginx, etc) to serve the media content using a protected link)
     'media_host': env.str('PETEREPORT_MEDIA_HOST', default='http://localhost:8000') # If docker deployment, set https://<HOST IP>, else for django deployment http://<HOST IP>:8000

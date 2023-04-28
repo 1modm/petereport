@@ -26,6 +26,7 @@ services:
       - PETEREPORT_DJANGO_AMIN_MODULE=False
       - PETEREPORT_MEDIA_HOST=https://localhost
       - PETEREPORT_MARTOR_UPLOAD_METHOD=MEDIA
+      - PETEREPORT_PDF_ENGINE=xelatex
       - PETEREPORT_REPORT_TITLEPAGE_COLOR=ffffff
       - PETEREPORT_DJANGO_SENDFILE_BACKEND=django_sendfile.backends.nginx
     command: bash -c "

@@ -1411,7 +1411,7 @@ def report_download_pdf(request, cst, pk):
                                                 '--number-sections',
                                                 '--highlight-style', 'breezedark',
                                                 '--filter', 'pandoc-latex-environment',
-                                                '--pdf-engine', 'pdflatex',
+                                                '--pdf-engine', PETEREPORT_MARKDOWN['pdf_engine'],
                                                 '--listings'])
             #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
 
