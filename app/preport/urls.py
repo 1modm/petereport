@@ -82,14 +82,6 @@ urlpatterns = [
     path('deliverable/delete/', views.deliverable_delete, name='deliverable_delete'),
     path('deliverable/download/<int:pk>', views.deliverable_download, name='deliverable_download'),
     path('deliverable/report/add/<int:pk>', views.deliverable_report_add, name='deliverable_report_add'),
-    # Shares
-    path('share/list/', views.share_list, name='share_list'),
-    path('share/deliverable/list/', views.share_deliverable_list, name='share_deliverable_list'),
-    path('share/deliverable/add/<int:pk>', views.share_deliverable_add, name='share_deliverable_add'),
-    path('share/deliverable/delete/<int:pk>', views.share_deliverable_delete, name='share_deliverable_delete'),
-    #path('share/finding/list/', views.share_finding_list, name='share_finding_list'),
-    #path('share/finding/add/<int:pk>', views.share_finding_add, name='share_finding_add'),
-    #path('share/finding/delete/<int:pk>', views.share_finding_delete, name='share_finding_delete'),
     # CWE
     path('cwe/list/', views.cwe_list, name='cwe_list'),
     path('cwe/add/', views.cwe_add, name='cwe_add'),

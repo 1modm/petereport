@@ -2689,21 +2689,3 @@ def fts(request):
     return render(request, 'fts/fts.html', {
         'form': form, 'search_results': search_results, 'search_results_count': len(search_results)
     })
-
-@login_required
-def share_list(request):
-    pass
-
-@login_required
-def share_deliverable_list(request):
-    pass
-
-@login_required
-@allowed_users(allowed_roles=['administrator'])
-def share_deliverable_add(request, pk):
-    pass
-
-@login_required
-@allowed_users(allowed_roles=['administrator'])
-def share_deliverable_delete(request, pk):
-    pass
