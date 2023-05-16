@@ -869,6 +869,7 @@
                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
                         <button type="button" class="btn btn-info btn-x" data-toggle="modal" data-target=".mm-modal-add-deliverable"><i class="fas fa-add"></i> {% translate "Add Custom Deliverables" %} </button>
                       {% endif %}
+                      <p>Share Connection: {{DB_report_query.share}}</p>
                     </td>
                   </h3>
                   <div class="modal modal-info fade mm-modal-add-deliverable" id="modal-info">
@@ -913,9 +914,9 @@
                         <thead>
                           <tr>
                             <th style="width: 10%">{% translate "Date" %}</th>
-                            <th style="width: 750%">{% translate "File" %}</th>
+                            <th style="width: 600%">{% translate "File" %}</th>
                             <th style="width: 10%">{% translate "Type" %}</th>
-                            <th style="width: 5%"class="text-center">{% translate "Actions" %}</th>
+                            <th style="width: 15%"class="text-center">{% translate "Actions" %}</th>
                           </tr>
                         </thead>
 
@@ -930,6 +931,7 @@
                               {% if user.groups.all.0|stringformat:'s' == "administrator" %}
                                 <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{deliverable.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                               {% endif %}
+                              <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".mm-modal-share-{{deliverable.pk}}"><i class="fas fa-trash"></i>{% translate "Share" %}</button>
                             </td>
                           </tr>
 
@@ -948,6 +950,26 @@
                                 <div class="modal-footer justify-content-between">
                                   <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
                                   <button type="button" onclick="DeleteID_D({{deliverable.pk}});" class="btn btn-outline-light">{% translate "Delete Deliverable" %}</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="modal modal-info fade mm-modal-share-{{deliverable.pk}}" id="modal-info">
+                            <div class="modal-dialog">
+                              <div class="modal-content bg-info">
+                                <div class="modal-header">
+                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <p>{% translate "Share Deliverable" %}&hellip;</p>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                  <button type="button" onclick="Share({{deliverable.pk}});" class="btn btn-outline-light">{% translate "Share Deliverable" %}</button>
                                 </div>
                               </div>
                             </div>
@@ -1395,6 +1417,22 @@ function DeleteID_D(del_id) {
           document.location.href = "/report/view/{{DB_report_query.pk}}";
         }
     })
+  }
+</script>
+<script>
+  function Share(deliverablepk) {
+    $.ajax({
+      type: 'GET',
+      async: false,
+      cache: false,
+      contentType: false,
+      processData: false,
+      url: `/fr/share/share/{{ DB_report_query.pk }}/${deliverablepk}`,
+
+      success : function(json) {
+        alert("Sucess");
+      }
+    });
   }
 </script>
 

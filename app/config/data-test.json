@@ -184,5 +184,18 @@
         "cwe": "0",
         "owasp" : "2"
     }
+},
+{
+    "model": "preport.db_shareconnection",
+    "pk": 1,
+    "fields": {
+        "id": "1",
+        "title": "test",
+        "type": "deliverable",
+        "func": "PostFile",
+        "url": "http://example.com",
+        "credentials": "test:test",
+        "creation_date": "2023-01-03"
+    }
 }
 ]

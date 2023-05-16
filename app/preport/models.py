@@ -107,11 +107,31 @@ class DB_Settings(models.Model):
 		verbose_name_plural = "Settings"
 	def get_label (self):
 		return self.company_name
+	
+# ---------- ShareConnection ------------
+
+class DB_ShareConnection(models.Model):
+	title = models.CharField(max_length=255, blank=False)
+	type = models.CharField(max_length=255, blank=False)
+	func = models.CharField(max_length=255, blank=False)
+	url = models.CharField(max_length=255, blank=False)
+	credentials = models.CharField(max_length=255, blank=False)
+	creation_date = models.DateTimeField(auto_now_add=True)
+	tags = TaggableManager(blank=True)
+
+	def __str__(self) -> str:
+		return self.title
+	def get_label(self) -> str:
+		return str(self)
+	class Meta:
+		verbose_name_plural = "Connection"
 
 # ---------- Report ------------
 
 class DB_Report(models.Model):
 	product = models.ForeignKey(DB_Product, on_delete=models.CASCADE)
+	share_deliverable = models.ForeignKey(DB_ShareConnection, on_delete=models.SET_NULL, null=True, blank=True, related_name='share_deliverable')
+	share_finding = models.ForeignKey(DB_ShareConnection, on_delete=models.SET_NULL, null=True, blank=True, related_name='share_finding')
 	report_id = models.CharField(max_length=255, blank=False, unique=True)
 	title = models.CharField(max_length=255, blank=False)
 	executive_summary_image = models.TextField(blank=True)
@@ -128,15 +148,13 @@ class DB_Report(models.Model):
 	audit_end = models.DateField(blank=True, null=True)
 	tags = TaggableManager(blank=True)
 	fts_enabled = True
-	fts_excluded_fields = ['report_id', 'product']
+	fts_excluded_fields = ['report_id', 'product', 'share_deliverable', 'share_finding']
 	def __str__(self):
 		return self.title
 	def get_label (self):
 		return self.title
 	class Meta:
 		verbose_name_plural = "Reports"
-
-
 
 # ---------- Deliverable ------------
 class DB_Deliverable(models.Model):

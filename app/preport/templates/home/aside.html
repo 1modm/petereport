@@ -210,7 +210,7 @@
           </li>
 
           <li class="nav-item">
-            <a href="/share/list" class="nav-link">
+            <a href="/share/list/" class="nav-link">
               <i class="nav-icon fa fa-cube text-primary"></i>
               <p>
                 {% translate "Shares" %}
@@ -220,9 +220,9 @@
 
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/share/deliverable/list" class="nav-link">
+                <a href="/share/list/" class="nav-link">
                   <i class="nav-icon fas fa-table"></i>
-                  <p>{% translate "Deliverable Shares" %}</p>
+                  <p>{% translate "All Shares" %}</p>
                 </a>
               </li>
             </ul>
@@ -230,29 +230,9 @@
         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/share/deliverable/add" class="nav-link">
+                <a href="/share/add/" class="nav-link">
                   <i class="nav-icon fas fa-edit"></i>
-                  <p>{% translate "Add Deliverable Share" %}</p>
-                </a>
-              </li>
-            </ul>
-        {% endif %}
-
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="/share/finding/list" class="nav-link">
-                  <i class="nav-icon fas fa-table"></i>
-                  <p>{% translate "Finding Shares" %}</p>
-                </a>
-              </li>
-            </ul>
-
-        {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="/share/finding/add" class="nav-link">
-                  <i class="nav-icon fas fa-edit"></i>
-                  <p>{% translate "Add Finding Share" %}</p>
+                  <p>{% translate "Add Share" %}</p>
                 </a>
               </li>
             </ul>

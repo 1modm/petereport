@@ -2,7 +2,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
@@ -20,13 +20,14 @@ import traceback
 
 import preport.utils.fts as ufts
 import preport.utils.urls as uurls
+import preport.utils.sharing as ushare
 
 import django.db
 # Forms
-from .forms import CustomDeliverableReportForm, NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm, NewFTSForm
+from .forms import CustomDeliverableReportForm, NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewShareForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm, NewFTSForm
 
 # Model
-from .models import DB_Deliverable, DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow, DB_FTSModel
+from .models import DB_Deliverable, DB_Report, DB_ShareConnection, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow, DB_FTSModel
 
 # Decorators
 from .decorators import allowed_users
@@ -2692,18 +2693,79 @@ def fts(request):
 
 @login_required
 def share_list(request):
-    pass
+    DB_share_query = DB_ShareConnection.objects.order_by("pk").all()
+    return render(request, 'share/share_list.html', {'DB_share_query': DB_share_query})
 
 @login_required
-def share_deliverable_list(request):
-    pass
-
-@login_required
-@allowed_users(allowed_roles=['administrator'])
-def share_deliverable_add(request, pk):
-    pass
+def share_view(request, pk:int):
+    return "WIP"
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def share_deliverable_delete(request, pk):
-    pass
+def share_add(request):
+    if request.method == 'POST':
+        form = NewShareForm(request.POST)
+        if form.is_valid():
+            share = form.save(commit=False)
+            share.save()
+            form.save_m2m() # Save tags
+            return redirect('share_list')
+    else:
+        form = NewShareForm()
+    return render(request, 'share/share_add.html', {
+        'form': form,
+        'list_func_deliverable': list(ushare.shares_deliverable.keys()),
+        "list_func_finding": list(ushare.shares_finding.keys())
+    })
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def share_edit(request, pk):
+    DB_share_querry = get_object_or_404(DB_ShareConnection, pk=pk)
+    if request.method == 'POST':
+        form = NewShareForm(request.POST, instance=DB_share_querry)
+        if form.is_valid():
+            share = form.save(commit=False)
+            share.save()
+            form.save_m2m() # Save tags
+            return redirect('share_list')
+    else:
+        form = NewShareForm(instance=DB_share_querry)
+        #form.fields['creation_date'].initial = today
+    return render(request, 'share/share_add.html', {
+        'form': form,
+        'list_func_deliverable': list(ushare.shares_deliverable.keys()),
+        "list_func_finding": list(ushare.shares_finding.keys())
+    })
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def share_delete(request):
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_ShareConnection.objects.filter(pk=delete_id).delete()
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+@login_required
+def share_deliverable(request, reportpk, deliverablepk):
+    report = get_object_or_404(DB_Report, pk=reportpk)
+    deliverable = get_object_or_404(DB_Deliverable, pk=deliverablepk)
+    ShareClass = ushare.shares_all.get(report.share_deliverable.func, None) if report.share_deliverable else None
+    if ShareClass:
+        shareobj = ShareClass(report.share_deliverable)
+        file = os.path.join(REPORTS_MEDIA_ROOT, 'pdf', deliverable.filename)
+        shareobj(file)
+        data = json.dumps({
+            'status': 200
+        }, cls=LazyEncoder)
+        return HttpResponse(
+            data, content_type='application/json', status=200)
+    else:
+        data = json.dumps({
+            'status': 405,
+            'error': _('Bad Function')
+        }, cls=LazyEncoder)
+        return HttpResponse(
+            data, content_type='application/json', status=405)
