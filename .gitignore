@@ -139,5 +139,6 @@ dmypy.json
 /.vscode
 /petereport.code-workspace
 /app/db/petereport.sqlite3
+/app/db/petereport.sqlite3-journal
 /app/storage_reports/*
 /app/media/uploads/*
