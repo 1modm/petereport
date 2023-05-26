@@ -37,7 +37,6 @@ import datetime
 import textwrap
 import requests
 import base64
-import bleach
 import uuid
 import json
 import csv
@@ -864,8 +863,10 @@ def report_uploadsummaryfindings(request, pk):
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
-
-
+@login_required
+def report_download(request, export_type, cst, pk):
+   # Used only to build URL into template
+   raise Http404
 
 @login_required
 def report_download_markdown(request, cst, pk):
@@ -2207,7 +2208,7 @@ def appendix_view(request,pk):
 # ----------------------------------------------------------------------
 
 @login_required
-def fields(request,pk):
+def customfields(request,pk):
 
     DB_finding_query = get_object_or_404(DB_Finding, pk=pk)
     DB_custom_query = DB_Custom_field.objects.filter(finding_id=pk)
@@ -2366,7 +2367,7 @@ def template_view(request,pk):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def templateaddfinding(request,pk):
+def template_add_finding(request,pk):
 
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_findings_query = DB_Finding_Template.objects.order_by('title')
@@ -2376,7 +2377,7 @@ def templateaddfinding(request,pk):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def templateaddreport(request,pk,reportpk):
+def template_add_report(request,pk,reportpk):
 
     DB_report_query = get_object_or_404(DB_Report, pk=reportpk)
     DB_finding_template_query = get_object_or_404(DB_Finding_Template, pk=pk)
@@ -2557,7 +2558,7 @@ def attackflow_add(request,pk):
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
     count_finding_query = DB_finding_query.count()
 
-    return render(request, 'attackflow/reportfindings.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
+    return render(request, 'attackflow/attackflow_add.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 
 @login_required
@@ -2618,7 +2619,7 @@ def attackflow_add_afb(request,pk,finding_pk):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def attackflow_edit_afb(request,pk):
+def attackflow_edit_afb(request, pk):
 
     DB_attackflow_query = get_object_or_404(DB_AttackFlow, pk=pk)
 
@@ -2698,7 +2699,8 @@ def share_list(request):
 
 @login_required
 def share_view(request, pk:int):
-    return "WIP"
+    # TODO
+    raise Http404
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
@@ -2749,23 +2751,26 @@ def share_delete(request):
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 @login_required
-def share_deliverable(request, reportpk, deliverablepk):
-    report = get_object_or_404(DB_Report, pk=reportpk)
-    deliverable = get_object_or_404(DB_Deliverable, pk=deliverablepk)
-    ShareClass = ushare.shares_all.get(report.share_deliverable.func, None) if report.share_deliverable else None
-    if ShareClass:
-        shareobj = ShareClass(report.share_deliverable)
-        file = os.path.join(REPORTS_MEDIA_ROOT, 'pdf', deliverable.filename)
-        shareobj(file)
-        data = json.dumps({
-            'status': 200
-        }, cls=LazyEncoder)
-        return HttpResponse(
-            data, content_type='application/json', status=200)
-    else:
-        data = json.dumps({
-            'status': 405,
-            'error': _('Bad Function')
-        }, cls=LazyEncoder)
-        return HttpResponse(
-            data, content_type='application/json', status=405)
+@allowed_users(allowed_roles=['administrator'])
+def share_deliverable(request):
+    if request.method == 'POST':
+        report = get_object_or_404(DB_Report, pk=request.POST['report_pk'])
+        deliverable = get_object_or_404(DB_Deliverable, pk=request.POST['deliverable_pk'])
+        ShareClass = ushare.shares_deliverable.get(report.share_deliverable.func, None) if report.share_deliverable else None
+        if ShareClass:
+            shareobj = ShareClass(report.share_deliverable)
+            file = os.path.join(REPORTS_MEDIA_ROOT, deliverable.filetype, deliverable.filename)
+            share_date, share_uuid = shareobj(filename=file, project=report.report_id)
+            deliverable.share_date = share_date
+            deliverable.share_uuid = share_uuid
+            deliverable.save()
+            data = json.dumps({
+                    'status': 200
+                    }, cls=LazyEncoder)
+            return HttpResponse(
+                data, content_type='application/json', status=200)
+    data = json.dumps({
+                'status': 405,
+                'error': _('Bad Function')
+                }, cls=LazyEncoder)
+    return HttpResponse(data, content_type='application/json', status=405)

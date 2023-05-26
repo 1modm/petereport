@@ -37,11 +37,12 @@ urlpatterns = [
     path('report/edit/<int:pk>', views.report_edit, name='report_edit'),
     path('report/delete/', views.report_delete, name='report_delete'),
     path('report-findings/duplicate/', views.report_findings_duplicate, name='report_findings_duplicate'),
-    path('report/uploadsummaryfindings/<int:pk>', views.report_uploadsummaryfindings, name='report_uploadsummaryfindings'), # prepend a language code in ajax
+    path('report/uploadsummaryfindings/<int:pk>', views.report_uploadsummaryfindings, name='report_uploadsummaryfindings'),
     path('report/download/markdown/<str:cst>/<int:pk>', views.report_download_markdown, name='report_download_markdown'),
     path('report/download/html/<str:cst>/<int:pk>', views.report_download_html, name='report_download_html'),
     path('report/download/pdf/<str:cst>/<int:pk>', views.report_download_pdf, name='report_download_pdf'),
     path('report/download/jupyter/<str:cst>/<int:pk>', views.report_download_jupyter, name='report_download_jupyter'),
+    path('report/download/<str:export_type>/<str:cst>/<int:pk>', views.report_download, name='report_download'),
     path('report/findings/<int:pk>', views.report_findings, name='report_findings'),
     # Findings
     path('finding/list/', views.finding_list, name='finding_list'),
@@ -57,10 +58,10 @@ urlpatterns = [
     path('findings/defectdojo/products/<int:pk>', views.defectdojo_products, name='defectdojo_products'),
     path('findings/defectdojo/import/<int:pk>/<int:ddpk>', views.defectdojo_import, name='defectdojo_import'),
     path('findings/defectdojo/viewfindings/<int:pk>/<int:ddpk>', views.defectdojo_viewfindings, name='defectdojo_viewfindings'),
-    path('findings/defectdojo/import_finding/<int:pk>/<int:ddpk>', views.defectdojo_import_finding, name='defectdojo_import_finding'),
+    path('findings/defectdojo/importfinding/<int:pk>/<int:ddpk>', views.defectdojo_import_finding, name='defectdojo_import_finding'),
     # Custom Fields
     path('field/add/<int:pk>', views.field_add, name='field_add'),
-    path('finding/customfields/<int:pk>', views.fields, name='fields'),
+    path('finding/customfields/<int:pk>', views.customfields, name='fields'),
     path('field/delete/', views.field_delete, name='field_delete'),
     path('field/edit/<int:pk>', views.field_edit, name='field_edit'),
     # Appendix
@@ -72,8 +73,8 @@ urlpatterns = [
     # Templates
     path('template/list/', views.template_list, name='template_list'),
     path('template/add/', views.template_add, name='template_add'),
-    path('template/add/finding/<int:pk>', views.templateaddfinding, name='templateaddfinding'),
-    path('template/add/report/<int:pk>/<int:reportpk>', views.templateaddreport, name='templateaddreport'),
+    path('template/add/finding/<int:pk>', views.template_add_finding, name='template_add_finding'),
+    path('template/add/report/<int:pk>/<int:reportpk>', views.template_add_report, name='template_add_report'),
     path('template/view/<int:pk>', views.template_view, name='template_view'),
     path('template/delete/', views.template_delete, name='template_delete'),
     path('template/edit/<int:pk>', views.template_edit, name='template_edit'),
@@ -88,7 +89,7 @@ urlpatterns = [
     path('share/view/<int:pk>', views.share_view, name='share_view'),
     path('share/edit/<int:pk>', views.share_edit, name='share_edit'),
     path('share/delete/', views.share_delete, name='share_delete'),
-    path('share/deliverable/<int:reportpk>/<int:deliverablepk>', views.share_deliverable, name='share_deliverable'),
+    path('share/deliverable/', views.share_deliverable, name='share_deliverable'),
     # CWE
     path('cwe/list/', views.cwe_list, name='cwe_list'),
     path('cwe/add/', views.cwe_add, name='cwe_add'),

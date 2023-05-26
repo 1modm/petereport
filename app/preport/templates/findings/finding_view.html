@@ -24,9 +24,9 @@
             <ol class="breadcrumb float-sm-right">
 
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-              <li class="breadcrumb-item"><a href="/customer/view/{{ finding.report.product.customer.pk}}">{{ finding.report.product.customer.name | bleach }}</a></li>
-              <li class="breadcrumb-item"><a href="/product/view/{{ finding.report.product.pk}}">{{ finding.report.product.name | bleach }}</a></li>
-              <li class="breadcrumb-item"><a href="/report/view/{{ finding.report.pk}}">{{ finding.report.title | bleach }}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'customer_view' finding.report.product.customer.pk %}">{{ finding.report.product.customer.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'product_view' finding.report.product.pk %}">{{ finding.report.product.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'report_view' finding.report.pk %}">{{ finding.report.name}}</a></li>
               <li class="breadcrumb-item active">{{ finding.title | bleach }}</li>
 
             </ol>
@@ -38,9 +38,9 @@
         <div class="row">
             <div class="col-md-7">
                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                  <a href="/finding/edit/{{ finding.pk }}#{{ finding.get_cvss_score_anchor }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Edit Finding" %}</button></a>
-                  <a href="/finding/customfields/{{ finding.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Finding custom fields" %}</button></a>
-                  <a href="/field/add/{{ finding.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-edit"></i> {% translate "Add custom field" %}</button></a>
+                  <a href="{% url 'finding_edit' finding.pk %}#{{ finding.get_cvss_score_anchor }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Edit Finding" %}</button></a>
+                  <a href="{% url 'fields' finding.pk %}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Finding custom fields" %}</button></a>
+                  <a href="{% url 'field_add' finding.pk %}"><button type="button" class="btn btn-info"><i class="fa fa-edit"></i> {% translate "Add custom field" %}</button></a>
                 {% endif %}
             </div>
         </div>

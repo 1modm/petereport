@@ -32,7 +32,7 @@
 
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/configuration/users" class="nav-link">
+                <a href="{% url 'user_list' %}" class="nav-link">
                   <i class="nav-icon fas fa-id-card"></i>
                   <p>{% translate "Users" %}</p>
                 </a>
@@ -41,7 +41,7 @@
 
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/configuration/user/add" class="nav-link">
+                <a href="{% url 'user_add' %}" class="nav-link">
                   <i class="nav-icon fas fa-users-cog"></i>
                   <p>{% translate "Add User" %}</p>
                 </a>
@@ -49,7 +49,7 @@
             </ul>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/configuration/settings" class="nav-link">
+                <a href="{% url 'settings' %}" class="nav-link">
                   <i class="nav-icon fas fa-cog"></i>
                   <p>{% translate "Settings" %}</p>
                 </a>
@@ -59,7 +59,7 @@
   {% endif %}
 
           <li class="nav-item">
-            <a href="/customer/list" class="nav-link">
+            <a href="{% url 'customer_list' %}" class="nav-link">
               <i class="nav-icon fas fa-building text-purple"></i>
               <p>
                 {% translate "Customers" %}
@@ -69,7 +69,7 @@
 
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/customer/list" class="nav-link">
+                <a href="{% url 'customer_list' %}" class="nav-link">
                   <i class="nav-icon fas fa-table"></i>
                   <p>{% translate "All Customers" %}</p>
                 </a>
@@ -79,7 +79,7 @@
         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/customer/add" class="nav-link">
+                <a href="{% url 'customer_add' %}" class="nav-link">
                   <i class="nav-icon fas fa-edit"></i>
                   <p>{% translate "Add Customer" %}</p>
                 </a>
@@ -90,7 +90,7 @@
           </li>
 
           <li class="nav-item">
-            <a href="/product/list" class="nav-link">
+            <a href="{% url 'product_list' %}" class="nav-link">
               <i class="nav-icon fa fa-cube text-primary"></i>
               <p>
                 {% translate "Products" %}
@@ -100,7 +100,7 @@
 
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/product/list" class="nav-link">
+                <a href="{% url 'product_list' %}" class="nav-link">
                   <i class="nav-icon fas fa-table"></i>
                   <p>{% translate "All Products" %}</p>
                 </a>
@@ -110,7 +110,7 @@
         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/product/add" class="nav-link">
+                <a href="{% url 'product_add' %}" class="nav-link">
                   <i class="nav-icon fas fa-edit"></i>
                   <p>{% translate "Add Product" %}</p>
                 </a>
@@ -122,7 +122,7 @@
 
 
           <li class="nav-item">
-            <a href="/product/list" class="nav-link">
+            <a href="{% url 'report_list' %}" class="nav-link">
               <i class="nav-icon fa fa-file-code text-success"></i>
               <p>
                 {% translate "Reports" %}
@@ -132,7 +132,7 @@
 
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/report/list" class="nav-link">
+                <a href="{% url 'report_list' %}" class="nav-link">
                   <i class="nav-icon fas fa-table"></i>
                   <p>{% translate "All Reports" %}</p>
                 </a>
@@ -142,7 +142,7 @@
         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/report/add" class="nav-link">
+                <a href="{% url 'report_add' %}" class="nav-link">
                   <i class="nav-icon fas fa-edit"></i>
                   <p>{% translate "Add Report" %}</p>
                 </a>
@@ -152,7 +152,7 @@
 
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/deliverable/list/" class="nav-link">
+                <a href="{% url 'deliverable_list' %}" class="nav-link">
                   <i class="nav-icon fas fa-download"></i>
                   <p>
                     {% translate "All Deliverables" %}
@@ -163,7 +163,7 @@
           </li>
 
           <li class="nav-item">
-            <a href="/finding/list/" class="nav-link">
+            <a href="{% url 'finding_list' %}" class="nav-link">
               <i class="nav-icon fas fa-bug text-danger"></i>
               <p>
                 {% translate "Findings" %}
@@ -172,7 +172,7 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/finding/list/" class="nav-link">
+                <a href="{% url 'finding_list' %}" class="nav-link">
                   <i class="nav-icon fas fa-table"></i>
                   <p>{% translate "All Findings" %}</p>
                 </a>
@@ -180,26 +180,26 @@
             </ul>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/finding/opened/" class="nav-link">
+                <a href="{% url 'findings_opened' %}" class="nav-link">
                   <i class="nav-icon fas fa-exclamation-triangle"></i>
                   <p>{% translate "Opened Findings" %}</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/finding/closed/" class="nav-link">
+                <a href="{% url 'findings_closed' %}" class="nav-link">
                   <i class="nav-icon fas fa-toolbox"></i>
                   <p>{% translate "Closed Findings" %}</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/template/list/" class="nav-link">
+                <a href="{% url 'template_list' %}" class="nav-link">
                   <i class="nav-icon fas fa-file-alt"></i>
                   <p>{% translate "Finding Templates" %}</p>
                 </a>
               </li>
             {% if user.groups.all.0|stringformat:'s' == "administrator" %}
               <li class="nav-item">
-                <a href="/template/add/" class="nav-link">
+                <a href="{% url 'template_add' %}" class="nav-link">
                   <i class="fas fa-file-code nav-icon"></i>
                   <p>{% translate "Add Finding Template" %}</p>
                 </a>
@@ -210,8 +210,8 @@
           </li>
 
           <li class="nav-item">
-            <a href="/share/list/" class="nav-link">
-              <i class="nav-icon fa fa-cube text-primary"></i>
+            <a href="{% url 'share_list' %}" class="nav-link">
+              <i class="nav-icon fa fa-share text-light"></i>
               <p>
                 {% translate "Shares" %}
                 <i class="right fas fa-angle-left"></i>
@@ -220,28 +220,28 @@
 
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/share/list/" class="nav-link">
+                <a href="{% url 'share_list' %}" class="nav-link">
                   <i class="nav-icon fas fa-table"></i>
                   <p>{% translate "All Shares" %}</p>
                 </a>
               </li>
             </ul>
 
-        {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+            {% if user.groups.all.0|stringformat:'s' == "administrator" %}
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/share/add/" class="nav-link">
+                <a href="{% url 'share_add' %}" class="nav-link">
                   <i class="nav-icon fas fa-edit"></i>
                   <p>{% translate "Add Share" %}</p>
                 </a>
               </li>
             </ul>
-        {% endif %}
+            {% endif %}
 
           </li>
 
           <li class="nav-item">
-            <a href="/cwe/list/" class="nav-link">
+            <a href="{% url 'cwe_list' %}" class="nav-link">
               <i class="nav-icon fas fa-fingerprint text-warning"></i>
               <p>
                 {% translate "CWE" %}
@@ -250,7 +250,7 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/cwe/list/" class="nav-link">
+                <a href="{% url 'cwe_list' %}" class="nav-link">
                   <i class="nav-icon fas fa-radiation-alt"></i>
                   <p>{% translate "CWE List" %}</p>
                 </a>
@@ -258,7 +258,7 @@
 
             {% if user.groups.all.0|stringformat:'s' == "administrator" %}
               <li class="nav-item">
-                <a href="/cwe/add/" class="nav-link">
+                <a href="{% url 'cwe_add' %}" class="nav-link">
                   <i class="nav-icon fas fa-edit"></i>
                   <p>{% translate "Add CWE" %}</p>
                 </a>
@@ -269,7 +269,7 @@
           </li>
 
           <li class="nav-item">
-            <a href="/owasp/list/" class="nav-link">
+            <a href="{% url 'owasp_list' %}" class="nav-link">
               <i class="nav-icon fas fa-fingerprint text-warning"></i>
               <p>
                 {% translate "OWASP" %}
@@ -278,7 +278,7 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/owasp/list/" class="nav-link">
+                <a href="{% url 'owasp_list' %}" class="nav-link">
                   <i class="nav-icon fas fa-radiation-alt"></i>
                   <p>{% translate "OWASP List" %}</p>
                 </a>
@@ -286,7 +286,7 @@
 
             {% if user.groups.all.0|stringformat:'s' == "administrator" %}
               <li class="nav-item">
-                <a href="/owasp/add/" class="nav-link">
+                <a href="{% url 'owasp_add' %}" class="nav-link">
                   <i class="fas fa-edit nav-icon"></i>
                   <p>{% translate "Add OWASP" %}</p>
                 </a>
@@ -297,7 +297,7 @@
           </li>
 
           <li class="nav-item">
-            <a href="/fts" class="nav-link">
+            <a href="{% url 'fts' %}" class="nav-link">
               <i class="nav-icon fa fa-search text-light"></i>
               <p>
                 {% translate "Search" %}

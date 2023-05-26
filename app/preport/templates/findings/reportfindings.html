@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load i18n %}
+{% load bleach_tags %}
 
 {% block title %} {% translate "Findings" %} {% endblock title %}
 
@@ -16,14 +17,14 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>{{DB_report_query.title}} - {% translate "Findings" %}</h1>
+          <h1>{% translate "Findings" %}</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-            <li class="breadcrumb-item"><a href="/customer/view/{{ DB_report_query.product.customer.pk}}">{{ DB_report_query.product.customer.name}}</a></li>
-            <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
-            <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report_query.product.customer.pk %}">{{ DB_report_query.product.customer.name | bleach}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report_query.product.pk %}">{{ DB_report_query.product.name | bleach}}</a></li>
+            <li class="breadcrumb-item active"><a href="{% url 'report_view' DB_report_query.pk %}">{{ DB_report_query.title}}</a></li>
           </ol>
         </div>
       </div>
@@ -35,10 +36,10 @@
         <div class="col-md-12">
 
           {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-            <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-danger"><i class="fa fa-edit"></i> {% translate "Add Finding" %}</button></a>
-            <a href="/template/add/finding/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Add Finding from template" %}</button></a>
-            <a href="/findings/upload/{{ DB_report_query.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-upload"></i> {% translate "Upload Findings" %}</button></a>
-            <a href="/findings/defectdojo/products/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-upload"></i> {% translate "Import Findings from DefectDojo" %}</button></a>
+            <a href="{% url 'finding_add' DB_report_query.pk %}"><button type="button" class="btn btn-danger"><i class="fa fa-edit"></i> {% translate "Add Finding" %}</button></a>
+            <a href="{% url 'template_add_finding' DB_report_query.pk %}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Add Finding from template" %}</button></a>
+            <a href="{% url 'findings_upload_csv' DB_report_query.pk %}"><button type="button" class="btn btn-info"><i class="fa fa-upload"></i> {% translate "Upload Findings" %}</button></a>
+            <a href="{% url 'defectdojo_products' DB_report_query.pk %}"><button type="button" class="btn btn-success"><i class="fa fa-upload"></i> {% translate "Import Findings from DefectDojo" %}</button></a>
           {% endif %}
 
         </div>
@@ -69,7 +70,7 @@
 
             {% if count_finding_query == 0 %}
 
-              <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">{% translate "Add Findings" %}</button></a>
+              <a href="{% url 'finding_add' DB_report_query.pk %}"><button type="button" class="btn btn-success btn-xm">{% translate "Add Findings" %}</button></a>
 
             {% else %}
 
@@ -132,10 +133,10 @@
                                     {% endif %}
                                   </td>
                                   <td align="center">
-                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
+                                      <a href="{% url 'finding_view' finding.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                        <a href="/finding/edit/{{ finding.pk }}#{{ finding.get_cvss_score_anchor }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                                        <a href="{% url 'finding_edit' finding.pk %}#{{ finding.get_cvss_score_anchor }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                                         <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{finding.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
                                         <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                       {% endif %}
@@ -224,28 +225,28 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/finding/delete/",
+            url: "{% url 'finding_delete' %}/",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/findings/{{DB_report_query.pk}}";
+              document.location.href = "{% url 'report_findings' DB_report_query.pk %}";
             }
         })
   }
   function DuplicateID(dup_id) {
     $.ajax({
         type: 'POST',
-        url: "/en/finding/duplicate/",
+        url: "{% url 'finding_duplicate' %}",
         headers:{
           "X-CSRFToken": '{{ csrf_token }}'
         },
         data : { 'duplicate_id': dup_id},
 
         success : function(json) {
-          document.location.href = "/report/findings/{{DB_report_query.pk}}";
+          document.location.href = "{% url 'report_findings' DB_report_query.pk %}";
         }
     })
 }

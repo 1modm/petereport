@@ -1,6 +1,7 @@
 {% extends 'home/template_attack_flow.html' %}
 
 {% load i18n %}
+{% load bleach_tags %}
 
 {% block title %} {% translate "Attack Flow" %} {% endblock title %}
 
@@ -19,7 +20,7 @@ html, body {
     height: 100%;
 }
 
-.fill { 
+.fill {
     min-height: 100%;
     height: 100%;
 }

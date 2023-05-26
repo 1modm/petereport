@@ -107,7 +107,7 @@ class DB_Settings(models.Model):
 		verbose_name_plural = "Settings"
 	def get_label (self):
 		return self.company_name
-	
+
 # ---------- ShareConnection ------------
 
 class DB_ShareConnection(models.Model):
@@ -163,6 +163,8 @@ class DB_Deliverable(models.Model):
 	generation_date = models.DateTimeField(blank=False)
 	filetype = models.CharField(max_length=32, blank=False, unique=False)
 	filetemplate = models.CharField(max_length=64, blank=False, unique=False)
+	share_date = models.DateTimeField(null=True, blank=True)
+	share_uuid = models.CharField(max_length=4096, blank=True, unique=False)
 	fts_enabled = True
 	fts_excluded_fields = ['report']
 	def get_label (self):

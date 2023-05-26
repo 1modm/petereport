@@ -175,13 +175,13 @@
 
                   {% for finding in DB_finding_query %}
                     <tr>
-                      <td class=" last" align="center"><a href="/customer/view/{{finding.report.product.customer.id}}">{{ finding.report.product.customer.name }}</a></td>
-                      <td class=" last" align="center"><a href="/product/view/{{finding.report.product.id}}">{{ finding.report.product.name }}</a></td>
-                      <td class=" last" align="center"><a href="/report/view/{{finding.report.id}}">{{ finding.report.title }}</a></td>
-                      <td class=" last" align="center"><a href="/finding/view/{{finding.id}}">{{ finding.status }}</a></td>
+                      <td class=" last" align="center"><a href="{% url 'customer_view' finding.report.product.customer.pk %}}">{{ finding.report.product.customer.name }}</a></td>
+                      <td class=" last" align="center"><a href="{% url 'product_view' finding.report.product.pk %}">{{ finding.report.product.name }}</a></td>
+                      <td class=" last" align="center"><a href="{% url 'report_view' finding.report.pk %}">{{ finding.report.title }}</a></td>
+                      <td class=" last" align="center"><a href="{% url 'finding_view' finding.pk %}">{{ finding.status }}</a></td>
 
                       {% if finding.cvss_score >= 9 %}
-                        <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#CC0000"><i class="fa fa-exclamation-circle"></i> {{finding.title}}</a></b></td>
+                        <td class=" last"><b><a href="{% url 'finding_view' finding.pk %}" style="color:#CC0000"><i class="fa fa-exclamation-circle"></i> {{finding.title}}</a></b></td>
                         <td>
                           {% if finding.cwe.cwe_id == -1 %}
                             -
@@ -198,7 +198,7 @@
                         </td>
                         <td><span class="badge bg-danger" style="font-size:15px;margin-left: 5%;">Critical {{ finding.cvss_score }}</span></td>
                       {% elif finding.cvss_score >= 7 %}
-                        <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#F20000"><i class="fa fa-exclamation-triangle"></i> {{finding.title}}</a></b></td>
+                        <td class=" last"><b><a href="{% url 'finding_view' finding.pk %}" style="color:#F20000"><i class="fa fa-exclamation-triangle"></i> {{finding.title}}</a></b></td>
                         <td>
                           {% if finding.cwe.cwe_id == -1 %}
                             -
@@ -215,7 +215,7 @@
                         </td>
                         <td><span class="badge bg-danger" style="font-size:15px;margin-left: 5%;">High {{ finding.cvss_score }}</span></td>
                       {% elif finding.cvss_score >= 4 %}
-                        <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#FC7F03"><i class="fa fa-exclamation-triangle"></i> {{finding.title}}</a></b></td>
+                        <td class=" last"><b><a href="{% url 'finding_view' finding.pk %}" style="color:#FC7F03"><i class="fa fa-exclamation-triangle"></i> {{finding.title}}</a></b></td>
                         <td>
                           {% if finding.cwe.cwe_id == -1 %}
                             -
@@ -232,7 +232,7 @@
                         </td>
                         <td><span class="badge bg-warning" style="font-size:15px;margin-left: 5%;">Medium {{ finding.cvss_score }}</span></td>
                       {% elif finding.cvss_score >= 0.1 %}
-                        <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#05B04F"><i class="fa fa-bug"></i> {{finding.title}}</a></b></td>
+                        <td class=" last"><b><a href="{% url 'finding_view' finding.pk %}" style="color:#05B04F"><i class="fa fa-bug"></i> {{finding.title}}</a></b></td>
                         <td>
                           {% if finding.cwe.cwe_id == -1 %}
                             -
@@ -249,7 +249,7 @@
                         </td>
                         <td><span class="badge bg-success" style="font-size:15px;margin-left: 5%;">Low {{ finding.cvss_score }}</span></td>
                       {% else %}
-                        <td class=" last"><b><a href="/finding/view/{{finding.id}}" style="color:#45A7F7"><i class="fa fa-bug"></i> {{finding.title}}</a></b></td>
+                        <td class=" last"><b><a href="{% url 'finding_view' finding.pk %}" style="color:#45A7F7"><i class="fa fa-bug"></i> {{finding.title}}</a></b></td>
                         <td>
                           {% if finding.cwe.cwe_id == -1 %}
                             -

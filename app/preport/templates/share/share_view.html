@@ -23,7 +23,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-              <li class="breadcrumb-item"><a href="/customer/list/">{% translate "Customers" %}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'customer_list' %}">{% translate "Customers" %}</a></li>
               <li class="breadcrumb-item active">{{ DB_customer_query.name | bleach }}</li>
             </ol>
           </div><div class="row">
@@ -214,17 +214,17 @@
 
               {% for report in DB_report_query %}
                   <tr>
-                    <td><a href="/product/view/{{ report.product.pk }}">{{ report.product.name }}</a></td>
+                    <td><a href="{% url 'product_view' report.product.pk %}">{{ report.product.name }}</a></td>
                     <td>{{ report.title }} </td>
                     <td>{{ report.creation_date | date:"d-m-Y" }} </td>
                     <td>
                       <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
                     </td>
                     <td class="text-center">
-                        <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
+                        <a href="{% url 'report_view' report.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                          <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                          <a href="{% url 'report_edit' report.pk %}}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
                     </td>
@@ -286,14 +286,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/report/delete/",
+            url: "{% url 'report_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/list/";
+              document.location.href = "{% url 'report_list' %}";
             }
         })
   }

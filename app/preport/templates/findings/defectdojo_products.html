@@ -11,7 +11,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  
+
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
@@ -21,8 +21,9 @@
         <div class="col-sm-4">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-            <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name | bleach}}</a></li>
-            <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title | bleach}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report_query.product.customer.pk %}">{{ DB_report_query.product.customer.name | bleach}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report_query.product.pk %}">{{ DB_report_query.product.name | bleach}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'report_view' DB_report_query.pk %}">{{ DB_report_query.title}}</a></li>
           </ol>
         </div>
       </div>
@@ -47,7 +48,7 @@
           <div class="row">
             <div class="col-md-12">
 
-              <table id="ddproductlist" class="table table-bordered table-hover"> 
+              <table id="ddproductlist" class="table table-bordered table-hover">
 
                     <thead>
                       <tr>
@@ -76,7 +77,7 @@
                           </td>
 
                           <td align="center">
-                            <a href="/findings/defectdojo/import/{{ DB_report_query.pk }}/{{ product.id }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-upload"></i> {% translate "Import Findings" %}</button></a>
+                            <a href="{% url 'defectdojo_import' DB_report_query.pk product.id %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-upload"></i> {% translate "Import Findings" %}</button></a>
                           </td>
                       </tr>
 
@@ -92,7 +93,7 @@
       </div>
     </div>
   </section>
- 
+
 
 
 {% endblock content %}
@@ -105,8 +106,8 @@
     $("#ddproductlist").DataTable({
       "paging": true,
       "searching": true,
-      "responsive": true, 
-      "lengthChange": false, 
+      "responsive": true,
+      "lengthChange": false,
       "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#ddproductlist_wrapper .col-md-6:eq(0)');
