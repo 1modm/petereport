@@ -7,14 +7,13 @@ verify_ssl	= true
 python_version			= "3.8"
 
 [packages]
-Django					= "==3.2.16"
-requests				= ">=2.28.1"
-martor					= "==1.6.15"
-pypandoc				= ">=1.8.1"
-termcolor				= "==1.1.0"
-cairosvg				= "==2.5.2"
+Django				= "==3.2.16"
+requests			= ">=2.28.1"
+martor				= "==1.6.15"
+pypandoc			= ">=1.8.1"
+termcolor			= "==1.1.0"
 django-bleach			= "==3.0.0"
-bleach					= "==5.0.1"
-Markdown				= "==3.3.4"
+bleach				= "==5.0.1"
+Markdown			= "==3.3.4"
 
 [dev-packages]

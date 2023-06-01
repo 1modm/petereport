@@ -603,7 +603,7 @@
 
 <h1 id="docker">Docker</h1>
 <h2 id="environment">Environment</h2>
-<pre><code class="language-bash">sudo apt install docker.io docker-compose
+<pre><code class="language-bash">sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 </code></pre>
 <h2 id="deployment">Deployment</h2>
 <ol>
@@ -621,8 +621,8 @@ cd petereport
 <p>Build environment</p>
 </li>
 </ol>
-<pre><code class="language-bash">docker-compose build --build-arg TARGETARCH=amd64
-docker-compose up
+<pre><code class="language-bash">docker compose build --build-arg TARGETARCH=amd64
+docker compose up
 </code></pre>
 <ol>
 <li>Go to <a href="https://127.0.0.1/">https://127.0.0.1/</a></li>

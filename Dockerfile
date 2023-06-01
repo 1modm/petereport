@@ -40,6 +40,7 @@ RUN dpkg -i pandoc-2.19.2-1-${TARGETARCH}.deb
 RUN apt-get -y install python3.8-distutils
 RUN apt-get -y install python3-gunicorn gunicorn
 RUN python3 -m pip install pandoc-latex-environment
+RUN python3 -m pip install CairoSVG
 
 # https://github.com/dalibo/pandocker/blob/latest/alpine/Dockerfile
 # Templates are installed in '/.pandoc'.

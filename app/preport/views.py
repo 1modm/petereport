@@ -104,14 +104,12 @@ def markdown_uploader(request):
                 img_uuid = "{0}-{1}".format(uuid.uuid4().hex[:10], image.name.replace(' ', '-'))
                 tmp_file = os.path.join(MARTOR_UPLOAD_PATH, img_uuid)
                 def_path = default_storage.save(tmp_file, ContentFile(image.read()))
-                os.path.join(MEDIA_URL, def_path)
                 # Modified to include server host and port
                 MEDIA_URL_COMPLETE = PETEREPORT_MARKDOWN['media_host'] + MEDIA_URL
                 img_url_complete = os.path.join(MEDIA_URL_COMPLETE, def_path)
 
                 data = json.dumps({
                     'status': 200,
-                    #'link': img_url,
                     'link': img_url_complete,
                     'name': image.name
                 })
@@ -208,8 +206,6 @@ def user_add(request):
         if form.is_valid():
             user = form.save(commit=False)
             
-            form.cleaned_data.get('username')
-            form.cleaned_data.get('password1')
             user_group = form.cleaned_data.get('group')
             superadmin = form.cleaned_data.get('superadmin')
             user.is_staff = superadmin
@@ -236,8 +232,6 @@ def user_edit(request,pk):
         if form.is_valid():
             user = form.save(commit=False)
             
-            form.cleaned_data.get('username')
-            form.cleaned_data.get('password1')
             user_group = form.cleaned_data.get('group')
             superadmin = form.cleaned_data.get('superadmin')
             user.is_staff = superadmin
@@ -385,7 +379,6 @@ def report_list(request):
 def report_add(request):
 
     today = datetime.date.today().strftime('%Y-%m-%d')
-    datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_id_format = PETEREPORT_TEMPLATES['report_id_format'] + str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))
 
     if request.method == 'POST':
@@ -577,8 +570,6 @@ def reportdownloadmarkdown(request,pk):
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
     # Datetime
-    datetime.date.today().strftime('%Y-%m-%d')
-    datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
     # MD filename
@@ -677,8 +668,6 @@ def reportdownloadhtml(request,pk):
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
     # Datetime
-    datetime.date.today().strftime('%Y-%m-%d')
-    datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
     # HTML filename
@@ -697,17 +686,7 @@ def reportdownloadhtml(request,pk):
     md_subject = PETEREPORT_MARKDOWN['subject']
     md_website = PETEREPORT_MARKDOWN['website']
 
-    DB_finding_query.count()
     counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = 0
-    
-    # IMAGES
-    if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
-        DB_report_query.executive_summary_image
-        DB_report_query.categories_summary_image
-    elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-        f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-        f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
-
 
     # Summary table
     finding_summary_table = render_to_string('tpl/html/html_finding_summary_table.html')
@@ -801,7 +780,7 @@ def reportdownloadhtml(request,pk):
 
     html_file_output = os.path.join(REPORTS_MEDIA_ROOT, pathfile)
 
-    pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained'])
+    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained'])
 
     if os.path.exists(html_file_output):
             with open(html_file_output, 'rb') as fh:
@@ -821,8 +800,6 @@ def reportdownloadpdf(request,pk):
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
     # Datetime
-    datetime.date.today().strftime('%Y-%m-%d')
-    datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
     # PDF filename
@@ -956,7 +933,7 @@ def reportdownloadpdf(request,pk):
 
     PETEREPORT_LATEX_FILE = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['pdf_latex_template'])
 
-    pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings'])
+    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings'])
     #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
 
     if os.path.exists(pdf_file_output):
@@ -979,8 +956,6 @@ def reportdownloadjupyter(request,pk):
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
     # Datetime
-    datetime.date.today().strftime('%Y-%m-%d')
-    datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
     # MD filename
@@ -1404,7 +1379,6 @@ def defectdojo_import(request,pk,ddpk):
 
         jsondata = json.loads(r.text)
 
-        jsondata['id']
         finding_title = jsondata['title'] or ""
         finding_cvssv3 = jsondata['cvssv3'] or ""
         finding_cvssv3_score = jsondata['cvssv3_score'] or 0
@@ -1501,7 +1475,7 @@ def appendix_add(request,pk):
         if form.is_valid():
             appendix = form.save(commit=False)            
             finding_pk = form['finding'].value()
-            get_object_or_404(DB_Finding, pk=finding_pk)
+            DB_finding_m2m = get_object_or_404(DB_Finding, pk=finding_pk)
             appendix.save()
             appendix.finding.add(finding_pk)
 
@@ -1795,9 +1769,7 @@ def cwe_add(request):
     else:
         form = NewCWEForm()
         latest_id = DB_CWE.objects.latest('cwe_id').cwe_id
-        latest_id+1
-        #form.fields['cwe_id'].initial = next_id
-        #form.fields['cwe_description'].initial = PETEREPORT_TEMPLATES['initial_text']
+        next_id = latest_id+1
 
     return render(request, 'cwe/cwe_add.html', {
         'form': form
@@ -1884,7 +1856,6 @@ def attackflow_edit_flow(request,pk):
     DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
 
     report = DB_finding_query.report
-    get_object_or_404(DB_Report, pk=report.pk)
 
     return render(request, 'attackflow/attackflow_edit.html', {
         'report_pk': report.pk, 'attackflow_pk': pk, 'finding_pk': finding_pk, 'attackflow_afb': attackflow_afb
@@ -1894,16 +1865,12 @@ def attackflow_edit_flow(request,pk):
 @login_required
 @allowed_users(allowed_roles=['administrator'])
 def attackflow_add_afb(request,pk,finding_pk):
-    
-    get_object_or_404(DB_Report, pk=pk)
-    get_object_or_404(DB_Finding, pk=finding_pk)
 
     if request.method == 'POST':
 
         # data received from mitre attack flow
         data = json.loads(request.body)
         title_file = data['title']
-        data['extension']
         afb_content = data['afb_content']
         afb_image = data['afb_image']
 
@@ -1955,4 +1922,3 @@ def attackflow_delete(request):
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
-

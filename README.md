@@ -40,13 +40,15 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 - [x] Docker installation
 - [x] DefectDojo integration
 - [x] User management
-
+- [x] Custom fields
+- [x] CWE custom list
+- [x] Multilingual UI Lang files
 
 ## TODO
 
 - [ ] More Output formats
 - [ ] API
-- [ ] Multilingual Lang files
+- [ ] Multilingual Report templates
 
 ## Demo
 
