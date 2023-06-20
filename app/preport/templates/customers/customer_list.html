@@ -89,7 +89,7 @@
 
                           {% if user.groups.all.0|stringformat:'s' == "administrator" %}
 
-                            <a class="btn btn-info btn-sm" href="{% url 'customer_edit' customer.pk %">
+                            <a class="btn btn-info btn-sm" href="{% url 'customer_edit' customer.pk %}">
                                 <i class="fas fa-pencil-alt"></i>
                                 {% translate "Edit" %}
                             </a>

@@ -23,7 +23,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-              <li class="breadcrumb-item"><a href={% url 'customer_view' DB_product_query.customer.pk %}">{{ DB_product_query.customer.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_product_query.customer.pk %}">{{ DB_product_query.customer.name | bleach}}</a></li>
               <li class="breadcrumb-item active">{{ DB_product_query.name | bleach }}</li>
             </ol>
           </div>
