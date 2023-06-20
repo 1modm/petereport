@@ -1,5 +1,6 @@
 {% extends 'home/template.html' %}
 {% load i18n %}
+{% load bleach_tags %}
 
 {% load app_filters %}
 
@@ -58,11 +59,11 @@
               {% for deliverable in DB_deliverable_query %}
                   <tr>
                     <td>{{ deliverable.generation_date|date:"Y-m-d" }}</td>
-                    <td><a href="/deliverable/download/{{ deliverable.pk }}">{{ deliverable.filename }}</a></td>
+                    <td><a href="{% url 'deliverable_download' deliverable.pk %}">{{ deliverable.filename }}</a></td>
                     <td>{{ deliverable.filetype }}/{{ deliverable.filetemplate }}</td>
-                    <td><a href="/report/view/{{ deliverable.report.pk }}">{{ deliverable.report.title }}</a></td>
-                    <td><a href="/product/view/{{ deliverable.report.product.pk }}">{{ deliverable.report.product.name }}</a></td>
-                    <td><a href="/customer/view/{{ deliverable.report.product.customer.pk }}">{{ deliverable.report.product.customer.name }}</a></td>
+                    <td><a href="{% url 'report_view' deliverable.report.pk %}">{{ deliverable.report.title }}</a></td>
+                    <td><a href="{% url 'product_view' deliverable.report.product.pk %}">{{ deliverable.report.product.name }}</a></td>
+                    <td><a href="{% url 'customer_view' deliverable.report.product.customer.pk }%">{{ deliverable.report.product.customer.name }}</a></td>
                     <td class="text-center">
                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
                         <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{deliverable.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
@@ -126,14 +127,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/deliverable/delete/",
+            url: "{% url 'deliverable_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/deliverable/list/";
+              document.location.href = "{% url 'deliverable_list' %}";
             }
         })
   }

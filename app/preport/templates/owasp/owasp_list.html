@@ -68,7 +68,7 @@
 
                     <td class="text-center">
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                          <a href="/owasp/edit/{{ owasp.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                          <a href="{% url 'owasp_edit' owasp.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{owasp.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
                     </td>
@@ -134,14 +134,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/owasp/delete/",
+            url: "{% url 'owasp_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/owasp/list/";
+              document.location.href = "{% url 'owasp_list' %}";
             }
         })
   }

@@ -1,5 +1,6 @@
 {% extends 'home/template.html' %}
 {% load i18n %}
+{% load bleach_tags %}
 
 {% load app_filters %}
 
@@ -58,16 +59,16 @@
                   <tr>
                     <td>{{ report.report_id }} </td>
                     <td>{{ report.title }} </td>
-                    <td><a href="/product/view/{{ report.product.pk }}">{{ report.product.name }}</a></td>
-                    <td><a href="/customer/view/{{ report.product.customer.pk }}">{{ report.product.customer.name }}</a></td>
+                    <td><a href="{% url 'product_view' report.product.pk %}">{{ report.product.name }}</a></td>
+                    <td><a href="{% url 'customer_view' report.product.customer.pk %}">{{ report.product.customer.name }}</a></td>
                     <td>
                       <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
                     </td>
                     <td class="text-center">
-                        <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
+                        <a href="{% url 'report_view' report.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                          <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                          <a href="{% url 'report_edit' report.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                           <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{report.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
                           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
@@ -150,14 +151,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/report/delete/",
+            url: "{% url 'report_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/list/";
+              document.location.href = "{% url 'report_list' %}";
             }
         })
   }
@@ -165,14 +166,14 @@
   function DuplicateID(dup_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/report-findings/duplicate/",
+            url: "{% url 'report_findings_duplicate' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'duplicate_id': dup_id},
 
             success : function(json) {
-              document.location.href = "/report/list/";
+              document.location.href = "{% url 'report_list' %}/";
             }
         })
   }

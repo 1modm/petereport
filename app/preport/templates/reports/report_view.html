@@ -23,8 +23,8 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-              <li class="breadcrumb-item"><a href="/customer/view/{{ DB_report_query.product.customer.pk}}">{{ DB_report_query.product.customer.name | bleach}}</a></li>
-              <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report_query.product.customer.pk %}">{{ DB_report_query.product.customer.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report_query.product.pk %}">{{ DB_report_query.product.name | bleach}}</a></li>
               <li class="breadcrumb-item active">{{ DB_report_query.title | bleach}}</li>
             </ol>
           </div>
@@ -35,9 +35,9 @@
 
         <div class="row">
             <div class="col-md-5">
-              <a href="/report/findings/{{ DB_report_query.pk }}"><button type="button" class="btn btn-danger"><i class="fa fa-bug"></i> {% translate "Findings" %}</button></a>
-              <a href="/report/appendix/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Appendix" %}</button></a>
-              <a href="/report/attackflow/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-sitemap"></i> {% translate "Attack Flows" %}</button></a>
+              <a href="{% url 'report_findings' DB_report_query.pk %}"><button type="button" class="btn btn-danger"><i class="fa fa-bug"></i> {% translate "Findings" %}</button></a>
+              <a href="{% url 'report_appendix' DB_report_query.pk %}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Appendix" %}</button></a>
+              <a href="{% url 'reportattackflow' DB_report_query.pk %}"><button type="button" class="btn btn-warning"><i class="fa fa-sitemap"></i> {% translate "Attack Flows" %}</button></a>
 
             </div>
 
@@ -114,6 +114,19 @@
                   <h3 class="card-title">
                     <i class="far fa-chart-bar"></i>
                     <b>{% translate "Executive Summary" %}</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="far fa-chart-bar"></i>
+                    <b>{% translate "Audit Objectives" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -261,6 +274,18 @@
                         <div class="card card-outline">
                           <div class="card-body">
                             {{ DB_report_query.executive_summary | safe_markdown | bleach}}
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                  {% if DB_report_query.audit_objectives %}
+                  <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-outline">
+                          <div class="card-body">
+                            {{ DB_report_query.audit_objectives | safe_markdown | bleach}}
                           </div>
                         </div>
                     </div>
@@ -500,7 +525,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>{{ count_finding_query }} {% translate "Finding" %}{{ count_finding_query|pluralize:"s" }}</b>
+                    <b><a href="#Findings">{{ count_finding_query }} {% translate "Finding" %}{{ count_finding_query|pluralize:"s" }}<a></b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -516,7 +541,7 @@
 
                       {% if count_finding_query == 0 %}
 
-                        <a href="/finding/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm" data-toggle="modal">{% translate "Add Findings" %}</button></a>
+                        <a href="{% url 'finding_add' DB_report_query.pk %}"><button type="button" class="btn btn-success btn-xm" data-toggle="modal">{% translate "Add Findings" %}</button></a>
 
                       {% else %}
 
@@ -579,19 +604,17 @@
                                     {% endif %}
                                   </td>
                                   <td align="center">
-                                      <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
+                                      <a href="{% url 'finding_view' finding.pk %}"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                        <a href="/finding/edit/{{ finding.pk }}#{{ finding.get_cvss_score_anchor }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                                        <a href="{% url 'finding_edit' finding.pk %}#{{ finding.get_cvss_score_anchor }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                                         <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{finding.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
-                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
+                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-finding-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                       {% endif %}
-
                                   </td>
-
                           </tr>
 
-                          <div class="modal modal-danger fade mm-modal-del-{{finding.pk}}" id="modal-danger">
+                          <div class="modal modal-danger fade mm-modal-del-finding-{{finding.pk}}" id="modal-danger">
                             <div class="modal-dialog">
                               <div class="modal-content bg-danger">
                                 <div class="modal-header">
@@ -655,7 +678,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>{{ DB_appendix_query.count }} {% translate "Appendix" %}</b>
+                    <b><a href="#Appendix">{{ DB_appendix_query.count }} {% translate "Appendix" %}</a></b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -673,7 +696,7 @@
 
                       {% if count_appendix_query == 0 %}
 
-                        <a href="/appendix/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">{% translate "Add Appendix" %}</button></a>
+                        <a href="{% url 'appendix_add' DB_report_query.pk %}"><button type="button" class="btn btn-success btn-xm">{% translate "Add Appendix" %}</button></a>
 
                       {% else %}
 
@@ -703,10 +726,10 @@
                                 {% endfor %}
                             </td>
                             <td align="center">
-                                <a href="/appendix/view/{{ appendix.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
+                                <a href="{% url 'appendix_view' appendix.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                  <a href="/appendix/edit/{{ appendix.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                                  <a href="{% url 'appendix_edit' appendix.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                                   <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-appendix-modal-{{appendix.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                 {% endif %}
 
@@ -760,7 +783,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>{{ DB_attackflow_query.count }} {% translate "Attack Flows" %}</b>
+                    <b><a href="#AttackFlows">{{ DB_attackflow_query.count }} {% translate "Attack Flows" %}</a></b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -778,7 +801,7 @@
 
                       {% if count_attackflow_query == 0 %}
 
-                        <a href="/attackflow/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-success btn-xm">{% translate "Add Attack Flow" %}</button></a>
+                        <a href="{% url 'attackflow_add' DB_report_query.pk %}"><button type="button" class="btn btn-success btn-xm">{% translate "Add Attack Flow" %}</button></a>
 
                       {% else %}
 
@@ -810,7 +833,7 @@
 
                             <td align="center">
                                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                  <a href="/attackflow/edit/{{ attackflow.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                                  <a href="{% url 'attackflow_edit' attackflow.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                                   <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-attackflow-modal-{{attackflow.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                 {% endif %}
 
@@ -864,12 +887,15 @@
             <div class="card card-outline card-info">
                 <div class="card-header">
                   <h3 class="card-title">
-                    <b>{{ DB_deliverable_query.count }} Deliverable{{ DB_deliverable_query.count|pluralize:"s" }}</b>
+                    <b><a href="#Deliverables">{{ DB_deliverable_query.count }} Deliverable{{ DB_deliverable_query.count|pluralize:"s" }}</a></b>
+                    &nbsp; | &nbsp;
                     <td class="text-center">
                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
                         <button type="button" class="btn btn-info btn-x" data-toggle="modal" data-target=".mm-modal-add-deliverable"><i class="fas fa-add"></i> {% translate "Add Custom Deliverables" %} </button>
                       {% endif %}
                     </td>
+                    &nbsp; | &nbsp;
+                    Share Connection: {{DB_report_query.share_deliverable|default_if_none:"Not configured"}}
                   </h3>
                   <div class="modal modal-info fade mm-modal-add-deliverable" id="modal-info">
                     <div class="modal-dialog">
@@ -913,9 +939,10 @@
                         <thead>
                           <tr>
                             <th style="width: 10%">{% translate "Date" %}</th>
-                            <th style="width: 750%">{% translate "File" %}</th>
+                            <th style="width: 40%">{% translate "File" %}</th>
                             <th style="width: 10%">{% translate "Type" %}</th>
-                            <th style="width: 5%"class="text-center">{% translate "Actions" %}</th>
+                            <th style="width: 25%">{% translate "Share Date &amp; UUID" %}</th>
+                            <th style="width: 15%"class="text-center">{% translate "Actions" %}</th>
                           </tr>
                         </thead>
 
@@ -924,16 +951,25 @@
                           {% for deliverable in DB_deliverable_query %}
                           <tr>
                             <td>{{ deliverable.generation_date|date:"Y-m-d" }}</td>
-                            <td><a href="/deliverable/download/{{ deliverable.pk }}">{{ deliverable.filename }}</a></td>
+                            <td><a href="{% url 'deliverable_download' deliverable.pk %}">{{ deliverable.filename }}</a></td>
                             <td>{{ deliverable.filetype }}/{{ deliverable.filetemplate }}</td>
+                            <td>
+                              {% if deliverable.share_date is not None %}
+                                {{ deliverable.share_date | date:"Y-m-d H:i:s" }}<br/>
+                                {{ deliverable.share_uuid }}
+                              {% endif %}
+                            </td>
                             <td class="text-center">
                               {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{deliverable.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-deliverable-{{deliverable.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
+                              {% endif %}
+                              {% if DB_report_query.share_deliverable %}
+                              <button type="button" class="btn btn-dark btn-sm" data-toggle="modal" data-target=".mm-modal-share-deliverable-{{deliverable.pk}}"><i class="fas fa-share"></i>{% translate "Share" %}</button>
                               {% endif %}
                             </td>
                           </tr>
 
-                          <div class="modal modal-danger fade mm-modal-del-{{deliverable.pk}}" id="modal-danger">
+                          <div class="modal modal-danger fade mm-modal-del-deliverable-{{deliverable.pk}}" id="modal-danger">
                             <div class="modal-dialog">
                               <div class="modal-content bg-danger">
                                 <div class="modal-header">
@@ -948,6 +984,26 @@
                                 <div class="modal-footer justify-content-between">
                                   <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
                                   <button type="button" onclick="DeleteID_D({{deliverable.pk}});" class="btn btn-outline-light">{% translate "Delete Deliverable" %}</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="modal modal-info fade mm-modal-share-deliverable-{{deliverable.pk}}" id="modal-info">
+                            <div class="modal-dialog">
+                              <div class="modal-content bg-dark">
+                                <div class="modal-header">
+                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <p>{% translate "Share Deliverable" %}&hellip;</p>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                  <button type="button" onclick="ShareDeliverable({{deliverable.pk}});" class="btn btn-outline-light">{% translate "Share Deliverable" %}</button>
                                 </div>
                               </div>
                             </div>
@@ -1034,10 +1090,6 @@
     }).buttons().container().appendTo('#attackt_wrapper .col-md-6:eq(0)');
   });
 </script>
-
-
-
-
 
 <script type="text/javascript">
         var chartSeveritybar = echarts.init(document.getElementById('SeveritybarChartEcharts'));
@@ -1136,9 +1188,6 @@
 
 </script>
 
-
-
-
 <script type="text/javascript">
     var chart_CWE = echarts.init(document.getElementById('CWEPieChartEcharts'));
 
@@ -1182,7 +1231,6 @@
     chart_CWE.setOption(option_CWE);
 
 </script>
-
 
 <script type="text/javascript">
   var chart_OWASP = echarts.init(document.getElementById('OWASPPieChartEcharts'));
@@ -1243,7 +1291,7 @@
     $('#exportButton').on('click', function() {
       var cst = $('#exportSelect').find(':selected').val();
       if (cst == 'CSV') {
-        document.location.href = "/finding/csv/{{ DB_report_query.pk }}";
+        document.location.href = "{% url 'findings_download_csv' DB_report_query.pk %}";
       } else {
         var export_type = $('#exportSelect').find(':selected').attr('export-type');
         SaveReport(export_type, cst);
@@ -1272,7 +1320,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "/en/report/uploadsummaryfindings/{{ DB_report_query.pk }}",
+            url: "{% url 'report_uploadsummaryfindings' DB_report_query.pk %}",
             headers:{ "X-CSRFToken": '{{ csrf_token }}' },
             data : { 'fileSeveritybar': imgSeveritybar.src, 'file_cwe': imgCWE.src, 'file_owasp': imgOWASP.src },
             beforeSend: function () {
@@ -1285,7 +1333,7 @@
               //console.log("requested complete");
               if (json.status == 'success'){
                 //window.open('/report/download/pdf/{{ DB_report_query.pk }}', '_blank');
-                document.location.href = "/report/download/" + export_type + "/" +  cst + "/{{ DB_report_query.pk }}";
+                document.location.href = "{% url 'report_download' 'XXEXPORTTYPEXX' 'XXCSTXX' DB_report_query.pk %}".replace('XXEXPORTTYPEXX', export_type).replace('XXCSTXX', cst);
               }
             }
         });
@@ -1297,32 +1345,34 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/finding/delete/",
+            url: "{% url 'finding_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/view/{{DB_report_query.pk}}";
+              window.location.href = "{% url 'report_view' DB_report_query.pk %}" + "#Findings";
+              document.location.reload(true);
             }
-        })
+        });
   }
 </script>
 <script>
 function DuplicateID(dup_id) {
   $.ajax({
       type: 'POST',
-      url: "/en/finding/duplicate/",
+      url: "{% url 'finding_duplicate' %}",
       headers:{
         "X-CSRFToken": '{{ csrf_token }}'
       },
       data : { 'duplicate_id': dup_id},
 
       success : function(json) {
-        document.location.href = "/report/view/{{DB_report_query.pk}}";
+        document.location.href = "{% url 'report_view' DB_report_query.pk %}" + "#Findings";
+        document.location.reload(true);
       }
-  })
+  });
 }
 </script>
 
@@ -1330,32 +1380,34 @@ function DuplicateID(dup_id) {
   function DeleteID_A(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/appendix/delete/",
+            url: "{% url 'appendix_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/view/{{DB_report_query.pk}}";
+              document.location.href = "{% url 'report_view' DB_report_query.pk %}" + "#Appendix";
+              document.location.reload(true);
             }
-        })
+        });
   }
 </script>
 <script>
   function DeleteID_AT(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/attackflow/delete/",
+            url: "{% url 'attackflow_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/view/{{DB_report_query.pk}}";
+              document.location.href = "{% url 'report_view' DB_report_query.pk %}" + "#AttackFlows";
+              document.location.reload(true);
             }
-        })
+        });
   }
 </script>
 
@@ -1363,16 +1415,17 @@ function DuplicateID(dup_id) {
 function DeleteID_D(del_id) {
   $.ajax({
       type: 'POST',
-      url: "/en/deliverable/delete/",
+      url: "{% url 'deliverable_delete' %}",
       headers:{
         "X-CSRFToken": '{{ csrf_token }}'
       },
       data : { 'delete_id': del_id},
 
       success : function(json) {
-        document.location.href = "/report/view/{{DB_report_query.pk}}";
+        document.location.href = "{% url 'report_view' DB_report_query.pk %}" + "#Deliverables";
+        document.location.reload(true);
       }
-  })
+  });
 }
 </script>
 
@@ -1385,16 +1438,36 @@ function DeleteID_D(del_id) {
         cache: false,
         contentType: false,
         processData: false,
-        url: "/en/deliverable/report/add/{{ DB_report_query.pk }}",
+        url: "{% url 'deliverable_report_add' DB_report_query.pk %}",
         headers:{
           "X-CSRFToken": '{{ csrf_token }}'
         },
         data: form_data,
 
         success : function(json) {
-          document.location.href = "/report/view/{{DB_report_query.pk}}";
+          document.location.href = "{% url 'report_view' DB_report_query.pk %}" + "#Deliverables";
+          document.location.reload(true);
         }
-    })
+    });
+  }
+</script>
+<script>
+  function ShareDeliverable(deliverable_pk) {
+    $.ajax({
+      type: 'POST',
+
+      url: "{% url 'share_deliverable' %}",
+      headers:{
+        "X-CSRFToken": '{{ csrf_token }}'
+      },
+      data : { 'report_pk': {{DB_report_query.pk}},
+               'deliverable_pk': deliverable_pk},
+
+      success : function(json) {
+        document.location.href = "{% url 'report_view' DB_report_query.pk %}" + "#Deliverables";
+        document.location.reload(true);
+      }
+    });
   }
 </script>
 

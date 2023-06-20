@@ -2,7 +2,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
@@ -20,13 +20,15 @@ import traceback
 
 import preport.utils.fts as ufts
 import preport.utils.urls as uurls
+import preport.utils.sharing as ushare
+import preport.utils.utils as uutils
 
 import django.db
 # Forms
-from .forms import CustomDeliverableReportForm, NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm, NewFTSForm
+from .forms import CustomDeliverableReportForm, NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewShareForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm, NewFTSForm
 
 # Model
-from .models import DB_Deliverable, DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow, DB_FTSModel
+from .models import DB_Deliverable, DB_Report, DB_ShareConnection, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow, DB_FTSModel
 
 # Decorators
 from .decorators import allowed_users
@@ -36,7 +38,6 @@ import datetime
 import textwrap
 import requests
 import base64
-import bleach
 import uuid
 import json
 import csv
@@ -594,6 +595,7 @@ def report_add(request):
         form = NewReportForm()
         form.fields['report_id'].initial = report_id_format
         form.fields['executive_summary'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['audit_objectives'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['scope'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['outofscope'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['methodology'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
@@ -863,8 +865,10 @@ def report_uploadsummaryfindings(request, pk):
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
-
-
+@login_required
+def report_download(request, export_type, cst, pk):
+   # Used only to build URL into template
+   raise Http404
 
 @login_required
 def report_download_markdown(request, cst, pk):
@@ -878,11 +882,11 @@ def report_download_markdown(request, cst, pk):
         DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
         # Datetime
-        now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        now = datetime.datetime.utcnow()
         report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
         # MD filename
-        name_file = PETEREPORT_TEMPLATES['report_markdown_name'] + '_' + cst +'_' + DB_report_query.title + '_' +  str(now) + '.md'
+        name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_markdown_name'], cst, DB_report_query.title, str(now.strftime('%Y%m%d_%H%M%S')), 'md')
 
         # INIT
         template_findings = template_appendix = md_finding_summary = md_finding = "\n"
@@ -991,7 +995,7 @@ def report_download_markdown(request, cst, pk):
         markdown_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'markdown', name_file)
         with open(markdown_file_output, 'w') as fh:
             fh.write(final_markdown_output)
-            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='markdown')
+            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now.date(), filetemplate=cst, filetype='markdown')
             deliverable.save()
 
         if os.path.exists(markdown_file_output):
@@ -1014,11 +1018,11 @@ def report_download_html(request, cst, pk):
         DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
         # Datetime
-        now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        now = datetime.datetime.utcnow()
         report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
         # HTML filename
-        name_file = PETEREPORT_TEMPLATES['report_html_name'] + '_' + cst + '_' + DB_report_query.title + '_' +  str(now) + '.html'
+        name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_html_name'], cst, DB_report_query.title, str(now.strftime('%Y%m%d_%H%M%S')), 'html')
 
         # COLORS
         CRITICAL = 'CC0000'
@@ -1184,7 +1188,7 @@ def report_download_html(request, cst, pk):
                                             '--top-level-division=chapter',
                                             '--self-contained'])
 
-        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='html')
+        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now.date(), filetemplate=cst, filetype='html')
         deliverable.save()
 
         if os.path.exists(html_file_output):
@@ -1208,11 +1212,11 @@ def report_download_pdf(request, cst, pk):
         DB_settings_query = DB_Settings.objects.get()
 
         # Datetime
-        now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        now = datetime.datetime.utcnow()
         report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
         # PDF filename
-        name_file = PETEREPORT_TEMPLATES['report_pdf_name'] + '_' + cst + '_' + DB_report_query.title + '_' +  str(now) + '.pdf'
+        name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_pdf_name'], cst, DB_report_query.title, str(now.strftime('%Y%m%d_%H%M%S')), 'pdf')
 
         # COLORS
         CRITICAL = 'CC0000'
@@ -1416,7 +1420,7 @@ def report_download_pdf(request, cst, pk):
             #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
 
 
-            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='pdf')
+            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now.date(), filetemplate=cst, filetype='pdf')
             deliverable.save()
 
             if os.path.exists(pdf_file_output):
@@ -1442,11 +1446,11 @@ def report_download_jupyter(request, cst, pk):
         DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
         # Datetime
-        now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        now = datetime.datetime.utcnow()
         report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
         # MD filename
-        name_file = PETEREPORT_TEMPLATES['report_jupyter_name'] + '_' + cst + '_' + DB_report_query.title + '_' +  str(now) + '.ipynb'
+        name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_jupyter_name'], cst, DB_report_query.title, str(now.strftime('%Y%m%d_%H%M%S')), 'ipynb')
 
         # INIT
         template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = ""
@@ -1561,7 +1565,7 @@ def report_download_jupyter(request, cst, pk):
         jupyter_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'jupyter', name_file)
         with open(jupyter_file_output, 'w') as fh:
             fh.write(final_markdown_output)
-            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='jupyter')
+            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now.date(), filetemplate=cst, filetype='jupyter')
             deliverable.save()
 
         if os.path.exists(jupyter_file_output):
@@ -1615,11 +1619,11 @@ def deliverable_report_add(request, pk):
         form = CustomDeliverableReportForm(request.POST, request.FILES)
         if form.is_valid():
             cst = 'custom'
-            now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+            now = datetime.datetime.utcnow()
             files = request.FILES.getlist('custom_deliverables')
             for f in files:
                 file_path = pathlib.PurePath(f.name)
-                name_file = PETEREPORT_TEMPLATES['report_custom_name'] + '_' + report.title + '_' + file_path.stem + '_' + str(now) + file_path.suffix
+                name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_custom_name'], report.title, file_path.stem, str(now.strftime('%Y%m%d_%H%M%S')), file_path.suffix.split('.')[-1])
                 file_path = pathlib.PurePath(REPORTS_MEDIA_ROOT, 'custom', name_file)
                 if os.path.exists(file_path):
                     os.remove(file_path)
@@ -1627,7 +1631,7 @@ def deliverable_report_add(request, pk):
                     for chunk in f.chunks():
                         destination.write(chunk)
                     deliverable = DB_Deliverable(report=report, filename=file_path.name,
-                                                generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(),
+                                                generation_date=now.date(),
                                                 filetemplate=file_path.suffix.replace('.','').lower(),
                                                 filetype=cst)
                     deliverable.save()
@@ -1806,7 +1810,9 @@ def findings_download_csv(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query)
 
-    name_file = PETEREPORT_TEMPLATES['report_csv_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.csv'
+    now = datetime.datetime.utcnow()
+
+    name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_csv_name'], 'default', DB_report_query.title, str(now.strftime('%Y%m%d_%H%M%S')), 'csv')
 
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
@@ -2206,7 +2212,7 @@ def appendix_view(request,pk):
 # ----------------------------------------------------------------------
 
 @login_required
-def fields(request,pk):
+def customfields(request,pk):
 
     DB_finding_query = get_object_or_404(DB_Finding, pk=pk)
     DB_custom_query = DB_Custom_field.objects.filter(finding_id=pk)
@@ -2365,7 +2371,7 @@ def template_view(request,pk):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def templateaddfinding(request,pk):
+def template_add_finding(request,pk):
 
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_findings_query = DB_Finding_Template.objects.order_by('title')
@@ -2375,7 +2381,7 @@ def templateaddfinding(request,pk):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def templateaddreport(request,pk,reportpk):
+def template_add_report(request,pk,reportpk):
 
     DB_report_query = get_object_or_404(DB_Report, pk=reportpk)
     DB_finding_template_query = get_object_or_404(DB_Finding_Template, pk=pk)
@@ -2556,7 +2562,7 @@ def attackflow_add(request,pk):
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
     count_finding_query = DB_finding_query.count()
 
-    return render(request, 'attackflow/reportfindings.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
+    return render(request, 'attackflow/attackflow_add.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 
 @login_required
@@ -2617,7 +2623,7 @@ def attackflow_add_afb(request,pk,finding_pk):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def attackflow_edit_afb(request,pk):
+def attackflow_edit_afb(request, pk):
 
     DB_attackflow_query = get_object_or_404(DB_AttackFlow, pk=pk)
 
@@ -2689,3 +2695,86 @@ def fts(request):
     return render(request, 'fts/fts.html', {
         'form': form, 'search_results': search_results, 'search_results_count': len(search_results)
     })
+
+@login_required
+def share_list(request):
+    DB_share_query = DB_ShareConnection.objects.order_by("pk").all()
+    return render(request, 'share/share_list.html', {'DB_share_query': DB_share_query})
+
+@login_required
+def share_view(request, pk:int):
+    # TODO
+    raise Http404
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def share_add(request):
+    if request.method == 'POST':
+        form = NewShareForm(request.POST)
+        if form.is_valid():
+            share = form.save(commit=False)
+            share.save()
+            form.save_m2m() # Save tags
+            return redirect('share_list')
+    else:
+        form = NewShareForm()
+    return render(request, 'share/share_add.html', {
+        'form': form,
+        'list_func_deliverable': list(ushare.shares_deliverable.keys()),
+        "list_func_finding": list(ushare.shares_finding.keys())
+    })
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def share_edit(request, pk):
+    DB_share_querry = get_object_or_404(DB_ShareConnection, pk=pk)
+    if request.method == 'POST':
+        form = NewShareForm(request.POST, instance=DB_share_querry)
+        if form.is_valid():
+            share = form.save(commit=False)
+            share.save()
+            form.save_m2m() # Save tags
+            return redirect('share_list')
+    else:
+        form = NewShareForm(instance=DB_share_querry)
+        #form.fields['creation_date'].initial = today
+    return render(request, 'share/share_add.html', {
+        'form': form,
+        'list_func_deliverable': list(ushare.shares_deliverable.keys()),
+        "list_func_finding": list(ushare.shares_finding.keys())
+    })
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def share_delete(request):
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_ShareConnection.objects.filter(pk=delete_id).delete()
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def share_deliverable(request):
+    if request.method == 'POST':
+        report = get_object_or_404(DB_Report, pk=request.POST['report_pk'])
+        deliverable = get_object_or_404(DB_Deliverable, pk=request.POST['deliverable_pk'])
+        ShareClass = ushare.shares_deliverable.get(report.share_deliverable.func, None) if report.share_deliverable else None
+        if ShareClass:
+            shareobj = ShareClass(report.share_deliverable)
+            file = os.path.join(REPORTS_MEDIA_ROOT, deliverable.filetype, deliverable.filename)
+            share_date, share_uuid = shareobj(filename=file, project=report.report_id)
+            deliverable.share_date = share_date
+            deliverable.share_uuid = share_uuid
+            deliverable.save()
+            data = json.dumps({
+                    'status': 200
+                    }, cls=LazyEncoder)
+            return HttpResponse(
+                data, content_type='application/json', status=200)
+    data = json.dumps({
+                'status': 405,
+                'error': _('Bad Function')
+                }, cls=LazyEncoder)
+    return HttpResponse(data, content_type='application/json', status=405)

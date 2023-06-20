@@ -16,6 +16,10 @@ website: {{md_website}}
 
 {{DB_report_query.product.description | safe}}
 
+## {% translate "Audit Objectives" %}
+
+{{DB_report_query.audit_objectives | safe}}
+
 # {% translate "Executive Summary" %}
 
 {{DB_report_query.executive_summary | safe}}

@@ -4,7 +4,7 @@
 {% load bleach_tags %}
 {% load app_filters %}
 
-{% block title %} {% translate "User List" %} {% endblock title %}
+{% block title %} {% translate "Share List" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -16,11 +16,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1></h1>
+            <h1>{% translate "Share List" %}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+              <li class="breadcrumb-item active">{% translate "Share" %}</li>
             </ol>
           </div>
         </div>
@@ -32,7 +33,7 @@
     <div class="container-fluid">
       <div class="card card-outline card-primary">
         <div class="card-header">
-          <h3 class="card-title">{{ userList.count }} {% translate "Users" %}</h3>
+          <h3 class="card-title">{{ DB_share_query.count }} {% translate "Share" %}{{ DB_share_query.count|pluralize:"s" }}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -41,23 +42,17 @@
           </div>
         </div>
         <div class="card-body">
-          <table id="userlist" class="table table-bordered table-hover">
+          <table id="productlist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                      <th style="width: 15%">
-                          {% translate "User" %}
-                      </th>
-                      <th style="width: 20%">
-                          {% translate "Email" %}
-                      </th>
-                      <th style="width: 5%">
-                          {% translate "Active" %}
+                      <th style="width: 10%">
+                          {% translate "Title" %}
                       </th>
                       <th style="width: 10%">
-                          {% translate "Group" %}
+                          {% translate "Type" %}
                       </th>
-                      <th style="width: 5%">
-                          {% translate "Admin" %}
+                      <th style="width: 60%">
+                          {% translate "URL" %}
                       </th>
                       <th style="width: 20%" class="text-center">
                           {% translate "Actions" %}
@@ -66,55 +61,43 @@
               </thead>
               <tbody>
 
-                {% for group in group_list %}
-
-                  {% for user in group.user_set.all %}
+                  {% for share in DB_share_query %}
 
                     <tr>
                       <td>
-                        {{ user.username }}
+                        <a href="{% url 'share_view' share.pk %}">{{ share.title }}</a>
                       </td>
                       <td>
-                        {{ user.email }}
+                      <span class="pull-right badge bg-blue">{{ share.type }}</span>
                       </td>
-                      <td class="text-center">
-                        {% if user.is_active %}
-                            <i class="fas fa-check-circle text-success"></i>
-                        {% else %}
-                            <i class="fas fa-times-circle text-danger"></i>
-                        {% endif %}
+                      <td>
+                      <span class="pull-right badge bg-blue">{{ share.url }}</span>
                       </td>
-                      <td class="text-center">
-                        {{ group }}
-                      </td>
-                      <td class="text-center">
-                        {% if user.is_superuser %}
-                            <i class="fas fa-check-circle text-success"></i>
-                        {% else %}
-                            <i class="fas fa-times-circle text-danger"></i>
-                        {% endif %}
-                      </td>
-
                       <td class="project-actions text-center">
-                          <a class="btn btn-primary btn-sm" href="/admin/auth/user/">
+                          <a class="btn btn-primary btn-sm" href="{% url 'share_view' share.pk %}">
                               <i class="fas fa-folder"></i>
                               {% translate "View" %}
                           </a>
-                          <a class="btn btn-info btn-sm" href="{% url 'user_edit' user.pk %}">
-                              <i class="fas fa-pencil-alt"></i>
-                              {% translate "Edit" %}
-                          </a>
 
-                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{user.pk}}">
-                            <i class="fas fa-trash"></i>
-                              {% translate "Delete" %}
-                          </button>
+                          {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+
+                            <a class="btn btn-info btn-sm" href="{% url 'share_edit' share.pk %}">
+                                <i class="fas fa-pencil-alt"></i>
+                                {% translate "Edit" %}
+                            </a>
+
+                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{share.pk}}">
+                              <i class="fas fa-trash"></i>
+                                {% translate "Delete" %}
+                            </button>
+
+                          {% endif %}
 
                       </td>
 
                     </tr>
 
-                      <div class="modal modal-danger fade mm-modal-{{user.pk}}" id="modal-danger">
+                      <div class="modal modal-danger fade mm-modal-{{share.pk}}" id="modal-danger">
                         <div class="modal-dialog">
                           <div class="modal-content bg-danger">
                             <div class="modal-header">
@@ -124,21 +107,19 @@
                               </button>
                             </div>
                             <div class="modal-body">
-                              <p>{% translate "Delete User" %}&hellip;</p>
+                              <p>{% translate "Delete Share" %}&hellip;</p>
                             </div>
                             <div class="modal-footer justify-content-between">
                               <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
-                              <button type="button" onclick="DeleteID({{user.pk}});" class="btn btn-outline-light">{% translate "Delete user" %}</button>
+                              <button type="button" onclick="DeleteID({{share.pk}});" class="btn btn-outline-light">{% translate "Delete share" %}</button>
+
                             </div>
                           </div>
                         </div>
                       </div>
 
-
-
                   {% endfor %}
 
-              {% endfor %}
 
               </tbody>
           </table>
@@ -158,14 +139,14 @@
 
 <script>
   $(function () {
-    $("#userlist").DataTable({
+    $("#productlist").DataTable({
       "paging": true,
       "searching": true,
       "responsive": true,
       "lengthChange": false,
       "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#userlist_wrapper .col-md-6:eq(0)');
+    }).buttons().container().appendTo('#productlist_wrapper .col-md-6:eq(0)');
   });
 </script>
 
@@ -174,14 +155,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "{% url 'user_delete' %}",
+            url: "{% url 'share_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "{% url 'user_list' %}";
+              document.location.href = "{% url 'share_list' %}";
             }
         })
   }

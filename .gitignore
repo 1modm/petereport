@@ -142,3 +142,4 @@ dmypy.json
 /app/db/petereport.sqlite3-journal
 /app/storage_reports/*
 /app/media/uploads/*
+test.sh

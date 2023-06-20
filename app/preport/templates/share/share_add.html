@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load bleach_tags %}
 
-{% block title %} {% translate "Customers" %} {% endblock title %}
+{% block title %} {% translate "Share" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -16,13 +16,13 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>{% translate "Customer" %}</h1>
+        <h1>{% translate "Share" %}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-          <li class="breadcrumb-item"><a href="{% url 'customer_list' %}">{% translate "Customers" %}</a></li>
-          <li class="breadcrumb-item active">{% translate "Add or Edit customer" %}</li>
+          <li class="breadcrumb-item"><a href="{% url 'share_list' %}">{% translate "Share" %}</a></li>
+          <li class="breadcrumb-item active">{% translate "Add or Edit Share" %}</li>
         </ol>
       </div>
     </div>
@@ -37,46 +37,46 @@
 
             <div class="card card-outline card-primary">
               <div class="card-header">
-                <h3 class="card-title">{% translate "Customer details" %}</h3>
+                <h3 class="card-title">{% translate "Share details" %}</h3>
               </div>
 
               <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card-body">
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Customer Name" %}</label>
+                    <label class="col-sm-2 col-form-label">{% translate "Share Title" %}</label>
                       <div class="col-md-10 col-sm-10 col-xs-12">
-                        {{ form.name }}
+                        {{ form.title }}
                       </div>
                   </div>
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Contacts Emails" %}</label>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.contact_list }}
-                    </div>
+                    <label class="col-sm-2 col-form-label">{% translate "Share Type" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.type }}
+                      </div>
+                  </div>
+                  <div class="form-group row" id="divfunc">
+                    <label class="col-sm-2 col-form-label">{% translate "Share Function" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.func }}
+                      </div>
                   </div>
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Security Email" %}</label>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.contact_sp_mail }}
-                    </div>
+                    <label class="col-sm-2 col-form-label">{% translate "Share URL" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.url }}
+                      </div>
                   </div>
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Contract Email" %}</label>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.contact_dp_mail }}
-                    </div>
+                    <label class="col-sm-2 col-form-label">{% translate "Share Credentials" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.credentials }}
+                      </div>
                   </div>
                   <div class="form-group row">
                     <label class="col-sm-2 col-form-label">{% translate "Tags" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.tags }}
-                    </div>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Customer Description" %}</label>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.description }}
                     </div>
                   </div>
 
@@ -100,7 +100,7 @@
                 {% endif %}
 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">{% translate "Save Customer" %}</button>
+                  <button type="submit" class="btn btn-primary">{% translate "Save Share" %}</button>
                 </div>
               </form>
             </div>
@@ -112,3 +112,36 @@
 
 
 {% endblock content %}
+
+{% block javascripts %}
+{{ block.super }}
+
+<script>
+  function removeAll(selectBox){
+    while (selectBox.options.length > 0){
+      selectBox.remove(0)
+    }
+  }
+  function TypeChange(type_value) {
+    sel = document.getElementById('selectfunc');
+    switch (type_value) {
+      case 'deliverable':
+        removeAll(sel);
+        l={{list_func_deliverable|safe}};
+        l.forEach(e => {
+          sel.add(new Option(e,e),undefined);
+        });
+        break;
+      case 'findings':
+        removeAll(sel);
+        l={{list_func_finding|safe}};
+        l.forEach(e => {
+          sel.add(new Option(e,e),undefined);
+        });
+        break;
+    }
+  }
+  TypeChange(document.getElementById('selecttype').value)
+</script>
+
+{% endblock javascripts %}

@@ -1,10 +1,12 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
-from django.forms import Textarea, TextInput, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, EmailField, BooleanField, FileInput, ModelMultipleChoiceField
-from .models import DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_AttackTree, DB_Custom_field, DB_FTSModel
+from django.db.models.base import Model
+from django.forms import Textarea, TextInput, DateInput, ModelChoiceField, CheckboxInput, CheckboxSelectMultiple, EmailField, BooleanField, FileInput, ModelMultipleChoiceField, URLInput
+from .models import DB_ShareConnection, DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_AttackTree, DB_Custom_field, DB_FTSModel
 from django.utils.translation import gettext_lazy as _
 import preport.utils.fts as ufts
+from preport.utils.sharing import shares_deliverable, shares_finding
 from dal import autocomplete
 
 import datetime
@@ -59,19 +61,22 @@ class NewSettingsForm(forms.ModelForm):
             'company_picture': FileInput(attrs={'class': 'form-control', 'type': "file", 'placeholder': _('Company picture')}),
         }
 
+class ShareChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj: Model) -> str:
+        return f"{obj.title}"
 
 class NewReportForm(forms.ModelForm):
 
     product_placeholder = _('(Select a product)')
-
     product = CustomModelChoiceField(queryset=DB_Product.objects.all(), empty_label=product_placeholder, widget=forms.Select(attrs={'class': 'form-control'}))
 
+    share_deliverable = ShareChoiceField(queryset=DB_ShareConnection.objects.all().filter(type="deliverable"), empty_label=_("None"), widget=forms.Select(attrs={'class': 'form-control'}), required=False)
+    share_finding = ShareChoiceField(queryset=DB_ShareConnection.objects.all().filter(type="finding"), empty_label=_("None"), widget=forms.Select(attrs={'class': 'form-control'}), required=False)
     class Meta:
         today = datetime.date.today().strftime('%Y-%m-%d')
         nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
         model = DB_Report
-        fields = ('product', 'report_id', 'title', 'report_date', 'audit_start', 'audit_end', 'executive_summary', 'scope', 'outofscope', 'methodology', 'recommendation', 'tags')
-
+        fields = ('product', 'report_id', 'title', 'report_date', 'audit_start', 'audit_end', 'share_deliverable', 'share_finding', 'executive_summary', 'audit_objectives', 'scope', 'outofscope', 'methodology', 'recommendation', 'tags')
         widgets = {
             'report_id': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required"}),
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Report Name')}),
@@ -80,6 +85,25 @@ class NewReportForm(forms.ModelForm):
             'audit_end': DateInput(attrs={'class': 'form-control', 'type': "text", 'data-inputmask': "'alias': 'YYYY-MM-DDd'", 'data-mask':''}),
             'tags': autocomplete.TaggitSelect2('tag_autocomplete'),
         }
+
+class NewShareForm(forms.ModelForm):
+    type_choice = (
+        ('deliverable', _('Deliverable')),
+        ('findings', _('Findings'))
+    )
+    type=forms.ChoiceField(choices=type_choice, required=True, widget=forms.Select(attrs={'class': 'form-control', 'id':'selecttype', 'onchange':'TypeChange(this.value);', 'type': "text", 'required': "required", 'placeholder': _("Deliverable/Findings")}))
+    func_choice = ((x,_(x)) for l in [['none'],shares_finding,shares_deliverable] for x in l)
+    func=forms.ChoiceField(choices=func_choice, required=True, widget=forms.Select(attrs={'class': 'form-control', 'id':'selectfunc', 'type': "text", 'required': "required"}))
+    class Meta:
+        today = datetime.date.today().strftime('%Y-%m-%d')
+        nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        model = DB_ShareConnection
+        fields = ('title', 'type', 'func', 'url', 'credentials', 'tags')
+        widgets = {
+            'url': URLInput(),
+            'tags': autocomplete.TaggitSelect2('tag_autocomplete')
+        }
+
 
 class CWEModelChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):

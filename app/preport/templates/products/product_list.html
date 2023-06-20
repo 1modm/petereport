@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load i18n %}
+{% load bleach_tags %}
 {% load app_filters %}
 
 {% block title %} {% translate "Products List" %} {% endblock title %}
@@ -67,10 +68,10 @@
 
                     <tr>
                       <td>
-                        <a href="/product/view/{{ product.pk }}">{{ product.name }}</a>
+                        <a href="{% url 'product_view' product.pk %}">{{ product.name }}</a>
                       </td>
                     <td>
-                        <span class="pull-right badge bg-blue"></span> <a href="/customer/view/{{ product.customer.pk }}">{{ product.customer.name }}</a>
+                        <span class="pull-right badge bg-blue"></span> <a href="{% url 'customer_view' product.customer.pk %}">{{ product.customer.name }}</a>
                       </td>
                       <td>
                         <span class="pull-right badge bg-blue">{{ product.db_report_set.count }}</span> {% translate "Report" %}{{ product.db_report_set.count|pluralize:"s" }}
@@ -79,14 +80,14 @@
                         <span class="pull-right badge bg-red">{{ product.db_report_set.all|findings_count }}</span> {% translate "Finding" %}{{ product.db_report_set.all|findings_count|pluralize:"s" }}
                       </td>
                       <td class="project-actions text-center">
-                          <a class="btn btn-primary btn-sm" href="/product/view/{{ product.pk }}">
+                          <a class="btn btn-primary btn-sm" href="{% url 'product_view' product.pk %}">
                               <i class="fas fa-folder"></i>
                               {% translate "View" %}
                           </a>
 
                           {% if user.groups.all.0|stringformat:'s' == "administrator" %}
 
-                            <a class="btn btn-info btn-sm" href="/product/edit/{{ product.pk }}">
+                            <a class="btn btn-info btn-sm" href="{% url 'product_edit' product.pk %}">
                                 <i class="fas fa-pencil-alt"></i>
                                 {% translate "Edit" %}
                             </a>
@@ -160,14 +161,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/product/delete/",
+            url: "{% url 'product_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/product/list/";
+              document.location.href = "{% url 'product_list' %}";
             }
         })
   }

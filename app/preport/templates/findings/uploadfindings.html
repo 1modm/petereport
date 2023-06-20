@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load i18n %}
+{% load bleach_tags %}
 
 {% block title %} {% translate "Upload Findings" %} {% endblock title %}
 
@@ -21,7 +22,9 @@
         <div class="col-sm-8">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-            <li class="breadcrumb-item"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report_query.product.customer.pk %}">{{ DB_report_query.product.customer.name | bleach}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report_query.product.pk %}">{{ DB_report_query.product.name | bleach}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'report_view' DB_report_query.pk %}">{{ DB_report_query.title}}</a></li>
             <li class="breadcrumb-item active">{% translate "Upload Findings" %}</a></li>
           </ol>
         </div>
@@ -62,7 +65,7 @@
                         <div class="highlight">
                           <pre class="highlight">
 // {% translate "Comma-separated values (CSV) file format" %}
-                        
+
 "ID","Status","Title","Severity","CVSS Base Score","CVSS Score","CWE","Description","Location","Impact","Recommendation","References","Appendix","Appendix Description"
 
 "2834q345-b24e-4ghf-r86d-ftue38af5480","Open","Finding 1","Low","3.7 (CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N)","3.7","73","Description","127.0.0.1","Impact","Recommendation","References","Appendix","Appendix Description"
@@ -74,7 +77,7 @@
                   </div>
 
           </div>
-       </div> 
+       </div>
 
 
 
@@ -102,7 +105,7 @@
       </div>
     </div>
   </section>
- 
+
 
 
 {% endblock content %}

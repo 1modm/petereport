@@ -1,4 +1,6 @@
-from preport.models import DB_Deliverable, DB_Report, DB_Settings, DB_Finding, DB_Custom_field, DB_Customer, DB_Product, DB_Finding_Template, DB_CWE, DB_OWASP
+from preport.models import DB_Deliverable, DB_Report, DB_Settings, DB_Finding
+from preport.models import DB_Custom_field, DB_Customer, DB_Product
+from preport.models import DB_Finding_Template, DB_CWE, DB_OWASP, DB_ShareConnection
 from petereport.settings import MARTOR_UPLOAD_PATH, MARTOR_MEDIA_URL
 
 import re, os, base64, mimetypes
@@ -28,6 +30,8 @@ def get_object_url(item):
         return '/cwe/list/'
     elif isinstance(item, DB_OWASP):
         return '/owasp/list/'
+    elif isinstance(item, DB_ShareConnection):
+        return '/share/list/'
     else:
         return '/'
 

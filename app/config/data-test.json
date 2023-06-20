@@ -79,6 +79,8 @@
         "scope": "https://mabanque.bnm.com",
         "outofscope": "All URL out of scope, except API calls for Authentication",
         "methodology": "CEH methodology",
+        "executive_summary": "Good application",
+        "audit_objectives": "Check IAM",
         "recommendation": "Patch old services",
         "creation_date": "2023-01-01",
         "report_date": "2023-02-11",
@@ -97,6 +99,8 @@
         "scope": "https://mabanque.bnm.com",
         "outofscope": "All URL out of scope, except API calls for Consumer Credit",
         "methodology": "CEH methodology",
+        "executive_summary": "Bad application",
+        "audit_objectives": "Check Internet exposition",
         "recommendation": "Patch old services",
         "creation_date": "2023-01-02",
         "report_date": "2023-02-12",
@@ -114,6 +118,8 @@
         "scope": "https://foundation.mozilla.org",
         "outofscope": "None, check everything",
         "methodology": "CEH methodology",
+        "executive_summary": "Very good application",
+        "audit_objectives": "Check source code and VM evasion",
         "recommendation": "TODO",
         "creation_date": "2023-01-03",
         "report_date": "2023-02-13"
@@ -183,6 +189,19 @@
         "cvss_score": "7.8",
         "cwe": "0",
         "owasp" : "2"
+    }
+},
+{
+    "model": "preport.db_shareconnection",
+    "pk": 1,
+    "fields": {
+        "id": "1",
+        "title": "test",
+        "type": "deliverable",
+        "func": "PostFile",
+        "url": "http://example.com",
+        "credentials": "test:test",
+        "creation_date": "2023-01-03"
     }
 }
 ]
