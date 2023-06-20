@@ -21,6 +21,7 @@ import traceback
 import preport.utils.fts as ufts
 import preport.utils.urls as uurls
 import preport.utils.sharing as ushare
+import preport.utils.utils as uutils
 
 import django.db
 # Forms
@@ -880,11 +881,11 @@ def report_download_markdown(request, cst, pk):
         DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
         # Datetime
-        now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        now = datetime.datetime.utcnow()
         report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
         # MD filename
-        name_file = PETEREPORT_TEMPLATES['report_markdown_name'] + '_' + cst +'_' + DB_report_query.title + '_' +  str(now) + '.md'
+        name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_markdown_name'], cst, DB_report_query.title, str(now.strftime('%Y%m%d_%H%M%S')), 'md')
 
         # INIT
         template_findings = template_appendix = md_finding_summary = md_finding = "\n"
@@ -993,7 +994,7 @@ def report_download_markdown(request, cst, pk):
         markdown_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'markdown', name_file)
         with open(markdown_file_output, 'w') as fh:
             fh.write(final_markdown_output)
-            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='markdown')
+            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now.date(), filetemplate=cst, filetype='markdown')
             deliverable.save()
 
         if os.path.exists(markdown_file_output):
@@ -1016,11 +1017,11 @@ def report_download_html(request, cst, pk):
         DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
         # Datetime
-        now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        now = datetime.datetime.utcnow()
         report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
         # HTML filename
-        name_file = PETEREPORT_TEMPLATES['report_html_name'] + '_' + cst + '_' + DB_report_query.title + '_' +  str(now) + '.html'
+        name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_html_name'], cst, DB_report_query.title, str(now.strftime('%Y%m%d_%H%M%S')), 'html')
 
         # COLORS
         CRITICAL = 'CC0000'
@@ -1186,7 +1187,7 @@ def report_download_html(request, cst, pk):
                                             '--top-level-division=chapter',
                                             '--self-contained'])
 
-        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='html')
+        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now.date(), filetemplate=cst, filetype='html')
         deliverable.save()
 
         if os.path.exists(html_file_output):
@@ -1210,11 +1211,11 @@ def report_download_pdf(request, cst, pk):
         DB_settings_query = DB_Settings.objects.get()
 
         # Datetime
-        now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        now = datetime.datetime.utcnow()
         report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
         # PDF filename
-        name_file = PETEREPORT_TEMPLATES['report_pdf_name'] + '_' + cst + '_' + DB_report_query.title + '_' +  str(now) + '.pdf'
+        name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_pdf_name'], cst, DB_report_query.title, str(now.strftime('%Y%m%d_%H%M%S')), 'pdf')
 
         # COLORS
         CRITICAL = 'CC0000'
@@ -1418,7 +1419,7 @@ def report_download_pdf(request, cst, pk):
             #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
 
 
-            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='pdf')
+            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now.date(), filetemplate=cst, filetype='pdf')
             deliverable.save()
 
             if os.path.exists(pdf_file_output):
@@ -1444,11 +1445,11 @@ def report_download_jupyter(request, cst, pk):
         DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
         # Datetime
-        now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        now = datetime.datetime.utcnow()
         report_date = DB_report_query.report_date.strftime('%Y-%m-%d')
 
         # MD filename
-        name_file = PETEREPORT_TEMPLATES['report_jupyter_name'] + '_' + cst + '_' + DB_report_query.title + '_' +  str(now) + '.ipynb'
+        name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_jupyter_name'], cst, DB_report_query.title, str(now.strftime('%Y%m%d_%H%M%S')), 'ipynb')
 
         # INIT
         template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = ""
@@ -1563,7 +1564,7 @@ def report_download_jupyter(request, cst, pk):
         jupyter_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'jupyter', name_file)
         with open(jupyter_file_output, 'w') as fh:
             fh.write(final_markdown_output)
-            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(), filetemplate=cst, filetype='jupyter')
+            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now.date(), filetemplate=cst, filetype='jupyter')
             deliverable.save()
 
         if os.path.exists(jupyter_file_output):
@@ -1617,11 +1618,11 @@ def deliverable_report_add(request, pk):
         form = CustomDeliverableReportForm(request.POST, request.FILES)
         if form.is_valid():
             cst = 'custom'
-            now = datetime.datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+            now = datetime.datetime.utcnow()
             files = request.FILES.getlist('custom_deliverables')
             for f in files:
                 file_path = pathlib.PurePath(f.name)
-                name_file = PETEREPORT_TEMPLATES['report_custom_name'] + '_' + report.title + '_' + file_path.stem + '_' + str(now) + file_path.suffix
+                name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_custom_name'], report.title, file_path.stem, str(now.strftime('%Y%m%d_%H%M%S')), file_path.suffix.split('.')[-1])
                 file_path = pathlib.PurePath(REPORTS_MEDIA_ROOT, 'custom', name_file)
                 if os.path.exists(file_path):
                     os.remove(file_path)
@@ -1629,7 +1630,7 @@ def deliverable_report_add(request, pk):
                     for chunk in f.chunks():
                         destination.write(chunk)
                     deliverable = DB_Deliverable(report=report, filename=file_path.name,
-                                                generation_date=datetime.datetime.strptime(now, '%Y%m%d_%H%M%S').date(),
+                                                generation_date=now.date(),
                                                 filetemplate=file_path.suffix.replace('.','').lower(),
                                                 filetype=cst)
                     deliverable.save()
@@ -1808,7 +1809,9 @@ def findings_download_csv(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query)
 
-    name_file = PETEREPORT_TEMPLATES['report_csv_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.csv'
+    now = datetime.datetime.utcnow()
+
+    name_file = uutils.build_report_file_name(PETEREPORT_TEMPLATES['report_csv_name'], 'default', DB_report_query.title, str(now.strftime('%Y%m%d_%H%M%S')), 'csv')
 
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
