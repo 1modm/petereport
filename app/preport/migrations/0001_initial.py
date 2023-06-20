@@ -94,22 +94,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='DB_ShareConnection',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
-                ('type', models.CharField(max_length=255)),
-                ('func', models.CharField(max_length=255)),
-                ('url', models.CharField(max_length=255)),
-                ('credentials', models.CharField(max_length=255)),
-                ('creation_date', models.DateTimeField(auto_now_add=True)),
-                ('tags', taggit.managers.TaggableManager(blank=True, help_text='A comma-separated list of tags.', through='taggit.TaggedItem', to='taggit.Tag', verbose_name='Tags')),
-            ],
-            options={
-                'verbose_name_plural': 'Connection',
-            },
-        ),
-        migrations.CreateModel(
             name='DB_Report',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -128,8 +112,6 @@ class Migration(migrations.Migration):
                 ('audit_start', models.DateField(blank=True, null=True)),
                 ('audit_end', models.DateField(blank=True, null=True)),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='preport.db_product')),
-                ('share_deliverable', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='share_deliverable', to='preport.db_shareconnection')),
-                ('share_finding', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='share_finding', to='preport.db_shareconnection')),
                 ('tags', taggit.managers.TaggableManager(blank=True, help_text='A comma-separated list of tags.', through='taggit.TaggedItem', to='taggit.Tag', verbose_name='Tags')),
             ],
             options={
@@ -190,6 +172,8 @@ class Migration(migrations.Migration):
                 ('generation_date', models.DateTimeField()),
                 ('filetype', models.CharField(max_length=32)),
                 ('filetemplate', models.CharField(max_length=64)),
+                ('share_date', models.DateTimeField(blank=True, null=True)),
+                ('share_uuid', models.CharField(blank=True, max_length=4096)),
                 ('report', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='preport.db_report')),
             ],
             options={

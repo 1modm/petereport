@@ -31,7 +31,7 @@ services:
       - PETEREPORT_DJANGO_SENDFILE_BACKEND=django_sendfile.backends.nginx
     command: bash -c "
       sleep 1 &&
-      pipenv install --deploy --ignore-pipfile --python 3.9 &&
+      pipenv install --deploy --ignore-pipfile --python 3.11 &&
       pip freeze &&
       pipenv run ./app/manage.py makemigrations &&
       pipenv run ./app/manage.py migrate &&

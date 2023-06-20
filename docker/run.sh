@@ -8,7 +8,7 @@ cd /opt/petereport && {
     mkdir -p ./app/storage_reports/markdown &&
     mkdir -p ./app/storage_reports/pdf &&
     mkdir -p ./app/media/uploads &&
-    pipenv install --deploy --ignore-pipfile --python 3.9 &&
+    pipenv install --deploy --ignore-pipfile --python 3.11 &&
     pip freeze &&
     pipenv run ./app/manage.py makemigrations &&
     pipenv run ./app/manage.py migrate &&

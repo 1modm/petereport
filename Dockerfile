@@ -23,13 +23,12 @@ RUN apt -y install texlive-latex-recommended texlive-fonts-extra texlive-latex-e
 RUN apt -y install python3-minimal python3-pypandoc
 RUN apt -y install libpangocairo-1.0-0
 RUN apt -y install python3-distutils
+RUN apt -y install pipenv
 RUN apt -y purge python3-gunicorn gunicorn
 
 ARG TARGETARCH
-RUN wget https://github.com/jgm/pandoc/releases/download/3.1.1/pandoc-3.1.1-1-${TARGETARCH}.deb
-RUN dpkg -i pandoc-3.1.1-1-${TARGETARCH}.deb && rm -f pandoc-3.1.1-1-${TARGETARCH}.deb
-
-RUN python3 -m pip install pipenv pandoc-latex-environment
+RUN wget https://github.com/jgm/pandoc/releases/download/3.1.3/pandoc-3.1.3-1-${TARGETARCH}.deb
+RUN dpkg -i pandoc-3.1.3-1-${TARGETARCH}.deb && rm -f pandoc-3.1.3-1-${TARGETARCH}.deb
 
 # https://github.com/dalibo/pandocker/blob/latest/alpine/Dockerfile
 # Templates are installed in '/.pandoc'.
@@ -48,7 +47,7 @@ WORKDIR /opt/petereport
 RUN python3 --version
 
 COPY Pipfile ./
-RUN pipenv install --deploy --ignore-pipfile --python 3.9
+RUN pipenv install --deploy --ignore-pipfile --python 3.11
 
 RUN apt -y purge wget
 RUN apt -y clean
