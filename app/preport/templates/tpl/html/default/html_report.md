@@ -25,6 +25,10 @@ colorlinks: true
 
 {{DB_report_query.product.description | safe_markdown | bleach}}
 
+# {% translate "Audit Objectives" %}
+
+{{DB_report_query.audit_objectives | safe_markdown | bleach}}
+
 # {% translate "Executive Summary" %}
 
 {{DB_report_query.executive_summary | safe_markdown | bleach}}

@@ -138,6 +138,7 @@ class DB_Report(models.Model):
 	cwe_categories_summary_image = models.TextField(blank=True)
 	owasp_categories_summary_image = models.TextField(blank=True)
 	executive_summary = MartorField(blank=True)
+	audit_objectives = MartorField(blank=True)
 	scope = MartorField(blank=True)
 	outofscope = MartorField(blank=True)
 	methodology = MartorField(blank=True)

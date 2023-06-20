@@ -69,14 +69,14 @@ class NewReportForm(forms.ModelForm):
 
     product_placeholder = _('(Select a product)')
     product = CustomModelChoiceField(queryset=DB_Product.objects.all(), empty_label=product_placeholder, widget=forms.Select(attrs={'class': 'form-control'}))
-    
+
     share_deliverable = ShareChoiceField(queryset=DB_ShareConnection.objects.all().filter(type="deliverable"), empty_label=_("None"), widget=forms.Select(attrs={'class': 'form-control'}), required=False)
     share_finding = ShareChoiceField(queryset=DB_ShareConnection.objects.all().filter(type="finding"), empty_label=_("None"), widget=forms.Select(attrs={'class': 'form-control'}), required=False)
     class Meta:
         today = datetime.date.today().strftime('%Y-%m-%d')
         nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
         model = DB_Report
-        fields = ('product', 'report_id', 'title', 'report_date', 'audit_start', 'audit_end', 'share_deliverable', 'share_finding', 'executive_summary', 'scope', 'outofscope', 'methodology', 'recommendation', 'tags')
+        fields = ('product', 'report_id', 'title', 'report_date', 'audit_start', 'audit_end', 'share_deliverable', 'share_finding', 'executive_summary', 'audit_objectives', 'scope', 'outofscope', 'methodology', 'recommendation', 'tags')
         widgets = {
             'report_id': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required"}),
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Report Name')}),

@@ -595,6 +595,7 @@ def report_add(request):
         form = NewReportForm()
         form.fields['report_id'].initial = report_id_format
         form.fields['executive_summary'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
+        form.fields['audit_objectives'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['scope'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['outofscope'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['methodology'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
