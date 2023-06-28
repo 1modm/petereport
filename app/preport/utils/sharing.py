@@ -45,7 +45,7 @@ class Sharepoint(Abstract):
             f = kwargs.get('filename', 'NoFile')
             project = kwargs.get('project', '')
             file = {'upload_file': open(f,'rb')}
-            res = requests.post(self.url, params={"id": project}, files=file)
+            res = requests.post(self.url, params={"id": project}, files=file, headers={"x-functions-key": self.credentials})
             res.raise_for_status()
             return datetime.utcnow(), res.text
         else:
