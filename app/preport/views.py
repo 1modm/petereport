@@ -2765,6 +2765,7 @@ def share_deliverable(request):
             shareobj = ShareClass(report.share_deliverable)
             file = os.path.join(REPORTS_MEDIA_ROOT, deliverable.filetype, deliverable.filename)
             share_date, share_uuid = shareobj(filename=file, project=report.report_id)
+            #share_date = datetime.utcnow()
             deliverable.share_date = share_date
             deliverable.share_uuid = share_uuid
             deliverable.save()

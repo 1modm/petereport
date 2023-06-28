@@ -1,10 +1,12 @@
-import requests
+import requests, environ
 from typing import Any
 from preport.models import DB_ShareConnection
 from abc import ABC, abstractmethod
 from enum import Enum
 from datetime import datetime
 import sys
+
+env = environ.Env()
 
 class ShareType(Enum):
     none = "none"
@@ -22,7 +24,7 @@ class Abstract(ABC):
         assert self.type.value == connection.type
         self.title = connection.title
         self.url = connection.url
-        self.credentials = connection.credentials # env.get(connection.credentials)
+        self.credentials = env.str(f"PETEREPORT_SHARE_{connection.credentials.upper()}", default="") # env.get(connection.credentials)
 
     @abstractmethod
     def __call__(self, **kwargs) -> tuple[datetime, str]:
@@ -36,14 +38,14 @@ class Test(Abstract):
         res.raise_for_status()
         return datetime.utcnow(), "done"
 
-class PostFileTest(Abstract):
+class Sharepoint(Abstract):
     type = ShareType.deliverable
     def __call__(self, **kwargs) -> tuple[datetime, str]:
         if 'filename' in kwargs:
             f = kwargs.get('filename', 'NoFile')
+            project = kwargs.get('project', '')
             file = {'upload_file': open(f,'rb')}
-            #values = {'DB': 'photcat', 'OUT': 'csv', 'SHORT': 'short'}
-            res = requests.post(self.url, files=file)#, data=values)
+            res = requests.post(self.url, params={"id": project}, files=file)
             res.raise_for_status()
             return datetime.utcnow(), res.text
         else:
