@@ -35,7 +35,9 @@ DJANGO_CONFIG = {
     'server_host': env.str('PETEREPORT_DJANGO_SERVER_HOST', default='http://localhost:8000'),
     'time_zone': env.str('PETEREPORT_DJANGO_TIME_ZONE', default='UTC'),
     'upload_memory_size': env.int('PETEREPORT_DJANGO_UPLOAD_MEMORY_SIZE', default=10485760), # 10MB
-    'sendfile_backend': env.str('PETEREPORT_DJANGO_SENDFILE_BACKEND', default='django_sendfile.backends.simple')
+    'sendfile_backend': env.str('PETEREPORT_DJANGO_SENDFILE_BACKEND', default='django_sendfile.backends.simple'),
+    'petereport_log_level': env.str('PETEREPORT_LOG_LEVEL', default='INFO'),
+    'django_log_level': env.str('PETEREPORT_DJANGO_LOG_LEVEL', default='WARNING'),
 }
 
 PETEREPORT_TEMPLATES = {
@@ -63,5 +65,8 @@ PETEREPORT_MARKDOWN = {
     'pdf_engine': env.str('PETEREPORT_PDF_ENGINE', default='pdflatex'),
     'subject': env.str('PETEREPORT_SUBJECT', default='Pentest Report'),
     'martor_upload_method': env.str('PETEREPORT_MARTOR_UPLOAD_METHOD', default='BASE64'), # BASE64 (stored in DB) or MEDIA (path not protected, must be set 'debug': True. This is highly insecure and not encouraged for production use. Should be configured the web server (apache, nginx, etc) to serve the media content using a protected link)
-    'media_host': env.str('PETEREPORT_MEDIA_HOST', default='http://localhost:8000') # If docker deployment, set https://<HOST IP>, else for django deployment http://<HOST IP>:8000
+    'media_host': env.str('PETEREPORT_MEDIA_HOST', default='http://localhost:8000'), # If docker deployment, set https://<HOST IP>, else for django deployment http://<HOST IP>:8000
+    'markdown_media_include': env.str('PETEREPORT_MARKDOWN_MEDIA_INCLUDE', default='LOCAL_FS'), # LOCAL_FS: Replace URL with local FS link, BASE64: Encode media into base64 and include into markdown file
+    'debug_pandoc_on_error' : env.bool('PETEREPORT_DEBUG_PANDOC_ON_ERROR', default=False), # If True, markdown file is dumped to pandoc directory
+
 }

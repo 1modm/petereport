@@ -16,7 +16,6 @@ from django_sendfile import sendfile
 from dal import autocomplete
 from taggit.models import Tag
 import uuid, time
-import traceback
 
 import preport.utils.fts as ufts
 import preport.utils.urls as uurls
@@ -38,6 +37,7 @@ import datetime
 import textwrap
 import requests
 import base64
+import bleach
 import uuid
 import json
 import csv
@@ -47,11 +47,17 @@ import pathlib
 from collections import Counter
 import pypandoc
 
+from timeit import default_timer as timer
+
 # Martor
-from petereport.settings import STATIC_ROOT, MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MARTOR_MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, TEMPLATES_DIRECTORIES
+from petereport.settings import BASE_DIR, DEBUG_PANDOC_ON_ERROR, MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MARTOR_MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, TEMPLATES_DIRECTORIES
 
 # PeTeReport config
 from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_CONFIG, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # Not all Django output can be passed unmodified to json. In particular, lazy
@@ -987,9 +993,9 @@ def report_download_markdown(request, cst, pk):
         final_markdown = textwrap.dedent(render_md)
         final_markdown_output = mark_safe(final_markdown)
 
-        # Replace media with base64 local data in order to have all media into the file
+        # Replace media with local data
         if  PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-            final_markdown_output = uurls.replace_media_url_local_base64(final_markdown_output)
+            final_markdown_output = uurls.replace_media_url(final_markdown_output)
 
 
         markdown_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'markdown', name_file)
@@ -1169,9 +1175,9 @@ def report_download_html(request, cst, pk):
         final_markdown = textwrap.dedent(render_md)
         final_markdown_output = mark_safe(final_markdown)
 
-        # Replace media with base64 local data in order to have all media into the file
+        # Replace media with local data
         if  PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-            final_markdown_output = uurls.replace_media_url_local_base64(final_markdown_output)
+            final_markdown_output = uurls.replace_media_url(final_markdown_output)
 
         html_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'html', name_file)
         petereport_html_tpl = os.path.join(TEMPLATES_ROOT, 'tpl', PETEREPORT_TEMPLATES['html_template'])
@@ -1202,6 +1208,10 @@ def report_download_html(request, cst, pk):
 
 @login_required
 def report_download_pdf(request, cst, pk):
+    logger.debug('Generating PDF Report [' + str(pk) + ']')
+
+    start_report = timer()
+
     tpl_dir = os.path.join(TEMPLATES_ROOT, 'tpl', 'pdf')
     tpl_cst_dir = os.path.join(tpl_dir, cst)
     tpl_cst_dir_pp = pathlib.PurePath(tpl_cst_dir)
@@ -1250,7 +1260,9 @@ def report_download_pdf(request, cst, pk):
             report_cwe_categories_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")), DB_report_query.cwe_categories_summary_image)
             report_owasp_categories_image = os.path.join(MARTOR_MEDIA_URL, '{}'.format(time.strftime("%Y/%m/%d/")), DB_report_query.owasp_categories_summary_image)
 
+        logger.debug('Generating Findings')
         for finding in DB_finding_query:
+
             # Custom fields
             template_custom_fields = ""
 
@@ -1258,6 +1270,7 @@ def report_download_pdf(request, cst, pk):
             if finding.severity == 'None':
                 pass
             else:
+                start_finding = timer()
                 counter_finding += 1
                 template_appendix_in_finding = template_attackflow_in_finding = ''
 
@@ -1326,10 +1339,10 @@ def report_download_pdf(request, cst, pk):
                         template_appendix += ''.join(pdf_appendix)
                         template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "\n")
 
-                    template_appendix_in_finding += ''.join("\\pagebreak")
+                    template_appendix_in_finding += ''.join('\pagebreak')
 
                 else:
-                    template_appendix_in_finding += ''.join("\\pagebreak")
+                    template_appendix_in_finding += ''.join('\pagebreak')
 
                 # attack flow
                 if finding.attackflow_finding.all():
@@ -1343,12 +1356,10 @@ def report_download_pdf(request, cst, pk):
 
                         template_attackflow_in_finding += ''.join(pdf_attackflow + "\n")
 
-                    template_attackflow_in_finding += ''.join("\\pagebreak")
+                    template_attackflow_in_finding += ''.join('\pagebreak')
 
                 else:
-                    template_attackflow_in_finding += ''.join("\\pagebreak")
-
-
+                    template_attackflow_in_finding += ''.join('\pagebreak')
 
                 # finding
                 pdf_finding = render_to_string(os.path.join('tpl', 'pdf', cst, 'pdf_finding.md'),
@@ -1362,6 +1373,10 @@ def report_download_pdf(request, cst, pk):
 
                 template_findings += ''.join(pdf_finding)
 
+                end_finding = timer()
+                logger.debug('Finding: [' + finding.finding_id + '] ' + finding.title + ' ⇨ ' + str(end_finding - start_finding) + ' s')
+
+        start_report_yaml = timer()
         pdf_markdown_report = render_to_string(os.path.join('tpl', 'pdf', cst, 'pdf_header.yaml'),
                                                                          {  'DB_report_query': DB_report_query,
                                                                             'md_author': md_author,
@@ -1375,7 +1390,10 @@ def report_download_pdf(request, cst, pk):
                                                                             'titlepageruleheight': PETEREPORT_TEMPLATES['titlepage-rule-height'],
                                                                             'title_background': title_background_image,
                                                                             'pages_background': pages_background_image })
+        end_report_yaml = timer()
+        logger.debug('Report YAML: [' + DB_report_query.report_id + '] ' + DB_report_query.title + ' ⇨ ' + str(end_report_yaml - start_report_yaml) + ' s')
 
+        start_report_markdown = timer()
         pdf_markdown_report += render_to_string(os.path.join('tpl', 'pdf', cst, 'pdf_report.md'),
                                                                          {  'md_author': md_author,
                                                                             'md_address': DB_Settings.objects.get().company_address,
@@ -1390,47 +1408,89 @@ def report_download_pdf(request, cst, pk):
 
         final_markdown = textwrap.dedent(pdf_markdown_report)
         final_markdown_output = mark_safe(final_markdown)
+        end_report_markdow = timer()
+        logger.debug('Report Markdown: [' + DB_report_query.report_id + '] ' + DB_report_query.title + ' ⇨ ' + str(end_report_markdow - start_report_markdown) + ' s')
 
-        # Replace media with base64 local data in order to have all media into the file
+        # Replace media with local data
         if  PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-            final_markdown_output = uurls.replace_media_url_local_base64(final_markdown_output)
+            start_report_media = timer()
+            final_markdown_output = uurls.replace_media_url(final_markdown_output)
+            end_report_media = timer()
+            logger.debug('Report Include Media: [' + DB_report_query.report_id + '] ' + DB_report_query.title + ' ⇨ ' + str(end_report_media - start_report_media) + ' s')
+
 
         pdf_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'pdf', name_file)
         header_file = os.path.join(tpl_dir, cst, 'pdf_header.tex')
         petereport_latex_tpl = os.path.join(tpl_dir, cst, 'petereport.latex')
 
+        start_report_latex = timer()
+
         try:
             # Remove Unicode characters, not parsed by pdflatex
             final_markdown_output = final_markdown_output.encode(encoding="utf-8", errors="ignore").decode()
 
+            pandoc_extra_args = [   '-H', header_file,
+                                    '--from', 'markdown+yaml_metadata_block+raw_html',
+                                    '--template', petereport_latex_tpl,
+                                    '--table-of-contents',
+                                    '--toc-depth', '4',
+                                    '--number-sections',
+                                    '--highlight-style', 'breezedark',
+                                    '--filter', 'pandoc-latex-environment',
+                                    '--pdf-engine', PETEREPORT_MARKDOWN['pdf_engine'],
+                                    '--listings',]
             pypandoc.convert_text(  final_markdown_output,
                                     to='pdf',
                                     outputfile=pdf_file_output,
                                     format='md',
-                                    extra_args=['-H', header_file,
-                                                '--from', 'markdown+yaml_metadata_block+raw_html',
-                                                '--template', petereport_latex_tpl,
-                                                '--table-of-contents',
-                                                '--toc-depth', '4',
-                                                '--number-sections',
-                                                '--highlight-style', 'breezedark',
-                                                '--filter', 'pandoc-latex-environment',
-                                                '--pdf-engine', PETEREPORT_MARKDOWN['pdf_engine'],
-                                                '--listings'])
-            #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
-
+                                    extra_args=pandoc_extra_args)
 
             deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now.date(), filetemplate=cst, filetype='pdf')
             deliverable.save()
+
+            end_report_latex = timer()
+            logger.debug('Report LateX: [' + DB_report_query.report_id + '] ' + DB_report_query.title + ' ⇨ ' + str(end_report_latex - start_report_latex) + ' s')
+
+            end_report = timer()
+            logger.debug('Report: [' + DB_report_query.report_id + '] ' + DB_report_query.title + ' ⇨ ' + str(end_report - start_report) + ' s')
 
             if os.path.exists(pdf_file_output):
                     with open(pdf_file_output, 'rb') as fh:
                         response = HttpResponse(fh.read(), content_type="application/pdf")
                         response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
                         return response
-        except:
-            traceback.print_exc()
-            return HttpResponseServerError()
+        except Exception as ex:
+            if DEBUG_PANDOC_ON_ERROR:
+                try:
+                    name_file += '.PANDOC_DEBUG.md'
+
+                    pandoc_cmd = 'pandoc --to=pdf -o pandoc_debug.pdf --from=md ' + ' '.join(pandoc_extra_args) + ' "' + name_file + '"'
+                    pandoc_cmd = pandoc_cmd.replace(str(BASE_DIR) + '/', '')
+                    pandoc_output_file = os.path.join(REPORTS_MEDIA_ROOT, 'pandoc', name_file)
+                    deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now.date(), filetemplate=cst, filetype='pandoc')
+                    deliverable.save()
+
+                    with open(pandoc_output_file, 'w') as pf:
+                        pf.write(final_markdown_output)
+
+                    pandoc_debug_error_message = '<br><hr><br>You can test the markdown file generated with this pandoc command:' \
+                                                + '<br><br><i>' + pandoc_cmd +'</i>' \
+                                                + '<br><br>The markdown file is available into the Deliverable section ; please delete it after your debug session!'
+                except Exception as exi:
+                    pandoc_debug_error_message = 'Cannot retrieve all data of Pandoc conversion<br>' + str(exi).replace('\n', '<br>')
+                    logger.error(pandoc_debug_error_message)
+                    logger.error(exi, exc_info=True)
+            else:
+                pandoc_debug_error_message = ''
+            end_report = timer()
+            error_msg = 'Error into Report generation: [' + DB_report_query.report_id + '] ' + DB_report_query.title + ' ⇨ ' + str(end_report - start_report) + ' s'
+            logger.error(error_msg)
+            logger.error(ex, exc_info=True)
+
+            return HttpResponseServerError('<h2>🤬🤬🤬🤬&nbsp;<b>Hacker, your markdown is so bad that the Pandoc LaTeX conversion is broken!</b>&nbsp;🤬🤬🤬🤬<br></h2>'
+                                           + '<hr><h2><br>'+  error_msg + '</h2><br><br>'
+                                           + str(ex).replace('\n', '<br>')
+                                           + pandoc_debug_error_message)
 
     raise Http404
 
@@ -1558,9 +1618,9 @@ def report_download_jupyter(request, cst, pk):
         final_markdown = textwrap.dedent(render_jupyter)
         final_markdown_output = mark_safe(final_markdown)
 
-        # Replace media with base64 local data in order to have all media into the file
+        # Replace media with local data
         if  PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-            final_markdown_output = uurls.replace_media_url_local_base64(final_markdown_output)
+            final_markdown_output = uurls.replace_media_url(final_markdown_output)
 
         jupyter_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'jupyter', name_file)
         with open(jupyter_file_output, 'w') as fh:

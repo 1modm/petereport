@@ -138,14 +138,14 @@
                                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
                                         <a href="{% url 'finding_edit' finding.pk %}#{{ finding.get_cvss_score_anchor }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                                         <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{finding.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
-                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
+                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                       {% endif %}
 
                                   </td>
 
                           </tr>
 
-                          <div class="modal modal-danger fade mm-modal-{{finding.pk}}" id="modal-danger">
+                          <div class="modal modal-danger fade mm-modal-del-{{finding.pk}}" id="modal-danger">
                             <div class="modal-dialog">
                               <div class="modal-content bg-danger">
                                 <div class="modal-header">
@@ -223,19 +223,20 @@
 
 <script>
   function DeleteID(del_id) {
-        $.ajax({
-            type: 'POST',
-            url: "{% url 'finding_delete' %}/",
-            headers:{
-              "X-CSRFToken": '{{ csrf_token }}'
-            },
-            data : { 'delete_id': del_id},
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'finding_delete' %}",
+        headers:{
+          "X-CSRFToken": '{{ csrf_token }}'
+        },
+        data : { 'delete_id': del_id},
 
-            success : function(json) {
-              document.location.href = "{% url 'report_findings' DB_report_query.pk %}";
-            }
-        })
-  }
+        success : function(json) {
+          window.location.href = "{% url 'report_view' DB_report_query.pk %}" + "#Findings";
+          document.location.reload(true);
+        }
+    });
+  };
   function DuplicateID(dup_id) {
     $.ajax({
         type: 'POST',
@@ -246,10 +247,11 @@
         data : { 'duplicate_id': dup_id},
 
         success : function(json) {
-          document.location.href = "{% url 'report_findings' DB_report_query.pk %}";
+          document.location.href = "{% url 'report_view' DB_report_query.pk %}" + "#Findings";
+          document.location.reload(true);
         }
-    })
-}
+    });
+  };
 </script>
 
 {% endblock javascripts %}

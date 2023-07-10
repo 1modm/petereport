@@ -26,7 +26,7 @@
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
               <li class="breadcrumb-item"><a href="{% url 'customer_view' finding.report.product.customer.pk %}">{{ finding.report.product.customer.name | bleach}}</a></li>
               <li class="breadcrumb-item"><a href="{% url 'product_view' finding.report.product.pk %}">{{ finding.report.product.name | bleach}}</a></li>
-              <li class="breadcrumb-item"><a href="{% url 'report_view' finding.report.pk %}">{{ finding.report.name}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'report_view' finding.report.pk %}">{{ finding.report.title}}</a></li>
               <li class="breadcrumb-item active">{{ finding.title | bleach }}</li>
 
             </ol>

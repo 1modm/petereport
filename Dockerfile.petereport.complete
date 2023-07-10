@@ -27,8 +27,12 @@ RUN apt -y install pipenv
 RUN apt -y purge python3-gunicorn gunicorn
 
 ARG TARGETARCH
-RUN wget https://github.com/jgm/pandoc/releases/download/3.1.3/pandoc-3.1.3-1-${TARGETARCH}.deb
-RUN dpkg -i pandoc-3.1.3-1-${TARGETARCH}.deb && rm -f pandoc-3.1.3-1-${TARGETARCH}.deb
+ARG PANDOC_VERSION=3.1.5
+RUN wget https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-${TARGETARCH}.deb
+RUN dpkg -i pandoc-${PANDOC_VERSION}-1-${TARGETARCH}.deb && rm -f pandoc-${PANDOC_VERSION}-1-${TARGETARCH}.deb
+
+ENV OSFONTDIR=/usr/share/fonts
+RUN fc-cache --really-force --verbose
 
 WORKDIR /opt/petereport
 RUN mkdir -p /var/www/.local
@@ -43,9 +47,8 @@ RUN python3 --version
 RUN pipenv install --deploy --ignore-pipfile --python 3.11
 
 USER root
+
 RUN apt -y purge wget
-RUN apt -y clean
-RUN apt -y autoremove
 
 ADD ./app ./app
 RUN rm -r ./app/db
@@ -53,7 +56,14 @@ RUN rm -r ./app/media
 RUN rm -r ./app/storage_reports
 ADD ./docker ./docker
 
-RUN chown -R root:www-data /opt/petereport
-RUN chmod -R 750 /var/www/.local /opt/petereport
+RUN chown -R root:www-data /var/www /opt
+RUN chmod -R 750 /var/www /opt
+RUN chown -R www-data:www-data /var/www/.local/share/virtualenvs
+
+# Final Debian Update
+RUN apt -y update
+RUN apt -y upgrade
+RUN apt -y clean
+RUN apt -y autoremove
 
 USER www-data

@@ -7,6 +7,7 @@ cd /opt/petereport && {
     mkdir -p ./app/storage_reports/jupyter &&
     mkdir -p ./app/storage_reports/markdown &&
     mkdir -p ./app/storage_reports/pdf &&
+    mkdir -p ./app/storage_reports/pandoc &&
     mkdir -p ./app/media/uploads &&
     pipenv install --deploy --ignore-pipfile --python 3.11 &&
     pip freeze &&

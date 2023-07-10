@@ -3,6 +3,10 @@ from django.core.management.base import BaseCommand
 import preport.utils.fts as ufts
 from preport.models import DB_FTSModel
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
@@ -21,11 +25,11 @@ class Command(BaseCommand):
             model = DB_FTSModel(model_name=model_name, fts_fields=', '.join(model_fields))
             model.save()
 
-            print("-- FTS " + model_name + " -----------------------")
-            #print("-- DELETE " + model_name)
-            #print(ufts.sql_delete_table_fts(model_name))
+            logger.info("-- FTS " + model_name + " -----------------------")
+            #logger.info("-- DELETE " + model_name)
+            #logger.info(ufts.sql_delete_table_fts(model_name))
             ufts.execute_script_sql(ufts.sql_delete_table_fts(model_name))
 
-            #print("-- CREATE " + model_name)
-            #print(ufts.sql_create_table_fts(model_name, model_fields))
+            #logger.info("-- CREATE " + model_name)
+            #logger.info(ufts.sql_create_table_fts(model_name, model_fields))
             ufts.execute_script_sql(ufts.sql_create_table_fts(model_name, model_fields))

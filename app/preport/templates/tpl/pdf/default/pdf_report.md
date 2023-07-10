@@ -4,7 +4,6 @@
 ## {% translate "Product Description" %}
 
 {{DB_report_query.product.description | safe}}
-
 \pagebreak
 # {% translate "Executive Summary" %}
 
@@ -29,23 +28,18 @@
 ### {% translate "Out of Scope" %}
 
 {{DB_report_query.outofscope | safe}}
-
 \pagebreak
 ## {% translate "Methodology" %}
 
 {{DB_report_query.methodology | safe}}
-
 \pagebreak
 ## {% translate "Recommendations" %}
 
 {{DB_report_query.recommendation | safe}}
-
 \pagebreak
 # {% translate "Findings and Risk Analysis" %}
 
 {{template_findings}}
-
 \pagebreak
 {{template_appendix}}
-
 \pagebreak

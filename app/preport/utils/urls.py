@@ -1,12 +1,12 @@
 from preport.models import DB_Deliverable, DB_Report, DB_Settings, DB_Finding
 from preport.models import DB_Custom_field, DB_Customer, DB_Product
 from preport.models import DB_Finding_Template, DB_CWE, DB_OWASP, DB_ShareConnection
-from petereport.settings import MARTOR_UPLOAD_PATH, MARTOR_MEDIA_URL
+from petereport.settings import MARTOR_UPLOAD_PATH, MARTOR_MEDIA_URL, PETEREPORT_MARKDOWN
 
 import re, os, base64, mimetypes
 from pathlib import Path
 
-local_media_file_regex = re.compile(r'.*\((' + MARTOR_UPLOAD_PATH + '.+\.(?:png|gif|jpg|jpeg))\).*')
+local_media_file_regex = re.compile(r'.*\]\((' + MARTOR_UPLOAD_PATH + '.+\.(?:png|gif|jpg|jpeg))\).*')
 mimetypes.init()
 
 def get_object_url(item):
@@ -35,13 +35,21 @@ def get_object_url(item):
     else:
         return '/'
 
+def replace_media_url_local_fs(markdown):
+    return markdown.replace('](' + os.path.join(MARTOR_MEDIA_URL, 'uploads'), '](' + MARTOR_UPLOAD_PATH)
 
 def replace_media_url_local_base64(markdown):
-    return extract_local_media_files(
-            markdown.replace('(' + os.path.join(MARTOR_MEDIA_URL, 'uploads'), '(' + MARTOR_UPLOAD_PATH)
+    return extract_local_media_files_to_base64(
+            markdown.replace('](' + os.path.join(MARTOR_MEDIA_URL, 'uploads'), '](' + MARTOR_UPLOAD_PATH)
             )
 
-def extract_local_media_files(markdown):
+def replace_media_url(markdown):
+    if PETEREPORT_MARKDOWN['markdown_media_include'] == 'LOCAL_FS':
+        return replace_media_url_local_fs(markdown)
+    else:
+        return replace_media_url_local_base64(markdown)
+
+def extract_local_media_files_to_base64(markdown):
     mediafiles = re.findall(local_media_file_regex, markdown)
     if len(mediafiles) > 0:
         mediafiles = list(dict.fromkeys(mediafiles))

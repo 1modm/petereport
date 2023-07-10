@@ -31,6 +31,46 @@ SECRET_KEY = DJANGO_CONFIG['secret_key']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_CONFIG['debug']
+DJANGO_LOG_LEVEL = DJANGO_CONFIG['django_log_level']
+PETEREPORT_LOG_LEVEL = DJANGO_CONFIG['petereport_log_level']
+DEBUG_PANDOC_ON_ERROR = PETEREPORT_MARKDOWN['debug_pandoc_on_error']
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "django": {
+            "format": "[DJANGO] [{asctime}] [{levelname}] [{filename}:{lineno} - {module}.{funcName}] {message}",
+            "style": "{",
+        },
+        "petereport": {
+            "format": "[PETEREPORT] [{asctime}] [{levelname}] [{filename}:{lineno} - {module}.{funcName}] {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "django_console": {
+            "class": "logging.StreamHandler",
+            "formatter": "django",
+        },
+        "petereport_console": {
+            "class": "logging.StreamHandler",
+            "formatter": "petereport",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["django_console"],
+            "level": DJANGO_LOG_LEVEL,
+            "propagate": True,
+        },
+        "preport": {
+            "handlers": ["petereport_console"],
+            "level": PETEREPORT_LOG_LEVEL,
+            "propagate": True,
+        },
+    },
+}
 
 ADMIN_ENABLED = DJANGO_CONFIG['admin_module']
 
@@ -251,6 +291,8 @@ SENDFILE_URL = os.path.join('/', MEDIA_URL, 'protected')
 MARTOR_MARKDOWN_BASE_EMOJI_URL = 'https://github.githubassets.com/images/icons/emoji/'                  # default from github
 
 # Maximum Upload Image
+# 500 KB - 524288
+# 1 MB - 1048576
 # 2.5MB - 2621440
 # 5MB - 5242880
 # 10MB - 10485760
@@ -259,7 +301,7 @@ MARTOR_MARKDOWN_BASE_EMOJI_URL = 'https://github.githubassets.com/images/icons/e
 # 100MB 104857600
 # 250MB - 214958080
 # 500MB - 429916160
-MAX_IMAGE_UPLOAD_SIZE = 5242880  # 5MB
+MAX_IMAGE_UPLOAD_SIZE = 5242880
 
 SERVER_CONF = DJANGO_CONFIG['server_host']
 TEMPLATES_ROOT = os.path.join(BASE_DIR, PETEREPORT_TEMPLATES['templates_root'])

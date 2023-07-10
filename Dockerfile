@@ -27,8 +27,12 @@ RUN apt -y install pipenv
 RUN apt -y purge python3-gunicorn gunicorn
 
 ARG TARGETARCH
-RUN wget https://github.com/jgm/pandoc/releases/download/3.1.3/pandoc-3.1.3-1-${TARGETARCH}.deb
-RUN dpkg -i pandoc-3.1.3-1-${TARGETARCH}.deb && rm -f pandoc-3.1.3-1-${TARGETARCH}.deb
+ARG PANDOC_VERSION=3.1.5
+RUN wget https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-${TARGETARCH}.deb
+RUN dpkg -i pandoc-${PANDOC_VERSION}-1-${TARGETARCH}.deb && rm -f pandoc-${PANDOC_VERSION}-1-${TARGETARCH}.deb
+
+ENV OSFONTDIR=/usr/share/fonts
+RUN fc-cache --really-force --verbose
 
 # https://github.com/dalibo/pandocker/blob/latest/alpine/Dockerfile
 # Templates are installed in '/.pandoc'.
@@ -50,5 +54,9 @@ COPY Pipfile ./
 RUN pipenv install --deploy --ignore-pipfile --python 3.11
 
 RUN apt -y purge wget
+
+# Final Debian Update
+RUN apt -y update
+RUN apt -y upgrade
 RUN apt -y clean
 RUN apt -y autoremove
