@@ -1,9 +1,10 @@
 {% extends 'home/template.html' %}
 
 {% load i18n %}
+{% load bleach_tags %}
 {% load app_filters %}
 
-{% block title %} {% translate "Template List" %} {% endblock title %}
+{% block title %} {% translate "Templates List" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -45,10 +46,12 @@
           <table id="templatelist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                    <th style="width: 35%">{% translate "Finding title" %}</th>
-                    <th style="width: 5%">{% translate "Severity" %}</th>
-                    <th style="width: 35%">{% translate "CVSS Score" %}</th>
-                    <th style="width: 23%" class="text-center">{% translate "Actions" %}</th>
+                    <th style="width: 35%" class="text-center">{% translate "Finding title" %}</th>
+                    <th style="width: 5%" class="text-center">{% translate "Severity" %}</th>
+                    <th style="width: 25%" class="text-center">{% translate "CVSS Score" %}</th>
+                    <th style="width: 7%" class="text-center">{% translate "CWE" %}</th>
+                    <th style="width: 7%" class="text-center">{% translate "OWASP" %}</th>
+                    <th style="width: 20%" class="text-center">{% translate "Actions" %}</th>
                   </tr>
               </thead>
               <tbody>
@@ -58,7 +61,7 @@
                     <td class=" last">{{ template.title }}</td>
 
                     <td>
-                        
+
                           {% if template.severity == "Critical" %}
                               <b><font color="#CC0000">{{template.severity}}</font></b>
                           {% elif template.severity == "High" %}
@@ -75,20 +78,29 @@
 
                     </td>
 
-                      <td>
-                          {{template.cvss_base_score}}
-                      </td>
+                    <td>
+                        {{template.cvss_base_score}}
+                    </td>
+
+                    <td>
+                        <a href="https://cwe.mitre.org/data/definitions/{{template.cwe.cwe_id}}.html">{{ template.cwe.cwe_id }}</a>
+                    </td>
+
+                    <td>
+                        <a href="{{ template.owasp.owasp_url }}">{{ template.owasp.owasp_full_id }}</a>
+                    </td>
+
 
                     <td align="center">
-                        <a href="/template/view/{{ template.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
+                        <a href="{% url 'template_view' template.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                          <a href="/template/edit/{{ template.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                          <a href="{% url 'template_edit' template.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{template.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                         {% endif %}
-                        
+
                     </td>
-          
+
 
                   </tr>
 
@@ -114,14 +126,14 @@
                       </div>
 
                 {% endfor %}
-                  
+
                 </tbody>
               </table>
 
         </div>
       </div>
     </div>
-  </section> 
+  </section>
 
 
 {% endblock content %}
@@ -134,8 +146,8 @@
     $("#templatelist").DataTable({
       "paging": true,
       "searching": true,
-      "responsive": true, 
-      "lengthChange": false, 
+      "responsive": true,
+      "lengthChange": false,
       "autoWidth": false,
       "ordering": true,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
@@ -147,14 +159,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/template/delete/",
+            url: "{% url 'template_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/template/list/"; 
+              document.location.href = "{% url 'template_list' %}";
             }
         })
   }

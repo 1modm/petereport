@@ -11,7 +11,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  
+
 
     <section class="content-header">
       <div class="container-fluid">
@@ -23,8 +23,9 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-              <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
-              <li class="breadcrumb-item active"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report_query.product.customer.pk %}">{{ DB_report_query.product.customer.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report_query.product.pk %}">{{ DB_report_query.product.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'report_view' DB_report_query.pk %}">{{ DB_report_query.title}}</a></li>
             </ol>
           </div>
         </div>
@@ -32,15 +33,11 @@
       <br>
 
         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-          <a href="/appendix/add/{{ DB_report_query.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Add Appendix" %}</button></a> 
+          <a href="{% url 'appendix_add' DB_report_query.pk %}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Add Appendix" %}</button></a>
         {% endif %}
 
       </div>
     </section>
-
-
-
-
 
   <section class="content">
     <div class="container-fluid">
@@ -62,8 +59,8 @@
 
                 </div>
                 <div class="card-body">
-            
-                  <table id="appendixlist" class="table table-bordered table-hover"> 
+
+                  <table id="appendixlist" class="table table-bordered table-hover">
                     <thead>
                       <tr>
                         <th style="width: 25%">{% translate "Appendix" %}</th>
@@ -88,10 +85,10 @@
                             {% endfor %}
                         </td>
                         <td align="center">
-                            <a href="/appendix/view/{{ appendix.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
+                            <a href="{% url 'appendix_view' appendix.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                             {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                              <a href="/appendix/edit/{{ appendix.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                              <a href="{% url 'appendix_edit' appendix.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                               <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{appendix.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                             {% endif %}
 
@@ -125,13 +122,13 @@
 
                     </tbody>
                   </table>
-            
+
 
                 </div>
               </div>
 
         </div>
-      </div> 
+      </div>
 
 
 
@@ -149,8 +146,8 @@
     $("#appendixlist").DataTable({
       "paging": true,
       "searching": true,
-      "responsive": true, 
-      "lengthChange": false, 
+      "responsive": true,
+      "lengthChange": false,
       "autoWidth": false,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#appendixlist_wrapper .col-md-6:eq(0)');
@@ -162,14 +159,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/appendix/delete/",
+            url: "{% url 'appendix_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/appendix/{{DB_report_query.pk}}"; 
+              document.location.href = "{% url 'reportappendix' DB_report_query.pk %}";
             }
         })
   }

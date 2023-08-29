@@ -18,12 +18,12 @@
         <div class="row mb-2">
 
           <div class="col-sm-6">
-            <h1>{% translate "Product" %} {{ DB_product_query.name }}</h1>
+            <h1>{% translate "Product" %} {{ DB_product_query.name | bleach }}</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-              <li class="breadcrumb-item"><a href="/product/list/">{% translate "Products" %}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_product_query.customer.pk %}">{{ DB_product_query.customer.name | bleach}}</a></li>
               <li class="breadcrumb-item active">{{ DB_product_query.name | bleach }}</li>
             </ol>
           </div>
@@ -96,9 +96,9 @@
   
 
 
+      {% if DB_product_query.description %}
       <div class="row">
         <div class="col-md-12">
-
             <div class="card card-outline card-primary">
                 <div class="card-header">
                   <h3 class="card-title">
@@ -113,11 +113,10 @@
                 <div class="card-body">
                     <p>{{ DB_product_query.description | safe_markdown | bleach }}</p>
                 </div>
-
-
               </div>
         </div>
       </div>
+      {% endif%}
 
 
 
@@ -147,8 +146,8 @@
 
               {% for report in DB_report_query %}
                   <tr>
-                    <td>{{ report.report_id }} </td>
-                    <td>{{ report.title }} </td>
+                    <td>{{ report.report_id | bleach }} </td>
+                    <td>{{ report.title | bleach }} </td>
                     <td>{{ report.creation_date | date:"d-m-Y" }} </td>
                     <td>
                       <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
@@ -157,6 +156,7 @@
                         <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
                         
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                          <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{report.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
                           <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
                           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
@@ -180,6 +180,27 @@
                                 <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
 
                                 <button type="button" onclick="DeleteID({{report.pk}});" class="btn btn-outline-light">{% translate "Delete Report" %}</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+
+                        <div class="modal modal-warning fade mm-modal-clone-{{report.pk}}" id="modal-warning">
+                          <div class="modal-dialog">
+                            <div class="modal-content bg-warning">
+                              <div class="modal-header">
+                                <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <p>{% translate "Clone Report and Findings" %}&hellip;</p>
+                              </div>
+                              <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                <button type="button" onclick="DuplicateID({{report.pk}});" class="btn btn-outline-light">{% translate "Clone Report and Findings" %}</button>
                               </div>
                             </div>
                           </div>
@@ -226,9 +247,25 @@
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/list/"; 
+              document.location.href = "{% url 'product_view' DB_product_query.pk %}";
             }
         })
+  }
+
+
+  function DuplicateID(dup_id) {
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'report_findings_duplicate' %}",
+        headers:{
+          "X-CSRFToken": '{{ csrf_token }}'
+        },
+        data : { 'duplicate_id': dup_id},
+
+        success : function(json) {
+          document.location.href = "{% url 'product_view' DB_product_query.pk %}";
+        }
+    })
   }
 </script>
 

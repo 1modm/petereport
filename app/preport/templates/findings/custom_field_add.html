@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load i18n %}
+{% load bleach_tags %}
 
 {% block title %} {% translate "Custom Fields" %} {% endblock title %}
 
@@ -20,8 +21,10 @@
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-          <li class="breadcrumb-item"><a href="/report/view/{{ DB_finding_query.report.pk}}">{{ DB_finding_query.report.title}}</a></li>
-          <li class="breadcrumb-item active"><a href="/finding/view/{{ DB_finding_query.pk}}">{{ DB_finding_query.title}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_finding_query.report.product.customer.pk %}">{{ DB_finding_query.report.product.customer.name | bleach}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'product_view' DB_finding_query.report.product.pk %}">{{ DB_finding_query.report.product.name | bleach}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'report_view' DB_finding_query.report.pk %}">{{ DB_finding_query.report.title}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'finding_view' DB_finding_query.pk %}">{{ DB_finding_query.title | bleach}}</a></li>
         </ol>
       </div>
     </div>

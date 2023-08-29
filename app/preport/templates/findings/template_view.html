@@ -21,15 +21,13 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-              <li class="breadcrumb-item"><a href="/template/list/">{% translate "Templates" %}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'template_list' %}">{% translate "Templates" %}</a></li>
               <li class="breadcrumb-item active">{{ DB_Template.title | bleach}}</li>
             </ol>
           </div>
         </div>
       </div>
     </section>
-
-
 
 
 
@@ -66,21 +64,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-12 col-sm-6">
-                        <div class="info-box bg-light">
-                          <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">{% translate "CWE" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cwe.cwe_id }} - {{DB_Template.cwe.cwe_name }}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
 
-
-
-        
-                    <div class="row">
-     
                       <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
@@ -90,7 +74,14 @@
                         </div>
                       </div>
 
-                        <div class="col-12 col-sm-6">
+                    </div>
+
+
+
+        
+                    <div class="row">
+     
+                      <div class="col-12 col-sm-4">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "Severity" %}</span>
@@ -112,6 +103,25 @@
                           </div>
                         </div>
                       </div>
+
+
+
+
+                      <div class="col-12 col-sm-8">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "CWE" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cwe.cwe_id }} - {{DB_Template.cwe.cwe_name }}</span>
+                          </div>
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "OWASP" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.owasp.owasp_id }} - {{DB_Template.owasp.owasp_name }}</span>
+                          </div>
+
+                        </div>
+                      </div>
+
+
 
 
                     </div>

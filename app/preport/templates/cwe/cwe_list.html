@@ -44,10 +44,10 @@
           <table id="cwelist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                      <th style="width: 25%">
+                      <th style="width: 25%" class="text-center">
                           {% translate "Title" %}
                       </th>
-                      <th style="width: 60%">
+                      <th style="width: 60%" class="text-center">
                           {% translate "Description" %}
                       </th>
                       <th style="width: 15%" class="text-center">{% translate "Actions" %}</th>
@@ -68,7 +68,7 @@
 
                     <td class="text-center">
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                          <a href="/cwe/edit/{{ cwe.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                          <a href="{% url 'cwe_edit' cwe.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
                           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{cwe.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
                     </td>
@@ -134,14 +134,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/cwe/delete/",
+            url: "{% url 'cwe_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/cwe/list/"; 
+              document.location.href = "{% url 'cwe_list' %}";
             }
         })
   }

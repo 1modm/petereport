@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load i18n %}
+{% load bleach_tags %}
 {% block title %} {% translate "Templates" %} {% endblock title %}
 
 {% block stylesheets %}
@@ -8,18 +9,19 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  
+
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-4">
-          <h1>{{DB_report_query.title}}</h1>
+          <h1>{% translate "Finding Templates" %}</h1>
         </div>
         <div class="col-sm-8">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-            <li class="breadcrumb-item"><a href="/product/view/{{ DB_report_query.product.pk}}">{{ DB_report_query.product.name}}</a></li>
-            <li class="breadcrumb-item"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report_query.product.customer.pk %}">{{ DB_report_query.product.customer.name | bleach}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report_query.product.pk %}">{{ DB_report_query.product.name | bleach}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'report_view' DB_report_query.pk %}">{{ DB_report_query.title}}</a></li>
             <li class="breadcrumb-item active">{% translate "Add finding from template" %}</a></li>
           </ol>
         </div>
@@ -66,32 +68,30 @@
 
                     <td>
                         
-                          {% if template.severity == "Critical" %}
-                              <b><font color="#CC0000">{{template.severity}}</font></b>
-                          {% elif template.severity == "High" %}
-                              <b><font color="#F20000">{{template.severity}}</font></b>
-                          {% elif template.severity == "Medium" %}
-                              <b><font color="#FC7F03">{{template.severity}}</font></b>
-                          {% elif template.severity == "Low" %}
-                              <b><font color="#05B04F">{{template.severity}}</font></b>
-                          {% elif template.severity == "Info" %}
-                              <b><font color="#45A7F7">{{template.severity}}</font></b>
-                          {% else %}
-                              <b>{{template.severity}}</b>
-                          {% endif %}
+                        {% if template.severity == "Critical" %}
+                            <b><font color="#CC0000">{{template.severity}}</font></b>
+                        {% elif template.severity == "High" %}
+                            <b><font color="#F20000">{{template.severity}}</font></b>
+                        {% elif template.severity == "Medium" %}
+                            <b><font color="#FC7F03">{{template.severity}}</font></b>
+                        {% elif template.severity == "Low" %}
+                            <b><font color="#05B04F">{{template.severity}}</font></b>
+                        {% elif template.severity == "Info" %}
+                            <b><font color="#45A7F7">{{template.severity}}</font></b>
+                        {% else %}
+                            <b>{{template.severity}}</b>
+                        {% endif %}
 
                     </td>
 
-                      <td>
-                          {{template.cvss_base_score}}
-                      </td>
+                    <td>
+                        {{template.cvss_base_score}}
+                    </td>
 
-                      <td align="center">
-
-                        <a href="/template/add/report/{{ template.pk }}/{{ DB_report_query.pk }}"><button type="button" class="btn btn-danger btn-sm"><i class="fa fa-folder"></i> {% translate "Add Finding to Report" %}</button></a>
-  
-                      </td>
-          
+                    <td align="center">
+                        <a href="{% url 'templateaddreport' template.pk DB_report_query.pk %}"><button type="button" class="btn btn-danger btn-sm"><i class="fa fa-folder"></i> {% translate "Add Finding to Report" %}</button></a>
+                    </td>
+        
 
                   </tr>
 
@@ -116,8 +116,8 @@
     $("#templatelist").DataTable({
       "paging": true,
       "searching": true,
-      "responsive": true, 
-      "lengthChange": false, 
+      "responsive": true,
+      "lengthChange": false,
       "autoWidth": false,
       "ordering": true,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]

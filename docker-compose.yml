@@ -1,8 +1,9 @@
-version: '3.7'
+version: '3.8'
 
 services:
   nginx:
     image: nginx
+    container_name: petereport_nginx
     volumes:
       - ./nginx:/opt/petereport/nginx
       - ./nginx/petereport.conf:/etc/nginx/conf.d/petereport.conf
@@ -18,13 +19,16 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    image: petereport_django
+    container_name: petereport_django
     command: bash -c "
       sleep 1 &&
-      pipenv install --deploy --ignore-pipfile &&
+      pipenv install --deploy --ignore-pipfile --python 3.9 &&
       pip freeze && 
       pipenv run ./app/manage.py makemigrations &&
       pipenv run ./app/manage.py migrate &&
       pipenv run ./app/manage.py loaddata ./app/config/cwe-list.json &&
+      pipenv run ./app/manage.py loaddata ./app/config/owasp-list.json &&
       pipenv run gunicorn --chdir ./app petereport.wsgi:application --timeout 120 --graceful-timeout 60 --bind 0.0.0.0:8000"
     volumes:
       - .:/opt/petereport

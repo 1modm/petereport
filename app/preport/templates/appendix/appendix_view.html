@@ -11,7 +11,7 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  
+
 
     <section class="content-header">
       <div class="container-fluid">
@@ -22,10 +22,11 @@
           <div class="col-sm-10">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-              <li class="breadcrumb-item"><a href="/product/view/{{ DB_finding_query.report.product.pk }}">{{ DB_finding_query.report.product.name | bleach}}</a></li>
-              <li class="breadcrumb-item"><a href="/report/view/{{ DB_finding_query.report.pk }}">{{ DB_finding_query.report.title | bleach}}</a></li>
-              <li class="breadcrumb-item"><a href="/finding/view/{{ DB_finding_query.pk }}">{{ DB_finding_query.title | bleach}}</a></li>
-              <li class="breadcrumb-item active">{{ DB_appendix_query.title | bleach}}</li>
+              <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_finding_query.report.product.customer.pk %}">{{ DB_finding_query.report.product.customer.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'product_view' DB_finding_query.report.product.pk %}">{{ DB_finding_query.report.product.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'report_view' DB_finding_query.report.pk %}">{{ DB_finding_query.report.title}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'finding_view' DB_finding_query.pk %}">{{ DB_finding_query.title | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'report_view' DB_report_query.pk %}">{{ DB_report_query.title}}</a></li>
             </ol>
           </div>
         </div>
@@ -59,7 +60,7 @@
               </div>
 
         </div>
-      </div> 
+      </div>
 
 
       <div class="row">

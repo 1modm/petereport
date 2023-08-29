@@ -10,22 +10,27 @@ from django.utils.safestring import mark_safe
 from django.core.files.storage import FileSystemStorage
 from django.utils.translation import gettext_lazy as _
 from django.utils.functional import Promise
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.core.serializers.json import DjangoJSONEncoder
+import django.db
 
 # Forms
-from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm
+from .forms import NewProductForm, NewReportForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewFieldForm, NewSettingsForm, NewCustomerForm, NewOWASPForm
 
 # Model
-from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_Custom_field, DB_AttackFlow
+from .models import DB_Report, DB_Finding, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_Custom_field, DB_AttackFlow, DB_OWASP, DB_Settings, DB_Customer, DB_Deliverable
 
 # Decorators
 from .decorators import allowed_users
+
+# Utils
+from .utils import replace_media_url_local_base64
 
 # Libraries
 import datetime
 import textwrap
 import requests
+import pathlib
 import base64
 import bleach
 import uuid
@@ -37,10 +42,10 @@ from collections import Counter
 import pypandoc
 
 # Martor
-from petereport.settings import MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, SERVER_CONF
+from petereport.settings import MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, SERVER_CONF, TEMPLATES_DIRECTORIES, MARTOR_MEDIA_URL
 
 # PeTeReport config
-from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG
+from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG, PETEREPORT_CONFIG
 
 # Not all Django output can be passed unmodified to json. In particular, lazy
 # translation objects need a special encoder written for them.
@@ -48,7 +53,7 @@ from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_TEMPLATES, 
 class LazyEncoder(DjangoJSONEncoder):
     def default(self, obj):
         if isinstance(obj, Promise):
-            return force_text(obj)
+            return force_str(obj)
         return super(LazyEncoder, self).default(obj)
 
 # ----------------------------------------------------------------------
@@ -61,7 +66,7 @@ def markdown_uploader(request):
     Makdown image upload for locale storage
     and represent as json to markdown editor.
     """
-    if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         if 'markdown-image-upload' in request.FILES:
             image = request.FILES['markdown-image-upload']
             image_types = [
@@ -101,13 +106,13 @@ def markdown_uploader(request):
                     })
 
             elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-                img_uuid = "{0}-{1}".format(uuid.uuid4().hex[:10], image.name.replace(' ', '-'))
-                tmp_file = os.path.join(MARTOR_UPLOAD_PATH, img_uuid)
+                img_uuid = "{0}-{1}".format(uuid.uuid4().hex[:32], image.name.replace(' ', '-')) 
+                today = datetime.date.today().strftime('%Y/%m/%d/')
+                tmp_file = os.path.join(MARTOR_UPLOAD_PATH, '{}'.format(today), img_uuid)
+
                 def_path = default_storage.save(tmp_file, ContentFile(image.read()))
                 # Modified to include server host and port
-                MEDIA_URL_COMPLETE = PETEREPORT_MARKDOWN['media_host'] + MEDIA_URL
-                img_url_complete = os.path.join(MEDIA_URL_COMPLETE, def_path)
-
+                img_url_complete = os.path.join(MARTOR_MEDIA_URL, def_path)
                 data = json.dumps({
                     'status': 200,
                     'link': img_url_complete,
@@ -120,23 +125,50 @@ def markdown_uploader(request):
 
 
 # ----------------------------------------------------------------------
-#                           index 
+#                           header & footer
 # ----------------------------------------------------------------------
 
 
+def header_footer_data(request):
+    application_license = PETEREPORT_CONFIG['application_license']
+    application_name = PETEREPORT_CONFIG['application_name']
+    company_name = DB_Settings.objects.get().company_name
+    company_picture = DB_Settings.objects.get().company_picture
+    company_website = DB_Settings.objects.get().company_website
+
+    return {'application_name': application_name,
+            'application_license': application_license,
+            'company_name': company_name,
+            'company_picture': company_picture,
+            'company_website': company_website,
+            }
+
+# ----------------------------------------------------------------------
+#                           index 
+# ----------------------------------------------------------------------
 
 @login_required
 def index(request):
 
     DB_product_query = DB_Product.objects.order_by('name')
+    DB_customer_query = DB_Customer.objects.order_by('name')
+    DB_deliverables_query = DB_Deliverable.objects
 
     report_number = {}
     product_findings = {}
     total_reports = 0
+    total_customers = DB_customer_query.count()
     total_products = DB_product_query.count()
+    total_deliverables = DB_deliverables_query.count()
     count_product_findings_total = 0
     count_product_findings_critical_high = 0
+    count_product_findings_critical = 0
+    count_product_findings_high = 0
     count_product_findings_medium = 0
+    count_product_findings_low = 0
+    count_product_findings_info = 0
+    count_open_findings = 0
+    count_closed_findings = 0
 
     for p in DB_product_query:
         DB_Report_query = DB_Report.objects.filter(product=p.id)
@@ -149,25 +181,50 @@ def index(request):
             count_product_findings = DB_finding_query.count()
             product_findings[report.id] = count_product_findings
             count_product_findings_total += count_product_findings
+
             for finding in DB_finding_query:
-                if finding.severity == 'High' or finding.severity == 'Critical':
+                if finding.severity == 'Critical':
                     count_product_findings_critical_high += 1
+                    count_product_findings_critical += 1
+                elif finding.severity == 'High':
+                    count_product_findings_critical_high += 1
+                    count_product_findings_high += 1
                 elif finding.severity == 'Medium':
                     count_product_findings_medium += 1
+                elif finding.severity == 'Low':
+                    count_product_findings_low += 1
+                elif finding.severity == 'Info':
+                    count_product_findings_info += 1
+
+                if finding.status == 'Open':
+                    count_open_findings += 1
+                elif finding.status == 'Closed':
+                    count_closed_findings += 1
 
     DB_finding_query = DB_Finding.objects.order_by('cvss_score').reverse()
 
+    # CWEs and OWASP
     cwe_rows = []
+    owasp_rows = []
 
     for finding in DB_finding_query:
-        finding_cwe = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
-        cwe_rows.append(finding_cwe)
+        if finding.cwe and finding.cwe.cwe_id > 0:
+            finding_cwe = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
+            cwe_rows.append(finding_cwe)
+        if finding.owasp and finding.owasp.owasp_id > 0:
+            prefix = 'A'
+            if finding.owasp.owasp_id < 10:
+                prefix += '0'
+            finding_owasp = f"{prefix}{finding.owasp.owasp_id}:{finding.owasp.owasp_year} {finding.owasp.owasp_name}"
+            owasp_rows.append(finding_owasp)
 
     cwe_cat = Counter(cwe_rows)
     cwe_categories = []
+    owasp_cat = Counter(owasp_rows)
+    owasp_categories = []
 
     for key_cwe, value_cwe in cwe_cat.items():
-        fixed_key_cwe = '\n'.join(key_cwe[i:i+60] for i in range(0, len(key_cwe), 60))
+        fixed_key_cwe = '\n'.join(key_cwe[i:i+48] for i in range(0, len(key_cwe), 48))
         dict_cwe = {
             "value": value_cwe,
             "name": fixed_key_cwe
@@ -175,12 +232,19 @@ def index(request):
 
         cwe_categories.append(dict_cwe)
 
+    for key_owasp, value_owasp in owasp_cat.items():
+        fixed_key_owasp = '\n'.join(key_owasp[i:i+35] for i in range(0, len(key_owasp), 35))
+        dict_owasp = {
+            "value": value_owasp,
+            "name": fixed_key_owasp
+        }
 
+        owasp_categories.append(dict_owasp)
 
     # TOP 10 findings
     DB_finding_query = DB_finding_query[:10] 
 
-    return render(request, 'home/index.html', {'total_reports': total_reports, 'total_products': total_products, 'count_product_findings_total': count_product_findings_total, 'count_product_findings_critical_high': count_product_findings_critical_high, 'count_product_findings_medium': count_product_findings_medium, 'DB_finding_query':DB_finding_query, 'cwe_categories': cwe_categories})
+    return render(request, 'home/index.html', {'total_reports': total_reports, 'total_products': total_products, 'count_product_findings_total': count_product_findings_total, 'count_product_findings_critical_high': count_product_findings_critical_high, 'count_product_findings_medium': count_product_findings_medium, 'count_product_findings_critical': count_product_findings_critical, 'count_product_findings_high': count_product_findings_high, 'count_product_findings_low': count_product_findings_low, 'count_product_findings_info': count_product_findings_info, 'DB_finding_query':DB_finding_query, 'cwe_categories': cwe_categories, 'total_customers': total_customers, 'total_deliverables': total_deliverables, 'owasp_categories': owasp_categories, 'count_open_findings': count_open_findings, 'count_closed_findings': count_closed_findings})
 
 
 # ----------------------------------------------------------------------
@@ -260,6 +324,142 @@ def user_delete(request):
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
+# ----------------------------------------------------------------------
+#                           Settings
+# ----------------------------------------------------------------------
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def settings(request):
+    DB_settings_query = DB_Settings.objects.get_or_create()[0]
+
+    if request.method == 'POST':
+        form = NewSettingsForm(request.POST, request.FILES, instance=DB_settings_query)
+        if form.is_valid():
+            prod = form.save(commit=False)
+            prod.save()
+            return redirect('settings')
+    else:
+        form = NewSettingsForm(instance=DB_settings_query)
+
+    return render(request, 'settings/settings.html', {
+        'form': form,
+    })
+
+
+
+
+# ----------------------------------------------------------------------
+#                           Customers
+# ----------------------------------------------------------------------
+
+@login_required
+def customer_list(request):
+
+    DB_customer_query = DB_Customer.objects.order_by('pk').all()
+
+    return render(request, 'customers/customer_list.html', {'DB_customer_query': DB_customer_query})
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def customer_add(request):
+    if request.method == 'POST':
+        form = NewCustomerForm(request.POST)
+        if form.is_valid():
+            prod = form.save(commit=False)
+            prod.save()
+            return redirect('customer_list')
+    else:
+        form = NewCustomerForm()
+
+    return render(request, 'customers/customer_add.html', {
+        'form': form
+    })
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def customer_edit(request,pk):
+
+    DB_customer_query = get_object_or_404(DB_Customer, pk=pk)
+
+    if request.method == 'POST':
+        form = NewCustomerForm(request.POST, instance=DB_customer_query)
+
+        if form.is_valid():
+            prod = form.save(commit=False)
+            prod.save()
+            return redirect('customer_list')
+    else:
+        form = NewCustomerForm(instance=DB_customer_query)
+    return render(request, 'customers/customer_add.html', {
+        'form': form
+    })
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def customer_delete(request):
+
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_Customer.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+
+@login_required
+def customer_view(request,pk):
+
+    DB_customer_query = get_object_or_404(DB_Customer, pk=pk)
+    DB_product_query = DB_Product.objects.filter(customer=DB_customer_query)
+    DB_report_query = DB_Report.objects.filter(product__in = DB_product_query)
+    count_customer_product = DB_product_query.count()
+    count_customer_report = DB_report_query.count()
+    customer_findings = {}
+    count_customer_findings_total = 0
+    count_customer_findings_critical_high = 0
+
+    # Deliverables
+    DB_deliverable_query = DB_Deliverable.objects.filter(report__in=DB_report_query)
+    count_deliverable = DB_deliverable_query.count()
+
+    cwe_rows = []
+
+    for report in DB_report_query:
+        # Findings
+        DB_finding_query = DB_Finding.objects.filter(report=report.id)
+        count_product_findings = DB_finding_query.count()
+        customer_findings[report.id] = count_product_findings
+        count_customer_findings_total += count_product_findings
+
+        for finding in DB_finding_query:
+            finding_cwe = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
+            cwe_rows.append(finding_cwe)
+
+            if finding.severity == 'High' or finding.severity == 'Critical':
+                count_customer_findings_critical_high += 1
+
+
+    cwe_cat = Counter(cwe_rows)
+    cwe_categories = []
+
+    for key_cwe, value_cwe in cwe_cat.items():
+        fixed_key_cwe = '\n'.join(key_cwe[i:i+60] for i in range(0, len(key_cwe), 60))
+        dict_cwe = {
+            "value": value_cwe,
+            "name": fixed_key_cwe
+        }
+
+        cwe_categories.append(dict_cwe)
+
+    return render(request, 'customers/customer_view.html', {'pk': pk, 'DB_customer_query': DB_customer_query, 'DB_product_query': DB_product_query, 'DB_report_query': DB_report_query, 'count_customer_product': count_customer_product, 'count_customer_report': count_customer_report, 'customer_findings': customer_findings, 'count_customer_findings_total': count_customer_findings_total, 'count_customer_findings_critical_high': count_customer_findings_critical_high, 'cwe_categories': cwe_categories, 'DB_deliverable_query': DB_deliverable_query, 'count_deliverable': count_deliverable})
+
+
 
 # ----------------------------------------------------------------------
 #                           Products 
@@ -269,13 +469,8 @@ def user_delete(request):
 def product_list(request):
 
     DB_product_query = DB_Product.objects.order_by('pk').all()
-    report_number = {}
 
-    for product_in_db in DB_product_query:
-        count_product_report = DB_Report.objects.filter(product=product_in_db.id).count()
-        report_number[product_in_db.id] = count_product_report
-
-    return render(request, 'products/product_list.html', {'DB_product_query': DB_product_query, 'report_number': report_number})
+    return render(request, 'products/product_list.html', {'DB_product_query': DB_product_query})
 
 
 
@@ -360,7 +555,6 @@ def product_view(request,pk):
 
 
 
-
 # ----------------------------------------------------------------------
 #                           Reports 
 # ----------------------------------------------------------------------
@@ -385,6 +579,10 @@ def report_add(request):
         form = NewReportForm(request.POST)
         if form.is_valid():
             report = form.save(commit=False)
+            audit_dates = request.POST['audit']
+            split_audit_dates = audit_dates.split(" - ")
+            report.audit_start = split_audit_dates[0]
+            report.audit_end = split_audit_dates[1]
             report.save()
             return redirect('report_view', pk=report.pk)
     else:
@@ -426,6 +624,10 @@ def report_edit(request,pk):
     if request.method == 'POST':
         form = NewReportForm(request.POST, instance=report)
         if form.is_valid():
+            audit_dates = request.POST['audit']
+            split_audit_dates = audit_dates.split(" - ")
+            report.audit_start = split_audit_dates[0]
+            report.audit_end = split_audit_dates[1]
             form.save()
             return redirect('report_view', pk=report.pk)
     else:
@@ -439,7 +641,7 @@ def report_edit(request,pk):
 @login_required
 def report_view(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score')
     count_finding_query = DB_finding_query.count()
 
     DB_appendix_query = DB_Appendix.objects.filter(finding__in=DB_finding_query)
@@ -448,6 +650,9 @@ def report_view(request,pk):
     DB_attackflow_query = DB_AttackFlow.objects.filter(finding__in=DB_finding_query)
     count_attackflow_query = DB_attackflow_query.count()
 
+    DB_deliverable_query = DB_Deliverable.objects.filter(report=pk).order_by('pk')
+    count_deliverable_query = DB_deliverable_query.count()
+
     count_findings_critical = 0
     count_findings_high = 0
     count_findings_medium = 0
@@ -455,7 +660,11 @@ def report_view(request,pk):
     count_findings_info = 0
     count_findings_none = 0
 
+    count_open_findings = 0
+    count_closed_findings = 0
+
     cwe_rows = []
+    owasp_rows = []
     
     for finding in DB_finding_query:
         # Only reporting Critical/High/Medium/Low/Info findings
@@ -463,8 +672,13 @@ def report_view(request,pk):
             count_findings_none += 1
         else:
 
-            finding_cwe = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
-            cwe_rows.append(finding_cwe)
+            if finding.cwe:
+                finding_cwe = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
+                cwe_rows.append(finding_cwe)
+
+            if finding.owasp:
+                finding_owasp = f"{finding.owasp.owasp_full_id} - {finding.owasp.owasp_name}"
+                owasp_rows.append(finding_owasp)
 
             if finding.severity == 'Critical':
                 count_findings_critical += 1
@@ -478,20 +692,36 @@ def report_view(request,pk):
                 count_findings_info += 1
 
 
-    cwe_cat = Counter(cwe_rows)
+            if finding.status == 'Open':
+                count_open_findings += 1
+            elif finding.status == 'Closed':
+                count_closed_findings += 1
 
+
+    cwe_cat = Counter(cwe_rows)
     cwe_categories = []
 
     for key_cwe, value_cwe in cwe_cat.items():
-        fixed_key_cwe = '\n'.join(key_cwe[i:i+60] for i in range(0, len(key_cwe), 60))
+        fixed_key_cwe = '\n'.join(key_cwe[i:i+50] for i in range(0, len(key_cwe), 50))
         dict_cwe = {
             "value": value_cwe,
             "name": fixed_key_cwe
         }
         cwe_categories.append(dict_cwe)
 
+    owasp_cat = Counter(owasp_rows)
+    owasp_categories = []
 
-    return render(request, 'reports/report_view.html', {'DB_appendix_query': DB_appendix_query, 'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_appendix_query': count_appendix_query, 'count_finding_query': count_finding_query, 'count_findings_critical': count_findings_critical, 'count_findings_high': count_findings_high, 'count_findings_medium': count_findings_medium, 'count_findings_low': count_findings_low, 'count_findings_info': count_findings_info, 'count_findings_none': count_findings_none, 'cwe_categories': cwe_categories, 'DB_attackflow_query': DB_attackflow_query, 'count_attackflow_query': count_attackflow_query})
+    for key_owasp, value_owasp in owasp_cat.items():
+        fixed_key_owasp = '\n'.join(key_owasp[i:i+55] for i in range(0, len(key_owasp), 55))
+        dict_owasp = {
+            "value": value_owasp,
+            "name": fixed_key_owasp
+        }
+        owasp_categories.append(dict_owasp)
+
+
+    return render(request, 'reports/report_view.html', {'DB_appendix_query': DB_appendix_query, 'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_appendix_query': count_appendix_query, 'count_finding_query': count_finding_query, 'count_findings_critical': count_findings_critical, 'count_findings_high': count_findings_high, 'count_findings_medium': count_findings_medium, 'count_findings_low': count_findings_low, 'count_findings_info': count_findings_info, 'count_findings_none': count_findings_none, 'cwe_categories': cwe_categories, 'owasp_categories': owasp_categories, 'DB_attackflow_query': DB_attackflow_query, 'count_attackflow_query': count_attackflow_query, 'DB_deliverable_query': DB_deliverable_query, 'count_deliverable_query': count_deliverable_query, 'templates_directories': TEMPLATES_DIRECTORIES, 'count_open_findings': count_open_findings, 'count_closed_findings': count_closed_findings})
 
 
 
@@ -507,53 +737,26 @@ def uploadsummaryfindings(request,pk):
         # Severitybar
         summary_finding_file_base64 = request.POST['fileSeveritybar']
         format, summary_finding_file_str = summary_finding_file_base64.split(';base64,')
-        ext = format.split('/')[-1]
+        summary_ext = format.split('/')[-1]
         dataimgSeveritybar = ContentFile(base64.b64decode(summary_finding_file_str))
 
-        # Categories
+        # CWE Categories
         summary_categories_file_base64 = request.POST['file_cwe']
         format, summary_categories_finding_file_str = summary_categories_file_base64.split(';base64,')
-        ext = format.split('/')[-1]
+        cwe_ext = format.split('/')[-1]
         dataCWE = ContentFile(base64.b64decode(summary_categories_finding_file_str))
 
-        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
-            DB_report_query.executive_summary_image = summary_finding_file_base64
-            DB_report_query.categories_summary_image = summary_categories_file_base64
-            DB_report_query.save()
+         # OWASP Categories
+        owasp_summary_categories_file_base64 = request.POST['file_owasp']
+        formatf, owasp_summary_categories_finding_file_str = owasp_summary_categories_file_base64.split(';base64,')
+        owasp_ext = formatf.split('/')[-1]
+        dataOWASP = ContentFile(base64.b64decode(owasp_summary_categories_finding_file_str))
 
 
-        elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-
-            # Severity chart
-            file_name_severity = DB_report_query.report_id + "_severity_summary_finding." + ext
-            img_url_severity = os.path.join(MARTOR_UPLOAD_PATH, file_name_severity)
-            media_url_severity = os.path.join(MEDIA_ROOT, img_url_severity)
-
-            if os.path.exists(media_url_severity):
-                os.remove(media_url_severity)
-
-            fs = FileSystemStorage()
-            filename_severity = fs.save(img_url_severity, dataimgSeveritybar) 
-            uploaded_file_url_severity = fs.url(filename_severity) 
-
-            DB_report_query.report_executive_summary = uploaded_file_url_severity
-
-
-            # CWE
-            file_name_categories = DB_report_query.report_id + "_categories_summary_finding." + ext
-            img_url_categories = os.path.join(MARTOR_UPLOAD_PATH, file_name_categories)
-            media_url_categories = os.path.join(MEDIA_ROOT, img_url_categories)
-
-            if os.path.exists(media_url_categories):
-                os.remove(media_url_categories)
-
-            fs = FileSystemStorage()
-            filename_categories = fs.save(img_url_categories, dataCWE) 
-            uploaded_file_url_categories = fs.url(filename_categories) 
-
-            DB_report_query.report_categories_summary = uploaded_file_url_categories
-
-            DB_report_query.save()
+        DB_report_query.executive_summary_image = summary_finding_file_base64
+        DB_report_query.cwe_categories_summary_image = summary_categories_file_base64
+        DB_report_query.owasp_categories_summary_image = owasp_summary_categories_file_base64
+        DB_report_query.save()
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
@@ -563,490 +766,610 @@ def uploadsummaryfindings(request,pk):
 
 
 @login_required
-def reportdownloadmarkdown(request,pk):
+def reportdownloadmarkdown(request, template, pk):
 
-    # DB
-    DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+    template_dir = os.path.join(TEMPLATES_ROOT, 'markdown')
+    template_markdown_dir = os.path.join(template_dir, template)
+    template_markdown_dir_pp = pathlib.PurePath(template_markdown_dir)
 
-    # Datetime
-    report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
+    if template_markdown_dir_pp.is_relative_to(template_dir):
 
-    # MD filename
-    name_file = PETEREPORT_TEMPLATES['report_markdown_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.md'
+        # DB
+        DB_report_query = get_object_or_404(DB_Report, pk=pk)
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
-    # INIT
-    template_findings = template_appendix = md_finding_summary = md_finding = "\n"
-    counter_finding = 0
-    md_author = PETEREPORT_MARKDOWN['author']
-    md_subject = PETEREPORT_MARKDOWN['subject']
-    md_website = PETEREPORT_MARKDOWN['website']
+        # Datetime
+        now = datetime.datetime.utcnow()
+        report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
-    
-    # IMAGES
-    if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
+        # MD filename
+        name_file = bleach.clean(PETEREPORT_TEMPLATES['report_markdown_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))).replace('/', '') + '.md'
+
+        # INIT
+        template_findings = template_appendix = md_finding_summary = md_finding = "\n"
+        counter_finding = 0
+
+        md_author = DB_Settings.objects.get().company_name
+        md_subject = DB_Settings.objects.get().report_subject
+        md_website = DB_Settings.objects.get().company_website
+
+        # IMAGES
         report_executive_summary_image = DB_report_query.executive_summary_image
-        report_executive_categories_image = DB_report_query.categories_summary_image
-    elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-        report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-        report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
-
-    # Appendix
-    template_appendix = _('# Additional Notes') + "\n\n"
-
-    # FINDINGS
-    for finding in DB_finding_query:
-
-        # Custom fields
-        template_custom_fields = ""
-
-        # Only reporting Critical/High/Medium/Low/Info findings
-        if finding.severity == 'None':
-            pass
-        else:
-            counter_finding += 1
-            template_appendix_in_finding = template_attackflow_in_finding = None
-
-            # Summary table
-            md_finding_summary += render_to_string('tpl/markdown/md_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding})
-
-            # Custom fields
-            if finding.custom_field_finding.all():
-
-                for field_in_finding in finding.custom_field_finding.all():
-                    md_custom_fields = f"**{bleach.clean(field_in_finding.title)}**\n\n{bleach.clean(field_in_finding.description)}\n\n"
-
-                    template_custom_fields += ''.join(md_custom_fields)
-
-
-            # appendix
-            if finding.appendix_finding.all():
-
-                template_appendix_in_finding = _('**Additional notes**') + "\n"
-
-                for appendix_in_finding in finding.appendix_finding.all():
-                    md_appendix = render_to_string('tpl/markdown/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
-
-                    template_appendix += ''.join(md_appendix)
-                    template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "\n")
-
-
-            # attack flows
-            if finding.attackflow_finding.all():
-
-                template_attackflow_in_finding = _('**Attack Flow**') + "\n"
-
-                for attackflow_in_finding in finding.attackflow_finding.all():
-                    md_attackflow = render_to_string('tpl/markdown/md_attackflow.md', {'attackflow_in_finding': attackflow_in_finding})
-
-                    template_attackflow_in_finding += ''.join(md_attackflow + "\n")
-
-            # finding
-            md_finding = render_to_string('tpl/markdown/md_finding.md', {'finding': finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding, 'template_custom_fields': template_custom_fields})
-
-            template_findings += ''.join(md_finding)
-
-    render_md = render_to_string('tpl/markdown/md_report.md', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
-
-    final_markdown = textwrap.dedent(render_md)
-    final_markdown_output = mark_safe(final_markdown)
-
-    # Create the HttpResponse object with the appropriate header.
-    response = HttpResponse(final_markdown_output, content_type='text/markdown')
-    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
-
-    return response
-
-
-
-
-@login_required
-def reportdownloadhtml(request,pk):
-
-    # DB
-    DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
-
-    # Datetime
-    report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
-
-    # HTML filename
-    name_file = PETEREPORT_TEMPLATES['report_html_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.html'
-
-    # COLORS
-    CRITICAL = 'CC0000'
-    HIGH = 'FF0000'
-    WARNING = 'FC7F03'
-    LOW = '05B04F'
-    INFO = '002060'
-
-    # INIT
-    template_findings = template_appendix = md_finding_summary = ''
-    md_author = PETEREPORT_MARKDOWN['author']
-    md_subject = PETEREPORT_MARKDOWN['subject']
-    md_website = PETEREPORT_MARKDOWN['website']
-
-    counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = 0
-
-    # Summary table
-    finding_summary_table = render_to_string('tpl/html/html_finding_summary_table.html')
-
-    # Appendix
-    template_appendix = _('# Additional Notes') + "\n\n"
-
-    # FINDINGS
-    for finding in DB_finding_query:
+        report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
+        report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
         
-        # Custom fields
-        template_custom_fields = ""
+        # Appendix
+        for finding in DB_finding_query:
+            if finding.appendix_finding.all():
+                template_appendix = _('# Additional Notes') + "\n\n"
 
-        # Only reporting Critical/High/Medium/Low/Info findings
-        if finding.severity == 'None':
-            pass
-        else:
-            counter_finding += 1
-            template_appendix_in_finding = template_attackflow_in_finding = None
+        # FINDINGS
+        for finding in DB_finding_query:
 
-            if finding.severity == 'Critical':
-                color_text_severity = CRITICAL
-                counter_finding_critical += 1 
-            elif finding.severity == 'High':
-                color_text_severity = HIGH
-                counter_finding_high += 1 
-            elif finding.severity == 'Medium':
-                color_text_severity = WARNING
-                counter_finding_medium += 1 
-            elif finding.severity == 'Low':
-                color_text_severity = LOW
-                counter_finding_low += 1 
+            # Custom fields
+            template_custom_fields = ""
+
+            # Only reporting Critical/High/Medium/Low/Info findings
+            if finding.severity == 'None':
+                pass
             else:
-                color_text_severity = INFO
-                counter_finding_info += 1 
+                counter_finding += 1
+                template_appendix_in_finding = template_attackflow_in_finding = None
 
-            # Summary table
-            finding_summary_table += render_to_string('tpl/html/html_finding_summary.html', {'finding': finding, 'counter_finding': counter_finding, 'color_text_severity': color_text_severity})
+                # Summary table
+                md_finding_summary += render_to_string(os.path.join(template_markdown_dir, 'md_finding_summary.md'), {'finding': finding, 'counter_finding': counter_finding})
+
+                # Custom fields
+                if finding.custom_field_finding.all():
+
+                    for field_in_finding in finding.custom_field_finding.all():
+                        md_custom_fields = f"**{bleach.clean(field_in_finding.title)}**\n\n{bleach.clean(field_in_finding.description)}\n\n"
+
+                        template_custom_fields += ''.join(md_custom_fields)
+
+
+                # appendix
+                if finding.appendix_finding.all():
+
+                    template_appendix_in_finding = _('**Additional notes**') + "\n"
+
+                    for appendix_in_finding in finding.appendix_finding.all():
+
+                        md_appendix = render_to_string(os.path.join(template_markdown_dir, 'md_appendix.md'), {'appendix_in_finding': appendix_in_finding})
+
+                        template_appendix += ''.join(md_appendix)
+                        template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "\n")
+
+
+                # attack flows
+                if finding.attackflow_finding.all():
+
+                    template_attackflow_in_finding = _('**Attack Flow**') + "\n"
+
+                    for attackflow_in_finding in finding.attackflow_finding.all():
+
+                        md_attackflow = render_to_string(os.path.join(template_markdown_dir, 'md_attackflow.md'), {'attackflow_in_finding': attackflow_in_finding})
+
+                        template_attackflow_in_finding += ''.join(md_attackflow + "\n")
+
+                # finding
+                md_finding = render_to_string(os.path.join(template_markdown_dir, 'md_finding.md'),{'finding': finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding,'template_custom_fields': template_custom_fields})
+
+                template_findings += ''.join(md_finding)
+
+        render_md = render_to_string(os.path.join(template_markdown_dir, 'md_report.md'), {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_executive_summary_image': report_executive_summary_image, 'report_cwe_categories_image': report_cwe_categories_image, 'report_owasp_categories_image': report_owasp_categories_image})
+
+        final_markdown = textwrap.dedent(render_md)
+        final_markdown_output = mark_safe(final_markdown)
+
+        # Replace media with base64 local data in order to have all media into the file
+        if PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
+            final_markdown_output = replace_media_url_local_base64(final_markdown_output)
+
+        markdown_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'markdown', name_file)
+
+        with open(markdown_file_output, 'w') as fh:
+            fh.write(final_markdown_output)
+            deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now, filetemplate=template, filetype='markdown')
+            deliverable.save()
+
+        if os.path.exists(markdown_file_output):
+            with open(markdown_file_output, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type="text/markdown")
+                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
+                return response
+
+    raise Http404
+
+
+
+@login_required
+def reportdownloadhtml(request, template, pk):
+
+    template_dir = os.path.join(TEMPLATES_ROOT, 'html')
+    template_html_dir = os.path.join(template_dir, template)
+    template_html_dir_pp = pathlib.PurePath(template_html_dir)
+
+    if template_html_dir_pp.is_relative_to(template_dir):
+
+        # DB
+        DB_report_query = get_object_or_404(DB_Report, pk=pk)
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+
+        # Datetime
+        now = datetime.datetime.utcnow()
+        report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
+
+        # HTML filename
+        name_file = bleach.clean(PETEREPORT_TEMPLATES['report_html_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))).replace('/', '') + '.html'
+
+        # COLORS
+        CRITICAL = 'CC0000'
+        HIGH = 'FF0000'
+        WARNING = 'FC7F03'
+        LOW = '05B04F'
+        INFO = '002060'
+
+        # INIT
+        template_findings = template_appendix = md_finding_summary = finding_summary_table = ''
+        md_author = DB_Settings.objects.get().company_name
+        md_subject = DB_Settings.objects.get().report_subject
+        md_website = DB_Settings.objects.get().company_website
+
+        counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = counter_appendix = 0
+
+        # Summary table
+        finding_summary_table = render_to_string(os.path.join(template_html_dir, 'html_finding_summary_table.html'))
+
+        # Appendix
+        for finding in DB_finding_query:
+            if finding.appendix_finding.all():
+                template_appendix = _('# Additional Notes') + "\n\n"
+
+        # FINDINGS
+        for finding in DB_finding_query:
             
             # Custom fields
-            if finding.custom_field_finding.all():
+            template_custom_fields = ""
 
-                for field_in_finding in finding.custom_field_finding.all():
-                    html_custom_fields = f"<tr><td style=\"width: 15%\">**{bleach.clean(field_in_finding.title)}**</td><td>{bleach.clean(field_in_finding.description)}</td></tr>\n\n"
+            # Only reporting Critical/High/Medium/Low/Info findings
+            if finding.severity == 'None':
+                pass
+            else:
+                counter_finding += 1
+                template_appendix_in_finding = template_attackflow_in_finding = None
 
-                    template_custom_fields += ''.join(html_custom_fields)
+                if finding.severity == 'Critical':
+                    color_text_severity = CRITICAL
+                    counter_finding_critical += 1 
+                elif finding.severity == 'High':
+                    color_text_severity = HIGH
+                    counter_finding_high += 1 
+                elif finding.severity == 'Medium':
+                    color_text_severity = WARNING
+                    counter_finding_medium += 1 
+                elif finding.severity == 'Low':
+                    color_text_severity = LOW
+                    counter_finding_low += 1 
+                else:
+                    color_text_severity = INFO
+                    counter_finding_info += 1 
+
+                # Summary table
+                finding_summary_table += render_to_string(os.path.join(template_html_dir, 'html_finding_summary.html'), {'finding': finding, 'counter_finding': counter_finding, 'color_text_severity': color_text_severity})
+                
+                # Custom fields
+                if finding.custom_field_finding.all():
+
+                    for field_in_finding in finding.custom_field_finding.all():
+                        html_custom_fields = f"<tr><td style=\"width: 15%\">**{bleach.clean(field_in_finding.title)}**</td><td>{bleach.clean(field_in_finding.description)}</td></tr>\n\n"
+
+                        template_custom_fields += ''.join(html_custom_fields)
 
 
-            # Appendix
-            if finding.appendix_finding.all():
+                # Appendix
+                if finding.appendix_finding.all():
 
-                template_appendix_in_finding = "<td style=\"width: 15%\">" + _('**Additional notes**') + "</td><td>\n"
+                    template_appendix_in_finding = "<td style=\"width: 15%\">" + _('**Additional notes**') + "</td><td>\n"
 
-                for appendix_in_finding in finding.appendix_finding.all():
-                    html_appendix = render_to_string('tpl/html/md_appendix.md', {'appendix_in_finding': appendix_in_finding})
+                    for appendix_in_finding in finding.appendix_finding.all():
+                        html_appendix = render_to_string(os.path.join(template_html_dir, 'md_appendix.md'), {'appendix_in_finding': appendix_in_finding})
 
-                    template_appendix += ''.join(html_appendix)
-                    template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "<br>")
+                        template_appendix += ''.join(html_appendix)
+                        template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "<br>")
 
-                template_appendix_in_finding += ''.join("</td>\n")
+                    template_appendix_in_finding += ''.join("</td>\n")
 
-            
-            # attack flow
-            if finding.attackflow_finding.all():
+                
+                # attack flow
+                if finding.attackflow_finding.all():
 
-                template_attackflow_in_finding = "<td style=\"width: 15%\">" + _('**Attack Flow**') + "</td><td>\n"
+                    template_attackflow_in_finding = "<td style=\"width: 15%\">" + _('**Attack Flow**') + "</td><td>\n"
 
-                for attackflow_in_finding in finding.attackflow_finding.all():
-                    html_attackflow = render_to_string('tpl/html/md_attackflow.md', {'attackflow_in_finding': attackflow_in_finding})
+                    for attackflow_in_finding in finding.attackflow_finding.all():
+                        html_attackflow = render_to_string(os.path.join(template_html_dir, 'md_attackflow.md'), {'attackflow_in_finding': attackflow_in_finding})
 
-                    template_attackflow_in_finding += ''.join(html_attackflow + "<br>")
-                    
-                template_attackflow_in_finding += ''.join("</td>\n")
+                        template_attackflow_in_finding += ''.join(html_attackflow + "<br>")
+                        
+                    template_attackflow_in_finding += ''.join("</td>\n")
 
 
-            # finding
-            html_finding = render_to_string('tpl/html/html_finding.md', {'finding': finding, 'color_text_severity': color_text_severity, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding, 'template_custom_fields': template_custom_fields})
+                # finding
+                html_finding = render_to_string(os.path.join(template_html_dir, 'html_finding.md'), {'finding': finding, 'color_text_severity': color_text_severity, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding, 'template_custom_fields': template_custom_fields})
 
-            template_findings += ''.join(html_finding)
+                template_findings += ''.join(html_finding)
 
-    # Summary table end
-    finding_summary_table += render_to_string('tpl/html/html_finding_end_table.html')
+        # Summary table end
+        finding_summary_table += render_to_string(os.path.join(template_html_dir, 'html_finding_end_table.html'))
 
-    render_md = render_to_string('tpl/html/html_report.md', {'DB_report_query': DB_report_query, 'template_findings': mark_safe(template_findings), 'template_appendix': mark_safe(template_appendix), 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'finding_summary_table': finding_summary_table})
+        render_md = render_to_string(os.path.join(template_html_dir, 'html_report.md'), {'DB_report_query': DB_report_query, 'template_findings': mark_safe(template_findings), 'template_appendix': mark_safe(template_appendix), 'finding_summary': md_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'finding_summary_table': finding_summary_table})
 
-    final_markdown = textwrap.dedent(render_md)
-    final_markdown_output = mark_safe(final_markdown)
+        final_markdown = textwrap.dedent(render_md)
+        final_markdown_output = mark_safe(final_markdown)
 
-    html_template = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['html_template'])    
-    pathfile = f"html/{name_file}"
+        # Replace media with base64 local data in order to have all media into the file
+        if  PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
+            final_markdown_output = replace_media_url_local_base64(final_markdown_output)
 
-    html_file_output = os.path.join(REPORTS_MEDIA_ROOT, pathfile)
+        html_template = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['html_template'])    
 
-    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained'])
+        html_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'html', name_file)
 
-    if os.path.exists(html_file_output):
-            with open(html_file_output, 'rb') as fh:
-                response = HttpResponse(fh.read(), content_type="text/html; charset=utf-8")
-                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(html_file_output)
-                return response
+        output_pypandoc = pypandoc.convert_text(final_markdown_output, to='html', outputfile=html_file_output, format='md', extra_args=['--from', 'markdown+yaml_metadata_block+raw_html', '--template', html_template, '--toc', '--table-of-contents', '--toc-depth', '2', '--number-sections', '--top-level-division=chapter', '--self-contained'])
+
+        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now, filetemplate=template, filetype='html')
+        deliverable.save()
+
+        if os.path.exists(html_file_output):
+                with open(html_file_output, 'rb') as fh:
+                    response = HttpResponse(fh.read(), content_type="text/html; charset=utf-8")
+                    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(html_file_output)
+                    return response
     raise Http404
 
 
 
 
 @login_required
-def reportdownloadpdf(request,pk):
+def reportdownloadpdf(request, template, pk):
 
-    # DB
-    DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+    template_dir = os.path.join(TEMPLATES_ROOT, 'pdf')
+    template_pdf_dir = os.path.join(template_dir, template)
+    template_pdf_dir_pp = pathlib.PurePath(template_pdf_dir)
 
-    # Datetime
-    report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
+    if template_pdf_dir_pp.is_relative_to(template_dir):
 
-    # PDF filename
-    name_file = PETEREPORT_TEMPLATES['report_pdf_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.pdf'
+        # DB
+        DB_report_query = get_object_or_404(DB_Report, pk=pk)
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
 
-    # COLORS
+        # Datetime
+        now = datetime.datetime.utcnow()
+        report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
-    # INIT
-    template_findings = template_appendix = pdf_finding_summary = ''
-    md_author = PETEREPORT_MARKDOWN['author']
-    md_subject = PETEREPORT_MARKDOWN['subject']
-    md_website = PETEREPORT_MARKDOWN['website']
-    counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = 0
-    title_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_title_background']}"
-    pages_background_image = f"preport/templates/tpl/pdf/{PETEREPORT_TEMPLATES['report_pdf_pages_background']}"
+        # PDF filename
+        name_file = bleach.clean(PETEREPORT_TEMPLATES['report_pdf_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))).replace('/', '') + '.pdf'
 
-    # Appendix
-    template_appendix = _('# Additional Notes') + "\n\n"
+        # INIT
+        template_findings = template_appendix = pdf_finding_summary = ''
+        md_author = DB_Settings.objects.get().company_name
+        md_subject = DB_Settings.objects.get().report_subject
+        md_website = DB_Settings.objects.get().company_website
+        
+        counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = 0
+        title_background_image = os.path.join(template_pdf_dir, PETEREPORT_TEMPLATES['report_pdf_title_background'])
+        pages_background_image = os.path.join(template_pdf_dir, PETEREPORT_TEMPLATES['report_pdf_pages_background'])
 
-    # IMAGES
-    if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
+        # Appendix
+        for finding in DB_finding_query:
+            if finding.appendix_finding.all():
+                template_appendix = _('# Additional Notes') + "\n\n"
+
+        # IMAGES
         report_executive_summary_image = DB_report_query.executive_summary_image
-        report_executive_categories_image = DB_report_query.categories_summary_image
-    elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-        report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-        report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
+        report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
+        report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
 
-    for finding in DB_finding_query:
-        # Custom fields
-        template_custom_fields = ""
-
-        # Only reporting Critical/High/Medium/Low/Info findings
-        if finding.severity == 'None':
-            pass
-        else:
-            counter_finding += 1
-            template_appendix_in_finding = template_attackflow_in_finding = ''
-
-            if finding.severity == 'Critical':
-                counter_finding_critical += 1
-                icon_finding = 'important'
-                severity_color = 'criticalcolor'
-                severity_box = 'criticalbox'
-            elif finding.severity == 'High':
-                counter_finding_high += 1
-                icon_finding = 'highnote'
-                severity_color = 'highcolor'
-                severity_box = 'highbox'
-            elif finding.severity == 'Medium':
-                counter_finding_medium += 1
-                icon_finding = 'mediumnote'
-                severity_color = 'mediumcolor'
-                severity_box = 'mediumbox'
-            elif finding.severity == 'Low':
-                counter_finding_low += 1
-                icon_finding = 'lownote'
-                severity_color = 'lowcolor'
-                severity_box = 'lowbox'
-            else:
-                counter_finding_info += 1
-                icon_finding = 'debugnote'
-                severity_color = 'debugcolor'
-                severity_box = 'infobox'
-
-            # Summary table
-            pdf_finding_summary += render_to_string('tpl/pdf/pdf_finding_summary.md', {'finding': finding, 'counter_finding': counter_finding, 'severity_box': severity_box})
-            
-            severity_color_finding = "\\textcolor{" + f"{severity_color}" +"}{" + f"{finding.severity}" + "}"
-
+        for finding in DB_finding_query:
             # Custom fields
-            if finding.custom_field_finding.all():
+            template_custom_fields = ""
 
-                for field_in_finding in finding.custom_field_finding.all():
-                    md_custom_fields = f"**{bleach.clean(field_in_finding.title)}**\n\n{bleach.clean(field_in_finding.description)}\n\n"
-
-                    template_custom_fields += ''.join(md_custom_fields)
-
-            # appendix
-            if finding.appendix_finding.all():
-
-                template_appendix_in_finding = _('**Additional notes**') + "\n\n"
-
-                for appendix_in_finding in finding.appendix_finding.all():
-
-                    pdf_appendix = render_to_string('tpl/pdf/pdf_appendix.md', {'appendix_in_finding': appendix_in_finding})
-
-                    template_appendix += ''.join(pdf_appendix)
-                    template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "\n")
-
-                template_appendix_in_finding += ''.join("\\pagebreak")
-
+            # Only reporting Critical/High/Medium/Low/Info findings
+            if finding.severity == 'None':
+                pass
             else:
-                template_appendix_in_finding += ''.join("\\pagebreak")
+                counter_finding += 1
+                template_appendix_in_finding = template_attackflow_in_finding = ''
 
-            # attack flow
-            if finding.attackflow_finding.all():
+                if finding.severity == 'Critical':
+                    counter_finding_critical += 1
+                    icon_finding = 'important'
+                    severity_color = 'criticalcolor'
+                    severity_box = 'criticalbox'
+                elif finding.severity == 'High':
+                    counter_finding_high += 1
+                    icon_finding = 'highnote'
+                    severity_color = 'highcolor'
+                    severity_box = 'highbox'
+                elif finding.severity == 'Medium':
+                    counter_finding_medium += 1
+                    icon_finding = 'mediumnote'
+                    severity_color = 'mediumcolor'
+                    severity_box = 'mediumbox'
+                elif finding.severity == 'Low':
+                    counter_finding_low += 1
+                    icon_finding = 'lownote'
+                    severity_color = 'lowcolor'
+                    severity_box = 'lowbox'
+                else:
+                    counter_finding_info += 1
+                    icon_finding = 'debugnote'
+                    severity_color = 'debugcolor'
+                    severity_box = 'infobox'
 
-                template_attackflow_in_finding = _('**Attack Flow**') + "\n\n"
+                # Summary table
+                pdf_finding_summary += render_to_string(os.path.join(template_pdf_dir, 'pdf_finding_summary.md'),{'finding': finding,'counter_finding': counter_finding, 'severity_box': severity_box})
+                
+                severity_color_finding = "\\textcolor{" + f"{severity_color}" +"}{" + f"{finding.severity}" + "}"
 
-                for attackflow_in_finding in finding.attackflow_finding.all():
+                # Custom fields
+                if finding.custom_field_finding.all():
 
-                    pdf_attackflow = render_to_string('tpl/pdf/pdf_attackflow.md', {'attackflow_in_finding': attackflow_in_finding})
-            
-                    template_attackflow_in_finding += ''.join(pdf_attackflow + "\n")
+                    for field_in_finding in finding.custom_field_finding.all():
+                        md_custom_fields = f"**{bleach.clean(field_in_finding.title)}**\n\n{bleach.clean(field_in_finding.description)}\n\n"
 
-                template_attackflow_in_finding += ''.join("\\pagebreak")
+                        template_custom_fields += ''.join(md_custom_fields)
 
-            else:
-                template_attackflow_in_finding += ''.join("\\pagebreak")
+                # appendix
+                if finding.appendix_finding.all():
+
+                    template_appendix_in_finding = _('**Additional notes**') + "\n\n"
+
+                    for appendix_in_finding in finding.appendix_finding.all():
+
+                        pdf_appendix = render_to_string(os.path.join(template_pdf_dir, 'pdf_appendix.md'),{'appendix_in_finding': appendix_in_finding})
+
+                        template_appendix += ''.join(pdf_appendix)
+                        template_appendix_in_finding += ''.join(bleach.clean(appendix_in_finding.title) + "\n")
+
+                    template_appendix_in_finding += ''.join("\\pagebreak")
+
+                else:
+                    template_appendix_in_finding += ''.join("\\pagebreak")
+
+                # attack flow
+                if finding.attackflow_finding.all():
+
+                    template_attackflow_in_finding = _('**Attack Flow**') + "\n\n"
+
+                    for attackflow_in_finding in finding.attackflow_finding.all():
+
+                        pdf_attackflow = render_to_string(os.path.join(template_pdf_dir, 'pdf_attackflow.md'), {'attackflow_in_finding': attackflow_in_finding})
+                
+                        template_attackflow_in_finding += ''.join(pdf_attackflow + "\n")
+
+                    template_attackflow_in_finding += ''.join("\\pagebreak")
+
+                else:
+                    template_attackflow_in_finding += ''.join("\\pagebreak")
 
 
 
-            # finding
-            pdf_finding = render_to_string('tpl/pdf/pdf_finding.md', {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding, 'template_custom_fields': template_custom_fields})
+                # finding
+                pdf_finding = render_to_string(os.path.join(template_pdf_dir, 'pdf_finding.md'), {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding, 'template_custom_fields': template_custom_fields})
 
-            template_findings += ''.join(pdf_finding)
+                template_findings += ''.join(pdf_finding)
 
 
-    pdf_markdown_report = render_to_string('tpl/pdf/pdf_header.yaml', {'DB_report_query': DB_report_query, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_pdf_language': PETEREPORT_TEMPLATES['report_pdf_language'], 'titlepagecolor': PETEREPORT_TEMPLATES['titlepage-color'], 'titlepagetextcolor': PETEREPORT_TEMPLATES['titlepage-text-color'], 'titlerulecolor': PETEREPORT_TEMPLATES['titlepage-rule-color'], 'titlepageruleheight': PETEREPORT_TEMPLATES['titlepage-rule-height'], 'title_background': title_background_image, 'pages_background': pages_background_image })
+        pdf_markdown_report = render_to_string(os.path.join(template_pdf_dir, 'pdf_header.yaml'), {'DB_report_query': DB_report_query, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'report_pdf_language': PETEREPORT_TEMPLATES['report_pdf_language'], 'titlepagecolor': PETEREPORT_TEMPLATES['titlepage-color'], 'titlepagetextcolor': PETEREPORT_TEMPLATES['titlepage-text-color'], 'titlerulecolor': PETEREPORT_TEMPLATES['titlepage-rule-color'], 'titlepageruleheight': PETEREPORT_TEMPLATES['titlepage-rule-height'], 'title_background': title_background_image, 'pages_background': pages_background_image })
 
-    pdf_markdown_report += render_to_string('tpl/pdf/pdf_report.md', {'DB_report_query': DB_report_query, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image, 'pdf_finding_summary': pdf_finding_summary, 'template_findings': template_findings, 'template_appendix': template_appendix})
+        pdf_markdown_report += render_to_string(os.path.join(template_pdf_dir, 'pdf_report.md'), {'DB_report_query': DB_report_query, 'report_executive_summary_image': report_executive_summary_image, 'report_cwe_categories_image': report_cwe_categories_image, 'report_owasp_categories_image': report_owasp_categories_image, 'pdf_finding_summary': pdf_finding_summary, 'template_findings': template_findings, 'template_appendix': template_appendix})
 
-    final_markdown = textwrap.dedent(pdf_markdown_report)
-    final_markdown_output = mark_safe(final_markdown)
+        final_markdown = textwrap.dedent(pdf_markdown_report)
+        final_markdown_output = mark_safe(final_markdown)
 
-    pathfile = f"pdf/{name_file}"
-    pdf_file_output = os.path.join(REPORTS_MEDIA_ROOT, pathfile)
+        pdf_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'pdf', name_file)
 
-    header_file = "pdf/pdf_header.tex"
-    PDF_HEADER_FILE = os.path.join(TEMPLATES_ROOT, header_file)
+        PDF_HEADER_FILE = os.path.join(template_pdf_dir, 'pdf_header.tex')
 
-    PETEREPORT_LATEX_FILE = os.path.join(TEMPLATES_ROOT, PETEREPORT_TEMPLATES['pdf_latex_template'])
+        PETEREPORT_LATEX_FILE = os.path.join(template_pdf_dir, PETEREPORT_TEMPLATES['pdf_latex_template'])
 
-    output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings'])
-    #output_pypandoc = pypandoc.convert_text(final_markdown_output, to='pdf', outputfile=pdf_file_output, format='md', extra_args=['-H', PDF_HEADER_FILE, '--from', 'markdown+yaml_metadata_block+raw_html', '--template', PETEREPORT_LATEX_FILE, '--table-of-contents', '--toc-depth', '4', '--number-sections', '--highlight-style', 'breezedark', '--filter', 'pandoc-latex-environment', '--listings', '--pdf-engine', 'xelatex'])
+        
+        # Remove Unicode characters, not parsed by pdflatex
+        final_markdown_output = final_markdown_output.encode(encoding="utf-8", errors="ignore").decode()
 
-    if os.path.exists(pdf_file_output):
-            with open(pdf_file_output, 'rb') as fh:
-                response = HttpResponse(fh.read(), content_type="application/pdf")
-                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(pdf_file_output)
-                return response
+        pypandoc.convert_text(final_markdown_output,
+                                to='pdf',
+                                outputfile=pdf_file_output,
+                                format='md',
+                                extra_args=['-H', PDF_HEADER_FILE,
+                                            '--from', 'markdown+yaml_metadata_block+raw_html',
+                                            '--template', PETEREPORT_LATEX_FILE,
+                                            '--table-of-contents',
+                                            '--toc-depth', '4',
+                                            '--number-sections',
+                                            '--highlight-style', 'breezedark',
+                                            '--filter', 'pandoc-latex-environment',
+                                            '--pdf-engine', PETEREPORT_MARKDOWN['pdf_engine'],
+                                            '--listings'])
+
+
+
+        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now, filetemplate=template, filetype='pdf')
+        deliverable.save()
+
+        if os.path.exists(pdf_file_output):
+                with open(pdf_file_output, 'rb') as fh:
+                    response = HttpResponse(fh.read(), content_type="application/pdf")
+                    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
+                    return response
 
     raise Http404
-
-
-
-
-
-@login_required
-def reportdownloadjupyter(request,pk):
-
-    # DB
-    DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
-
-    # Datetime
-    report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
-
-    # MD filename
-    name_file = PETEREPORT_TEMPLATES['report_jupyter_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.ipynb'
-
-    # INIT
-    template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = ""
-    counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = 0
-    md_author = PETEREPORT_MARKDOWN['author']
-    md_subject = PETEREPORT_MARKDOWN['subject']
-    md_website = PETEREPORT_MARKDOWN['website']
-
-    # Appendix
-    template_appendix = render_to_string('tpl/jupyter/additional_notes.ipynb')
-
-    # Attackflow init
-    template_attackflow = render_to_string('tpl/jupyter/attackflows.ipynb')
     
-    # IMAGES
-    if PETEREPORT_MARKDOWN['martor_upload_method'] == 'BASE64':
-        report_executive_summary_image = DB_report_query.executive_summary_image
-        report_executive_categories_image = DB_report_query.categories_summary_image
-    elif PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
-        report_executive_summary_image = f"{SERVER_CONF}{DB_report_query.executive_summary_image}"
-        report_executive_categories_image = f"{SERVER_CONF}{DB_report_query.categories_summary_image}"
 
 
-    # FINDINGS
-    for finding in DB_finding_query:
-        # Only reporting Critical/High/Medium/Low/Info findings
-        if finding.severity == 'None':
-            pass
-        else:
-            counter_finding += 1
 
-            if finding.severity == 'Critical':
-                counter_finding_critical += 1 
-            elif finding.severity == 'High':
-                counter_finding_high += 1 
-            elif finding.severity == 'Medium':
-                counter_finding_medium += 1 
-            elif finding.severity == 'Low':
-                counter_finding_low += 1 
-            else:
-                counter_finding_info += 1 
 
-            # Summary table
-            ipynb_finding_summary += render_to_string('tpl/jupyter/finding_summary.ipynb', {'finding': finding, 'counter_finding': counter_finding})
-            
-            # finding
-            ipynb_finding = render_to_string('tpl/jupyter/finding.ipynb', {'finding': finding})
 
-            # appendix
+@login_required
+def reportdownloadjupyter(request, template, pk):
+
+    template_dir = os.path.join(TEMPLATES_ROOT, 'jupyter')
+    template_jupyter_dir = os.path.join(template_dir, template)
+    template_jupyter_dir_pp = pathlib.PurePath(template_jupyter_dir)
+
+    if template_jupyter_dir_pp.is_relative_to(template_dir):
+
+        # DB
+        DB_report_query = get_object_or_404(DB_Report, pk=pk)
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+
+        # Datetime
+        now = datetime.datetime.utcnow()
+        report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
+
+        # filename
+        name_file = bleach.clean(PETEREPORT_TEMPLATES['report_jupyter_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))).replace('/', '') + '.ipynb'
+
+        # INIT
+        template_findings = template_appendix = ipynb_finding_summary = ipynb_finding = ""
+        counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = 0
+        md_author = DB_Settings.objects.get().company_name
+        md_subject = DB_Settings.objects.get().report_subject
+        md_website = DB_Settings.objects.get().company_website
+
+        # Appendix
+        for finding in DB_finding_query:
             if finding.appendix_finding.all():
+                template_appendix = render_to_string(os.path.join(template_jupyter_dir, 'additional_notes.ipynb'))
 
-                for appendix_in_finding in finding.appendix_finding.all():
-                    ipynb_finding += render_to_string('tpl/jupyter/appendix_in_finding.ipynb', {'appendix_in_finding': appendix_in_finding})
+        # Attackflow init
+        template_attackflow = render_to_string(os.path.join(template_jupyter_dir, 'attackflows.ipynb'))
+        
+        # IMAGES
+        report_executive_summary_image = DB_report_query.executive_summary_image
+        report_cwe_categories_image = DB_report_query.cwe_categories_summary_image
+        report_owasp_categories_image = DB_report_query.owasp_categories_summary_image
 
-                    ipynb_appendix = render_to_string('tpl/jupyter/appendix.ipynb', {'appendix_in_finding': appendix_in_finding})
-
-                    template_appendix += ''.join(ipynb_appendix)
-
+        # FINDINGS
+        for finding in DB_finding_query:
+            # Only reporting Critical/High/Medium/Low/Info findings
+            if finding.severity == 'None':
+                pass
             else:
-                ipynb_finding += render_to_string('tpl/jupyter/NA.ipynb')
+                counter_finding += 1
+
+                if finding.severity == 'Critical':
+                    counter_finding_critical += 1 
+                elif finding.severity == 'High':
+                    counter_finding_high += 1 
+                elif finding.severity == 'Medium':
+                    counter_finding_medium += 1 
+                elif finding.severity == 'Low':
+                    counter_finding_low += 1 
+                else:
+                    counter_finding_info += 1 
+
+                # Summary table
+                ipynb_finding_summary += render_to_string(os.path.join(template_jupyter_dir, 'finding_summary.ipynb'),{'finding': finding, 'counter_finding': counter_finding})
+                
+                # finding
+                ipynb_finding = render_to_string(os.path.join(template_jupyter_dir, 'finding.ipynb'), {'finding': finding})
+
+                # appendix
+                if finding.appendix_finding.all():
+
+                    for appendix_in_finding in finding.appendix_finding.all():
+                        ipynb_finding += render_to_string(os.path.join(template_jupyter_dir, 'appendix_in_finding.ipynb'), {'appendix_in_finding': appendix_in_finding})
+
+                        ipynb_appendix = render_to_string(os.path.join(template_jupyter_dir, 'appendix.ipynb'), {'appendix_in_finding': appendix_in_finding})
+
+                        template_appendix += ''.join(ipynb_appendix)
+
+                else:
+                    ipynb_finding += render_to_string(os.path.join(template_jupyter_dir, 'NA.ipynb'))
 
 
-            # attack flow
-            if finding.attackflow_finding.all():
+                # attack flow
+                if finding.attackflow_finding.all():
 
-                for attackflow_in_finding in finding.attackflow_finding.all():
+                    for attackflow_in_finding in finding.attackflow_finding.all():
 
-                    ipynb_finding += render_to_string('tpl/jupyter/attackflow_in_finding.ipynb', {'attackflow_in_finding': attackflow_in_finding})
+                        ipynb_finding += render_to_string(os.path.join(template_jupyter_dir, 'attackflow_in_finding.ipynb'), {'attackflow_in_finding': attackflow_in_finding})
 
-                    ipynb_attackflow = render_to_string('tpl/jupyter/attackflow.ipynb', {'attackflow_in_finding': attackflow_in_finding})
+                        ipynb_attackflow = render_to_string(os.path.join(template_jupyter_dir, 'attackflow.ipynb'), {'attackflow_in_finding': attackflow_in_finding})
 
-                    template_attackflow += ''.join(ipynb_attackflow)
-                    
-            
-            template_findings += ''.join(ipynb_finding)
+                        template_attackflow += ''.join(ipynb_attackflow)
+                        
+                
+                template_findings += ''.join(ipynb_finding)
 
-    render_jupyter = render_to_string('tpl/jupyter/report.ipynb', {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'template_attackflow': template_attackflow, 'finding_summary': ipynb_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'report_executive_summary_image': report_executive_summary_image, 'report_executive_categories_image': report_executive_categories_image})
+        render_jupyter = render_to_string(os.path.join(template_jupyter_dir, 'report.ipynb'), {'DB_report_query': DB_report_query, 'template_findings': template_findings, 'template_appendix': template_appendix, 'template_attackflow': template_attackflow, 'finding_summary': ipynb_finding_summary, 'md_author': md_author, 'report_date': report_date, 'md_subject': md_subject, 'md_website': md_website, 'counter_finding_critical': counter_finding_critical, 'counter_finding_high': counter_finding_high, 'counter_finding_medium': counter_finding_medium, 'counter_finding_low': counter_finding_low, 'counter_finding_info': counter_finding_info, 'report_executive_summary_image': report_executive_summary_image, 'report_cwe_categories_image': report_cwe_categories_image, 'report_owasp_categories_image': report_owasp_categories_image})
 
-    final_markdown = textwrap.dedent(render_jupyter)
-    final_markdown_output = mark_safe(final_markdown)
+        final_jupyter = textwrap.dedent(render_jupyter)
+        final_jupyter_output = mark_safe(final_jupyter)
 
-    # Create the HttpResponse object with the appropriate header.
-    response = HttpResponse(final_markdown_output, content_type='application/x-ipynb+json')
-    response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
+        # Replace media with base64 local data in order to have all media into the file
+        if  PETEREPORT_MARKDOWN['martor_upload_method'] == 'MEDIA':
+            final_jupyter_output = replace_media_url_local_base64(final_jupyter_output)
 
-    return response
 
+        jupyter_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'jupyter', name_file)
+        with open(jupyter_file_output, 'w') as fh:
+            fh.write(final_jupyter_output)
+
+        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now, filetemplate=template, filetype='jupyter')
+        deliverable.save()
+
+        if os.path.exists(jupyter_file_output):
+            with open(jupyter_file_output, 'rb') as fh:
+                # Create the HttpResponse object with the appropriate header.
+                response = HttpResponse(fh.read(), content_type="application/x-ipynb+json")
+                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
+                return response
+
+    raise Http404
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def report_findings_duplicate(request):
+
+    if request.method == 'POST':
+        duplicate_id = request.POST['duplicate_id']
+        report = DB_Report.objects.get(pk=duplicate_id)
+        report.pk = None
+        report._state.adding = True
+        copy_datetime = str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))
+        report.report_id = f"[CLONE-{copy_datetime}]-{report.report_id}"
+        report.title = f"[CLONE-{copy_datetime}]-{report.title}"
+
+        try:
+            report.save()
+        except django.db.utils.IntegrityError:
+            report.report_id = DB_Report.objects.filter(report_id__contains = report.report_id, report_id__endswith = copy_datetime).latest("creation_date").report_id
+            report.report_id = report.report_id + copy_datetime
+            report.save()
+
+        # Now, duplicate findings
+        DB_finding_query = DB_Finding.objects.filter(report_id=duplicate_id)
+        for finding in DB_finding_query:
+            finding.pk = None
+            finding._state.adding = True # self._state.adding is True creating, False updating
+            finding.finding_id = uuid.uuid4()
+            finding.title = f"[CLONE-{copy_datetime}]-{finding.title}"
+            finding.report_id = report.pk
+
+            try:
+                finding.save()
+            except django.db.utils.IntegrityError:
+                finding.finding_id = DB_Finding.objects.filter(finding_id__contains = finding.finding_id, finding_id__endswith = copy_datetime).latest("creation_date").finding_id
+                finding.finding_id = finding.finding_id + copy_datetime
+                finding.save()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
 # ----------------------------------------------------------------------
@@ -1068,7 +1391,7 @@ def openfindings(request):
     DB_finding_query = DB_Finding.objects.filter(status='Open').order_by('cvss_score').reverse()
     count_finding_query = DB_finding_query.count()
 
-    return render(request, 'findings/findings_list.html', {'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
+    return render(request, 'findings/findings_list.html', {'Status': 'Open', 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 
 @login_required
@@ -1076,7 +1399,7 @@ def closedfindings(request):
     DB_finding_query = DB_Finding.objects.filter(status='Closed').order_by('cvss_score').reverse()
     count_finding_query = DB_finding_query.count()
 
-    return render(request, 'findings/findings_list.html', {'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
+    return render(request, 'findings/findings_list.html', {'Status': 'Closed','DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
@@ -1105,7 +1428,9 @@ def finding_add(request,pk):
         form.fields['impact'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['recommendation'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['references'].initial = PETEREPORT_TEMPLATES['initial_text']
+        form.fields['poc'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['cwe'].initial = '1'
+        form.fields['owasp'].initial = '1'
 
     return render(request, 'findings/finding_add.html', {
         'form': form, 'DB_report': DB_report_query})
@@ -1171,43 +1496,79 @@ def downloadfindingscsv(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
     DB_finding_query = DB_Finding.objects.filter(report=DB_report_query)
 
-    name_file = PETEREPORT_TEMPLATES['report_csv_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M')) + '.csv'
+    name_file = bleach.clean(PETEREPORT_TEMPLATES['report_csv_name'] + '_' + DB_report_query.title + '_' +  str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))).replace('/', '') + '.csv'
 
-    # Create the HttpResponse object with the appropriate CSV header.
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="'+name_file+'"'
+    csv_file_output = os.path.join(REPORTS_MEDIA_ROOT, 'csv', name_file)
+
+    # Datetime
+    now = datetime.datetime.utcnow()
+    report_date = DB_report_query.report_date.strftime('%d-%m-%Y')
 
     csv.register_dialect('MMDialect', quoting=csv.QUOTE_ALL, skipinitialspace=True)
-    writer = csv.writer(response, dialect='MMDialect')
-    writer.writerow(["ID", "Status", "Title", "Severity", "CVSS Base Score", "CVSS Score", "CWE", "CWE ID", "Description", "Location", "Impact", "Recommendation", "References", "Appendix", "Appendix Description"])
+    with open(csv_file_output, 'w') as fh:
+        writer = csv.writer(fh, dialect='MMDialect')
+        writer.writerow(["ID", "Status", "Title", "Severity", "CVSS Base Score", "CVSS Score", "CWE", "CWE ID", "OWASP", "OWASP ID", "Description", "POC", "Location", "Impact", "Recommendation", "References", "Appendix", "Appendix Description"])
+        for finding in DB_finding_query:
+            if finding.cwe:
+                cwe_title = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
+                cwe_id = finding.cwe.cwe_id
+            else:
+                cwe_title = ""
+                cwe_id = ""
 
-    for finding in DB_finding_query:
-        cwe_title = f"{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
-        cwe_id = finding.cwe.cwe_id
+            if finding.owasp:
+                owasp_title = f"OWASP-{finding.owasp.owasp_full_id} - {finding.owasp.owasp_name}"
+                owasp_id = finding.owasp.owasp_full_id
+            else:
+                owasp_title = ""
+                owasp_id = ""
 
-        if finding.appendix_finding.exists():
-            for appendix in finding.appendix_finding.all():
-                appendix_title = appendix.title
-                appendix_description = appendix.description
-        else:
-            appendix_title = ""
-            appendix_description = ""
+            if finding.appendix_finding.exists():
+                for appendix in finding.appendix_finding.all():
+                    appendix_title = appendix.title
+                    appendix_description = appendix.description
+            else:
+                appendix_title = ""
+                appendix_description = ""
 
-        # Remove non ascii/unicode characters
-        finding_title_encoded = finding.title.encode("ascii", "ignore").decode()
-        finding_description_encoded = finding.description.encode("ascii", "ignore").decode()
-        finding_location_encoded = finding.location.encode("ascii", "ignore").decode()
-        finding_impact_encoded = finding.impact.encode("ascii", "ignore").decode()
-        finding_recommendation_encoded = finding.recommendation.encode("ascii", "ignore").decode()
-        finding_references_encoded = finding.references.encode("ascii", "ignore").decode()
-        appendix_title_encoded = appendix_title.encode("ascii", "ignore").decode()
-        appendix_description_encoded = appendix_description.encode("ascii", "ignore").decode()
+            # Remove non ascii/unicode characters
+            finding_title_encoded = finding.title.encode("ascii", "ignore").decode()
+            finding_description_encoded = finding.description.encode("ascii", "ignore").decode()
+            finding_poc_encoded = finding.poc.encode("ascii", "ignore").decode()
+            finding_location_encoded = finding.location.encode("ascii", "ignore").decode()
+            finding_impact_encoded = finding.impact.encode("ascii", "ignore").decode()
+            finding_recommendation_encoded = finding.recommendation.encode("ascii", "ignore").decode()
+            finding_references_encoded = finding.references.encode("ascii", "ignore").decode()
+            appendix_title_encoded = appendix_title.encode("ascii", "ignore").decode()
+            appendix_description_encoded = appendix_description.encode("ascii", "ignore").decode()
 
-        writer.writerow([finding.finding_id, finding.status, finding_title_encoded, finding.severity, finding.cvss_base_score, finding.cvss_score, cwe_title, cwe_id, finding_description_encoded, finding_location_encoded, finding_impact_encoded, finding_recommendation_encoded, finding_references_encoded, appendix_title_encoded, appendix_description_encoded])
+            writer.writerow([finding.finding_id,
+                            finding.status,
+                            finding_title_encoded,
+                            finding.severity, finding.cvss_base_score, finding.cvss_score,
+                            cwe_title, cwe_id,
+                            owasp_title, owasp_id,
+                            finding_description_encoded,
+                            finding_poc_encoded,
+                            finding_location_encoded,
+                            finding_impact_encoded,
+                            finding_recommendation_encoded,
+                            finding_references_encoded,
+                            appendix_title_encoded, appendix_description_encoded])
 
+    
+        deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now, filetemplate='csv', filetype='csv')
+        deliverable.save()
 
-    return response
+    if os.path.exists(csv_file_output):
+        with open(csv_file_output, 'rb') as fh:
+            # Create the HttpResponse object with the appropriate CSV header.
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
+            return response
 
+    else:
+        raise Http404
 
 
 
@@ -1220,8 +1581,8 @@ def upload_csv_findings(request,pk):
     if request.method == 'POST':
         csv_file = request.FILES['file'].file
 
-        #csv_file_string = io.TextIOWrapper(csv_file, encoding='utf-8')
-        csv_file_string = io.TextIOWrapper(csv_file, encoding='ISO-8859-1')
+        csv_file_string = io.TextIOWrapper(csv_file, encoding='UTF-8')
+        #csv_file_string = io.TextIOWrapper(csv_file, encoding='ISO-8859-1')
 
         csvReader = csv.reader(csv_file_string, dialect='excel')
 
@@ -1235,16 +1596,17 @@ def upload_csv_findings(request,pk):
         f_cvss_score = header.index("CVSS Base Score")
         f_cvss = header.index("CVSS Score")
         f_cwe = header.index("CWE ID")
+        f_owasp = header.index("OWASP ID")
         f_description = header.index("Description")
         f_location = header.index("Location")
         f_impact = header.index("Impact")
         f_recommendation = header.index("Recommendation")
-        f_references = header.index("References")
+        f_ref = header.index("References")
         f_appendix = header.index("Appendix")
         f_appendix_description = header.index("Appendix Description")
-         
+
         List = []
-         
+
         for row in csvReader:
             fid = row[f_id]
             ftitle = row[f_title]
@@ -1253,20 +1615,22 @@ def upload_csv_findings(request,pk):
             fcvss_score = row[f_cvss_score]
             fcvss = row[f_cvss]
             fcwe = row[f_cwe]
+            fowasp = row[f_owasp]
             fdescription = row[f_description]
             flocation = row[f_location]
             fimpact = row[f_impact]
             frecommendation = row[f_recommendation]
-            freferences = row[f_references]
+            fref = row[f_ref]
             fappendix = row[f_appendix]
             fappendixdescription = row[f_appendix_description]
-            
-            List.append([fid,ftitle,fstatus,fseverity,fcvss_score,fcvss,fcwe,fdescription,flocation,fimpact,frecommendation,freferences,fappendix,fappendixdescription])
+
+            List.append([fid,ftitle,fstatus,fseverity,fcvss_score,fcvss,fcwe,fowasp,fdescription,flocation,fimpact,frecommendation,fref,fappendix,fappendixdescription])
 
             DB_cwe = get_object_or_404(DB_CWE, cwe_id=fcwe)
+            DB_owasp = get_object_or_404(DB_OWASP, owasp_id=fowasp)
 
             # Save finding
-            finding_to_DB = DB_Finding(report=DB_report_query, finding_id=fid, title=ftitle, status=fstatus, severity=fseverity, cvss_base_score=fcvss_score, cvss_score=fcvss, description=fdescription, location=flocation, impact=fimpact, recommendation=frecommendation, references=freferences, cwe=DB_cwe)
+            finding_to_DB = DB_Finding(report=DB_report_query, finding_id=fid, title=ftitle, status=fstatus, severity=fseverity, cvss_base_score=fcvss_score, cvss_score=fcvss, description=fdescription, location=flocation, impact=fimpact, recommendation=frecommendation, references=fref, cwe=DB_cwe, owasp=DB_owasp)
             finding_to_DB.save()
 
             # Save appendix
@@ -1447,6 +1811,34 @@ def defectdojo_import_finding(request,pk,ddpk):
 
     return redirect('report_view', pk=pk)
 
+
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def finding_duplicate(request):
+
+    if request.method == 'POST':
+        duplicate_id = request.POST['duplicate_id']
+        finding = DB_Finding.objects.get(pk=duplicate_id)
+        finding.pk = None
+        finding._state.adding = True # self._state.adding is True creating, False updating
+        finding.finding_id = uuid.uuid4()
+        copy_datetime = str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))
+        finding.title = f"[CLONE-{copy_datetime}]-{finding.title}"
+
+        try:
+            finding.save()
+        except django.db.utils.IntegrityError:
+            finding.finding_id = DB_Finding.objects.filter(finding_id__contains = finding.finding_id, finding_id__endswith = copy_datetime).latest("creation_date").finding_id
+            finding.finding_id = finding.finding_id + copy_datetime
+            finding.save()
+
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
 # ----------------------------------------------------------------------
 #                           Appendix 
 # ----------------------------------------------------------------------
@@ -1527,8 +1919,6 @@ def appendix_edit(request,pk):
 
 
 
-
-
 @login_required
 @allowed_users(allowed_roles=['administrator'])
 def appendix_delete(request):
@@ -1542,7 +1932,6 @@ def appendix_delete(request):
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
 
-
 @login_required
 def appendix_view(request,pk):
     appendix = get_object_or_404(DB_Appendix, pk=pk)
@@ -1550,9 +1939,6 @@ def appendix_view(request,pk):
     DB_finding_query = get_object_or_404(DB_Finding, pk=finding_pk)
 
     return render(request, 'appendix/appendix_view.html', {'DB_finding_query': DB_finding_query, 'DB_appendix_query': appendix})
-
-
-
 
 
 # ----------------------------------------------------------------------
@@ -1665,6 +2051,7 @@ def template_add(request):
         form.fields['recommendation'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['references'].initial = PETEREPORT_TEMPLATES['initial_text']
         form.fields['cwe'].initial = '1'
+        form.fields['owasp'].initial = '1'
 
     return render(request, 'findings/template_add.html', {
         'form': form
@@ -1737,7 +2124,7 @@ def templateaddreport(request,pk,reportpk):
     # save template in DB
     finding_uuid = uuid.uuid4()
     finding_status = "Open"
-    finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_uuid, title=DB_finding_template_query.title, severity=DB_finding_template_query.severity, cvss_base_score=DB_finding_template_query.cvss_base_score, cvss_score=DB_finding_template_query.cvss_score, description=DB_finding_template_query.description, status=finding_status, location=DB_finding_template_query.location, impact=DB_finding_template_query.impact, recommendation=DB_finding_template_query.recommendation, references=DB_finding_template_query.references, cwe=DB_finding_template_query.cwe)
+    finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_uuid, title=DB_finding_template_query.title, severity=DB_finding_template_query.severity, cvss_base_score=DB_finding_template_query.cvss_base_score, cvss_score=DB_finding_template_query.cvss_score, description=DB_finding_template_query.description, status=finding_status, location=DB_finding_template_query.location, impact=DB_finding_template_query.impact, recommendation=DB_finding_template_query.recommendation, references=DB_finding_template_query.references, cwe=DB_finding_template_query.cwe, owasp=DB_finding_template_query.owasp)
 
     finding_to_DB.save()
 
@@ -1808,6 +2195,68 @@ def cwe_edit(request,pk):
         'form': form
     })
 
+
+# ----------------------------------------------------------------------
+#                           OWASP
+# ----------------------------------------------------------------------
+
+@login_required
+def owasp_list(request):
+
+    DB_owasp_query = DB_OWASP.objects.order_by('pk').all()
+
+    return render(request, 'owasp/owasp_list.html', {'DB_owasp_query': DB_owasp_query})
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def owasp_add(request):
+
+    if request.method == 'POST':
+        form = NewOWASPForm(request.POST)
+        if form.is_valid():
+            owasp = form.save(commit=False)
+            owasp.save()
+            return redirect('owasp_list')
+    else:
+        form = NewOWASPForm()
+
+    return render(request, 'owasp/owasp_add.html', {
+        'form': form
+    })
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def owasp_delete(request):
+
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        if delete_id == -1:
+            return HttpResponseServerError('{"status":"fail", "reason": "Cannot delete OWASP ID -1"}', content_type='application/json')
+
+        DB_OWASP.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def owasp_edit(request,pk):
+
+    owasp = get_object_or_404(DB_OWASP, pk=pk)
+
+    if request.method == 'POST':
+        form = NewOWASPForm(request.POST, instance=owasp)
+        if form.is_valid():
+            form.save()
+            return redirect('owasp_list')
+    else:
+        form = NewOWASPForm(instance=owasp)
+    return render(request, 'owasp/owasp_add.html', {
+        'form': form
+    })
 
 # ----------------------------------------------------------------------
 #                           Attack Flow 
@@ -1922,3 +2371,57 @@ def attackflow_delete(request):
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+
+
+# ----------------------------------------------------------------------
+#                           Deliverables
+# ----------------------------------------------------------------------
+
+@login_required
+def deliverable_list(request):
+    DB_deliverable_query = DB_Deliverable.objects.order_by('pk').all()
+    return render(request, 'deliverable/deliverable_list.html', {'DB_deliverable_query': DB_deliverable_query})
+
+@login_required
+def deliverable_download(request, pk):
+    deliverable = get_object_or_404(DB_Deliverable, pk=pk)
+    file_path = os.path.join(REPORTS_MEDIA_ROOT, deliverable.filetype, deliverable.filename )
+
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            if deliverable.filetype == 'jupyter':
+                content_type="application/x-ipynb+json"
+            elif deliverable.filetype == 'pdf':
+                content_type="application/pdf"
+            elif deliverable.filetype == 'html':
+                content_type="text/html; charset=utf-8"
+            elif deliverable.filetype == 'markdown':
+                content_type="text/markdown"
+            elif deliverable.filetype == 'csv':
+                content_type="text/csv"
+            else:
+                content_type="application/octet-stream"
+            response = HttpResponse(fh.read(), content_type=content_type)
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+            return response
+
+    raise Http404
+
+
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def deliverable_delete(request):
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        deliverable = get_object_or_404(DB_Deliverable, pk=delete_id)
+        file_path = os.path.join(REPORTS_MEDIA_ROOT, deliverable.filetype, deliverable.filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        DB_Deliverable.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+

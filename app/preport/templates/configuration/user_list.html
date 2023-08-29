@@ -43,19 +43,19 @@
           <table id="userlist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                      <th style="width: 15%">
+                      <th style="width: 15%" class="text-center">
                           {% translate "User" %}
                       </th>
-                      <th style="width: 20%">
+                      <th style="width: 20%" class="text-center">
                           {% translate "Email" %}
                       </th>
-                      <th style="width: 5%">
+                      <th style="width: 5%" class="text-center">
                           {% translate "Active" %}
                       </th>
-                      <th style="width: 10%">
+                      <th style="width: 10%" class="text-center">
                           {% translate "Group" %}
                       </th>
-                      <th style="width: 5%">
+                      <th style="width: 5%" class="text-center">
                           {% translate "Admin" %}
                       </th>
                       <th style="width: 20%" class="text-center">
@@ -95,10 +95,12 @@
                       </td>
 
                       <td class="project-actions text-center">
+                        <!--
                           <a class="btn btn-primary btn-sm" href="/admin/auth/user/">
                               <i class="fas fa-folder"></i>
                               {% translate "View" %}
                           </a>
+                        -->
                           <a class="btn btn-info btn-sm" href="/configuration/user/edit/{{ user.pk }}">
                               <i class="fas fa-pencil-alt"></i>
                               {% translate "Edit" %}

@@ -24,8 +24,9 @@
             <ol class="breadcrumb float-sm-right">
 
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-              <li class="breadcrumb-item"><a href="/product/view/{{ finding.report.product.pk}}">{{ finding.report.product.name | bleach }}</a></li>
-              <li class="breadcrumb-item"><a href="/report/view/{{ finding.report.pk}}">{{ finding.report.title | bleach }}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'customer_view' finding.report.product.customer.pk %}">{{ finding.report.product.customer.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'product_view' finding.report.product.pk %}">{{ finding.report.product.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'report_view' finding.report.pk %}">{{ finding.report.title }}</a></li>
               <li class="breadcrumb-item active">{{ finding.title | bleach }}</li>
 
             </ol>
@@ -37,9 +38,9 @@
         <div class="row">
             <div class="col-md-7">
                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                  <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Edit Finding" %}</button></a>
-                  <a href="/finding/customfields/{{ finding.pk }}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Finding custom fields" %}</button></a>
-                  <a href="/field/add/{{ finding.pk }}"><button type="button" class="btn btn-info"><i class="fa fa-edit"></i> {% translate "Add custom field" %}</button></a> 
+                  <a href="{% url 'finding_edit' finding.pk %}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Edit Finding" %}</button></a>
+                  <a href="{% url 'fields' finding.pk %}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Finding custom fields" %}</button></a>
+                  <a href="{% url 'field_add' finding.pk %}"><button type="button" class="btn btn-info"><i class="fa fa-edit"></i> {% translate "Add custom field" %}</button></a> 
                 {% endif %}
             </div>
         </div>
@@ -117,38 +118,49 @@
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "CVSS Score" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_base_score | safe | bleach}}<span>
-                          </span></span></div>
+                          </span></span>
+                        </div>
                         </div>
                       </div>
-                    </div>
+
+                  </div>
 
         
-                    <div class="row">
+                  <div class="row">
      
-                      <div class="col-12 col-sm-6">
+                      <div class="col-12 col-sm-4">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "OWASP" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.owasp.owasp_id | safe | bleach}} - {{finding.owasp.owasp_name |safe| bleach}}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-sm-4">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "Status" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.status | safe_markdown | bleach}}<span>
-                          </span></span></div>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.status | safe | bleach}}<span>
+                          </div>
                         </div>
                       </div>
 
-                        <div class="col-12 col-sm-6">
+                      <div class="col-12 col-sm-4">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "Severity" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">
                                 {% if finding.severity == "Critical" %}
-                                      <span><b><font color="#cc0000">{{finding.severity| safe_markdown | bleach}}</font></b></span>
+                                      <span><b><font color="#cc0000">{{finding.severity| safe | bleach}}</font></b></span>
                                   {% elif finding.severity == "High" %}
-                                      <span><b><font color="#ff403d">{{finding.severity| safe_markdown | bleach}}</font></b></span>
+                                      <span><b><font color="#ff403d">{{finding.severity| safe | bleach}}</font></b></span>
                                   {% elif finding.severity == "Medium" %}
-                                      <span><b><font color="#fc7f03">{{finding.severity| safe_markdown | bleach}}</font></b></span>
+                                      <span><b><font color="#fc7f03">{{finding.severity| safe | bleach}}</font></b></span>
                                   {% elif finding.severity == "Low" %}
-                                      <span><b><font color="#05b04f">{{finding.severity| safe_markdown | bleach}}</font></b></span>
+                                      <span><b><font color="#05b04f">{{finding.severity| safe | bleach}}</font></b></span>
                                   {% elif finding.severity == "Info" %}
-                                      <span><b><font color="#45a7f7">{{finding.severity| safe_markdown | bleach}}</font></b></span>
+                                      <span><b><font color="#45a7f7">{{finding.severity| safe | bleach}}</font></b></span>
                                   {% else %}
                                       <span><b>{{finding.severity}}</b></span> ({% translate "will not appear in the report" %})
                                 {% endif %}
@@ -271,6 +283,31 @@
       </div>
       {% endif %}
 
+      {% if finding.poc %}
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>{% translate "Proof of Concept" %}</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ finding.poc | safe_markdown | bleach }}
+                </div>
+              </div>
+
+        </div>
+      </div>
+      {% endif %}
+      
       {% if finding.recommendation %}
       <div class="row">
         <div class="col-md-12">

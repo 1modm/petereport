@@ -1,0 +1,149 @@
+{% extends 'home/template.html' %}
+
+{% load i18n %}
+{% load app_filters %}
+{% load bleach_tags %}
+
+{% block title %} {% translate "OWASPs List" %} {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>{% translate "OWASPs List" %}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+
+    <div class="container-fluid">
+      <div class="card card-outline card-primary">
+        <div class="card-header">
+          <h3 class="card-title">{{ DBowaspquery.count }} {% translate "OWASPs" %}</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <table id="owasplist" class="table table-bordered table-hover">
+              <thead>
+                  <tr>
+                      <th style="width: 25%" class="text-center">
+                          {% translate "Title" %}
+                      </th>
+                      <th style="width: 60%" class="text-center">
+                          {% translate "Description" %}
+                      </th>
+                      <th style="width: 15%" class="text-center">{% translate "Actions" %}</th>
+
+                  </tr>
+              </thead>
+              <tbody>
+
+                  {% for owasp in DB_owasp_query %}
+
+                    <tr>
+                      <td>
+                        <a href="{{ owasp.owasp_url}}" target=”_blank”>{{ owasp.owasp_full_id }} - {{ owasp.owasp_name }}</a>
+                      </td>
+                      <td>
+                        {{ owasp.owasp_description | bleach}}
+                      </td>
+
+                    <td class="text-center">
+                        {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                          <a href="{% url 'owasp_edit' owasp.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{owasp.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
+                        {% endif %}
+                    </td>
+
+                    </tr>
+
+
+                        <div class="modal modal-danger fade mm-modal-{{owasp.pk}}" id="modal-danger">
+                          <div class="modal-dialog">
+                            <div class="modal-content bg-danger">
+                              <div class="modal-header">
+                                <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <p>{% translate "Delete OWASP" %}&hellip;</p>
+                              </div>
+                              <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                <button type="button" onclick="DeleteID({{cowaspwe.pk}});" class="btn btn-outline-light">{% translate "Delete OWASP" %}</button>
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                  {% endfor %}
+
+
+              </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+<script>
+  $(function () {
+    $("#owasplist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true,
+      "lengthChange": false,
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#owasplist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+
+<script>
+  function DeleteID(del_id) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'owasp_delete' %}",
+            headers:{
+              "X-CSRFToken": '{{ csrf_token }}'
+            },
+            data : { 'delete_id': del_id},
+
+            success : function(json) {
+              document.location.href = "{% url 'owasp_list' %}";
+            }
+        })
+  }
+</script>
+{% endblock javascripts %}

@@ -1,10 +1,15 @@
 {% extends 'home/template.html' %}
 {% load i18n %}
+{% load bleach_tags %}
 
 {% block title %} {% translate "Reports" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
+
+  <link rel="stylesheet" href="/static/plugins/daterangepicker/daterangepicker.css" />
+  <link rel="stylesheet" href="/static/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
 {% endblock stylesheets %}
 
 {% block content %}
@@ -19,6 +24,7 @@
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'report_list' %}">{% translate "Reports" %}</a></li>
           <li class="breadcrumb-item active">{% translate "Add or Edit Report" %}</li>
         </ol>
       </div>
@@ -95,12 +101,36 @@
                     </div>
                   </div>
 
+
                   <div class="form-group row">
                     <label class="col-sm-2 col-form-label">{% translate "Report date" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.report_date }}
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                          </span>
+                        </div>
+                        {{ form.report_date }}
+                      </div>
                     </div>
                   </div>
+
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Audit dates" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                          </span>
+                        </div>
+                        {{ form.audit }}
+                      </div>
+                    </div>
+                  </div>
+
 
                 </div>
 
@@ -135,3 +165,31 @@
 
 
 {% endblock content %}
+
+
+{% block javascripts %}
+  {{ block.super }}
+
+<script src="/static/plugins/moment/moment.min.js"></script>
+<script src="/static/plugins/inputmask/jquery.inputmask.min.js"></script>
+<script src="/static/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/static/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<script>
+  $(function () {
+    //Date range picker
+    $('#audit').daterangepicker({
+      locale: {
+        format: 'YYYY-MM-DD'
+      }
+    });
+
+    //Date picker
+    $('#reportdate').datetimepicker({
+        format: 'L'
+    });
+
+  })
+</script>
+
+{% endblock javascripts %}

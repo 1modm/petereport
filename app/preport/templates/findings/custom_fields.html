@@ -22,9 +22,10 @@
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-          <li class="breadcrumb-item"><a href="/product/view/{{ DB_finding_query.report.product.pk}}">{{ DB_finding_query.report.product.name | bleach}}</a></li>
-          <li class="breadcrumb-item"><a href="/report/view/{{ DB_finding_query.report.pk}}">{{ DB_finding_query.report.title}}</a></li>
-          <li class="breadcrumb-item active"><a href="/finding/view/{{ DB_finding_query.pk}}">{{ DB_finding_query.title}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_finding_query.report.product.customer.pk %}">{{ DB_finding_query.report.product.customer.name | bleach}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'product_view' DB_finding_query.report.product.pk %}">{{ DB_finding_query.report.product.name | bleach}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'report_view' DB_finding_query.report.pk %}">{{ DB_finding_query.report.title}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'finding_view' DB_finding_query.pk %}">{{ DB_finding_query.title | bleach}}</a></li>
         </ol>
       </div>
     </div>
@@ -72,7 +73,7 @@
 
                         <td align="center">
                             {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                              <a href="/field/edit/{{ field.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                              <a href="{% url 'field_edit' field.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
                               <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{field.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                             {% endif %}
                         </td>
@@ -142,14 +143,14 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/field/delete/",
+            url: "{% url 'field_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/finding/customfields/{{DB_finding_query.pk}}"; 
+              document.location.href = "{% url 'fields' DB_finding_query.pk %}";
             }
         })
   }

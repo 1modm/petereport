@@ -1,0 +1,145 @@
+{% extends 'home/template.html' %}
+{% load i18n %}
+{% load bleach_tags %}
+
+{% load app_filters %}
+
+{% block title %} {% translate "Deliverables List" %} {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>{% translate "Deliverables List" %}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+              <li class="breadcrumb-item active">{% translate "Deliverables" %}</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+
+    <div class="container-fluid">
+      <div class="card card-outline card-primary">
+        <div class="card-header">
+          <h3 class="card-title">{{ DB_deliverable_query.count }} Deliverable{{ DB_deliverable_query.count|pluralize:"s" }}</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <table id="deliverablelist" class="table table-bordered table-hover">
+              <thead>
+                  <tr>
+                    <th style="width: 10%">{% translate "Generated date" %}</th>
+                    <th style="width: 28%">{% translate "File" %}</th>
+                    <th style="width: 8%">{% translate "Type" %}</th>
+                    <th style="width: 15%">{% translate "Report" %}</th>
+                    <th style="width: 12%">{% translate "Product" %}</th>
+                    <th style="width: 12%">{% translate "Customer" %}</th>
+                    <th style="width: 15%" class="text-center">{% translate "Actions" %}</th>
+                  </tr>
+              </thead>
+              <tbody>
+
+              {% for deliverable in DB_deliverable_query %}
+                  <tr>
+                    <td>{{ deliverable.generation_date|date:"Y-m-d" }}</td>
+                    <td><a href="{% url 'deliverable_download' deliverable.pk %}">{{ deliverable.filename }}</a></td>
+                    <td>{{ deliverable.filetype }}/{{ deliverable.filetemplate }}</td>
+                    <td><a href="{% url 'report_view' deliverable.report.pk %}">{{ deliverable.report.title }}</a></td>
+                    <td><a href="{% url 'product_view' deliverable.report.product.pk %}">{{ deliverable.report.product.name }}</a></td>
+                    <td><a href="{% url 'customer_view' deliverable.report.product.customer.pk %}">{{ deliverable.report.product.customer.name }}</a></td>
+                    <td class="text-center">
+                      {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                        <a href="{% url 'deliverable_download' deliverable.pk %}"><button type="button" class="btn btn-warning btn-sm"><i class="fa fa-download"></i> {% translate "Download" %}</button></a>
+                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{deliverable.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
+                      {% endif %}
+                    </td>
+                  </tr>
+
+
+                <div class="modal modal-danger fade mm-modal-del-{{deliverable.pk}}" id="modal-danger">
+                  <div class="modal-dialog">
+                    <div class="modal-content bg-danger">
+                      <div class="modal-header">
+                        <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p>{% translate "Delete Deliverable" %}&hellip;</p>
+                      </div>
+                      <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                        <button type="button" onclick="DeleteID({{deliverable.pk}});" class="btn btn-outline-light">{% translate "Delete Deliverable" %}</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {% endfor %}
+
+              </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+<script>
+  $(function () {
+    $("#deliverablelist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true,
+      "lengthChange": false,
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#deliverablelist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+<script>
+  function DeleteID(del_id) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'deliverable_delete' %}",
+            headers:{
+              "X-CSRFToken": '{{ csrf_token }}'
+            },
+            data : { 'delete_id': del_id},
+
+            success : function(json) {
+              document.location.href = "{% url 'deliverable_list' %}";
+            }
+        })
+  }
+
+</script>
+
+{% endblock javascripts %}

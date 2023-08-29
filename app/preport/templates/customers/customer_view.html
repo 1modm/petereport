@@ -1,0 +1,429 @@
+{% extends 'home/template.html' %}
+
+{% load i18n %}
+{% load martortags %}
+{% load bleach_tags %}
+
+{% block title %} {% translate "Customer Details" %} {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+
+          <div class="col-sm-6">
+            <h1>{% translate "Customer" %}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'customer_list' %}">{% translate "Customers" %}</a></li>
+              <li class="breadcrumb-item active">{{ DB_customer_query.name | bleach }}</li>
+            </ol>
+          </div><div class="row">
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section class="content">
+      <div class="container-fluid">
+      <hr>
+
+      <div class="row">
+        <div class="col-lg-3 col-xs-6">
+
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3>{{count_customer_product}}</h3>
+              <p>{% translate "Product" %}{{ count_customer_product|pluralize:"s" }}</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-cube"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-xs-6">
+
+          <div class="small-box bg-green">
+            <div class="inner">
+              <h3>{{count_customer_report}}</h3>
+
+              <p>{% translate "Report" %}{{ count_customer_report|pluralize:"s" }}</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-file-code"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-xs-6">
+
+          <div class="small-box bg-yellow">
+            <div class="inner">
+              <h3>{{count_customer_findings_total}}</h3>
+
+              <p>{% translate "Finding" %}{{ customer_findings|pluralize:"s" }}</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-bug"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-xs-6">
+
+          <div class="small-box bg-red">
+            <div class="inner">
+              <h3>{{count_customer_findings_critical_high}}</h3>
+
+              <p>{% translate "Critical/High Severity Finding" %}{{ count_customer_findings_critical_high|pluralize:"s" }}</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-exclamation-triangle"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if DB_customer_query.description %}
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <dt>{% translate "Description" %}</dt>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                    <p>{{ DB_customer_query.description | safe_markdown | bleach }}</p>
+                </div>
+              </div>
+        </div>
+      </div>
+      {% endif %}
+
+
+      {% if DB_customer_query.contact %}
+      <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <dt>{% translate "Contact Email" %}</dt>
+                  </h3>
+                </div>
+                <ul class="list-group">
+                  <li class="list-group-item">{{ DB_customer_query.contact }}</li>
+                </ul>
+              </div>
+        </div>
+      </div>
+      {% endif %}
+
+
+      <div class="row">
+          <div class="col-md-12">
+
+              <div class="card card-outline card-success">
+                  <div class="card-header">
+                    <h3 class="card-title">
+                      <dt>{% translate "Overall Breakdown by Categories" %}</dt>
+                    </h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </div>
+
+                  </div>
+
+                  <div class="card-body">
+                      <div id="CWEPieChartEcharts" style="width:100%; height:400px;"></div>
+                  </div>
+
+                </div>
+
+          </div>
+        </div>
+
+
+      <div class="card card-outline card-primary">
+        <div class="card-header">
+          <h3 class="card-title">
+            <dt>{% translate "Reports" %}</dt>
+          </h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <table id="customerlist" class="table table-bordered table-hover">
+              <thead>
+                  <tr>
+                    <th style="width: 20%" class="text-center">{% translate "Product" %}</th>
+                    <th style="width: 35%" class="text-center">{% translate "Report" %}</th>
+                    <th style="width: 5%" class="text-center">{% translate "Date" %}</th>
+                    <th style="width: 15%" class="text-center">{% translate "Findings" %}</th>
+                    <th style="width: 25%" class="text-center">{% translate "Actions" %}</th>
+                  </tr>
+              </thead>
+              <tbody>
+
+              {% for report in DB_report_query %}
+                  <tr>
+                    <td><a href="{% url 'product_view' report.product.pk %}">{{ report.product.name }}</a></td>
+                    <td>{{ report.title }} </td>
+                    <td>{{ report.creation_date | date:"d-m-Y" }} </td>
+                    <td>
+                      <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
+                    </td>
+                    <td class="text-center">
+                        <a href= "{% url 'report_view' report.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
+
+                        {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                          <a href="{% url 'report_edit' report.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                          <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
+                        {% endif %}
+                    </td>
+                  </tr>
+
+
+                        <div class="modal modal-danger fade mm-modal-{{report.pk}}" id="modal-danger">
+                          <div class="modal-dialog">
+                            <div class="modal-content bg-danger">
+                              <div class="modal-header">
+                                <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <p>{% translate "Delete Report" %}&hellip;</p>
+                              </div>
+                              <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+
+                                <button type="button" onclick="DeleteID({{report.pk}});" class="btn btn-outline-light">{% translate "Delete Report" %}</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                {% endfor %}
+
+              </tbody>
+          </table>
+        </div>
+      </div>
+
+
+
+      <div class="card card-outline card-primary">
+        <div class="card-header">
+          <h3 class="card-title">
+            <b>{{ DB_deliverable_query.count }} {% translate "Reports generated - Deliverables" %} </b>
+          </h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <table id="deliverablelist" class="table table-bordered table-hover">
+              <thead>
+                  <tr>
+                    <th style="width: 10%" class="text-center">{% translate "Generated date" %}</th>
+                    <th style="width: 30%" class="text-center">{% translate "File" %}</th>
+                    <th style="width: 10%" class="text-center">{% translate "Type" %}</th>
+                    <th style="width: 15%" class="text-center">{% translate "Report" %}</th>
+                    <th style="width: 15%" class="text-center">{% translate "Product" %}</th>
+                    <th style="width: 8%" class="text-center">{% translate "Actions" %}</th>
+                  </tr>
+              </thead>
+              <tbody>
+
+              {% for deliverable in DB_deliverable_query %}
+                  <tr>
+                    <td>{{ deliverable.generation_date|date:"Y-m-d" }}</td>
+                    <td><a href="{% url 'deliverable_download' deliverable.pk %}">{{ deliverable.filename }}</a></td>
+                    <td>{{ deliverable.filetype }}/{{ deliverable.filetemplate }}</td>
+                    <td><a href="{% url 'report_view' deliverable.report.pk %}">{{ deliverable.report.title }}</a></td>
+                    <td><a href="{% url 'product_view' deliverable.report.product.pk %}">{{ deliverable.report.product.name }}</a></td>
+                    <td class="text-center">
+                      {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{deliverable.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
+                      {% endif %}
+                    </td>
+                  </tr>
+
+
+                <div class="modal modal-danger fade mm-modal-del-{{deliverable.pk}}" id="modal-danger">
+                  <div class="modal-dialog">
+                    <div class="modal-content bg-danger">
+                      <div class="modal-header">
+                        <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p>{% translate "Delete Deliverable" %}&hellip;</p>
+                      </div>
+                      <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                        <button type="button" onclick="DeleteID({{deliverable.pk}});" class="btn btn-outline-light">{% translate "Delete Deliverable" %}</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {% endfor %}
+
+              </tbody>
+          </table>
+        </div>
+
+      </div>
+
+
+
+    </div>
+  </section>
+
+<br>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+<script>
+  $(function () {
+    $("#customerlist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true,
+      "lengthChange": false,
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#customerlist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+<script>
+  function DeleteID(del_id) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'report_delete' %}",
+            headers:{
+              "X-CSRFToken": '{{ csrf_token }}'
+            },
+            data : { 'delete_id': del_id},
+
+            success : function(json) {
+              document.location.href = "{% url 'report_list' %}";
+            }
+        })
+  }
+</script>
+
+
+<script>
+  $(function () {
+    $("#deliverablelist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true,
+      "lengthChange": false,
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#deliverablelist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+<script>
+  function DeleteID(del_id) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'deliverable_delete' %}",
+            headers:{
+              "X-CSRFToken": '{{ csrf_token }}'
+            },
+            data : { 'delete_id': del_id},
+
+            success : function(json) {
+              document.location.href = "{% url 'deliverable_list' %}";
+            }
+        })
+  }
+
+</script>
+
+
+<script type="text/javascript">
+    var chart_CWE = echarts.init(document.getElementById('CWEPieChartEcharts'));
+
+    var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b} <br>{c}'
+            },
+            toolbox: {
+              show: true,
+              feature: {
+                  saveAsImage: {
+                    show: false,
+                    title: "Save Image",
+                    name: "Breakdown_by_Categories"
+                  }
+              }
+            },
+            series: [
+                {
+                    name: 'CWE',
+                    type: 'pie',
+                    radius: '70%',
+                    animation: false,
+
+                    data: {{cwe_categories|safe}},
+                    labelLine: {
+                        show: true
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+    };
+
+    chart_CWE.setOption(option);
+
+</script>
+
+{% endblock javascripts %}

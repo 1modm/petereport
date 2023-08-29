@@ -17,12 +17,12 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>{% translate "Open Findings" %}</h1>
+          <h1>{% translate Status %} {% translate "Findings" %}</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-            <li class="breadcrumb-item active">{% translate "Open Findings" %}</a></li>
+            <li class="breadcrumb-item active">{% translate Status %} {% translate "Findings" %}</a></li>
           </ol>
         </div>
       </div>
@@ -35,7 +35,7 @@
     <div class="container-fluid">
       <div class="card card-outline card-danger">
         <div class="card-header">
-          <h3 class="card-title">{{ count_finding_query }} {% translate "Open Findings" %}</h3>
+          <h3 class="card-title">{{ count_finding_query }} {% translate Status %} {% translate "Findings" %}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -55,11 +55,12 @@
 
                         <thead>
                           <tr>
-                            <th style="width: 40%">{% translate "Title" %}</th>
-                            <th style="width: 5%">{% translate "Severity" %}</th>
-                            <th style="width: 5%">{% translate "CVSS" %}</th>
-                            <th style="width: 20%">{% translate "Report" %}</th>
-                            <th style="width: 25%" class="text-center"> Actions{% translate "Title" %}</th>
+                            <th style="width: 40%" class="text-center">{% translate "Title" %}</th>
+                            <th style="width: 5%" class="text-center">{% translate "Severity" %}</th>
+                            <th style="width: 5%" class="text-center">{% translate "CVSS" %}</th>
+                            <th style="width: 20%" class="text-center">{% translate "Report" %}</th>
+                            <th style="width: 10%" class="text-center">{% translate "Product" %}</th>
+                            <th style="width: 25%" class="text-center"> {% translate "Actions" %}</th>
                           </tr>
                         </thead>
 
@@ -91,13 +92,17 @@
                                       {{ finding.cvss_score }}
                                   </td>
                                   <td>
-                                    <a href="/report/view/{{finding.report.id}}">{{ finding.report.title  | bleach }}</a>
+                                    <a href="{% url 'report_view' finding.report.id %}">{{ finding.report.title | bleach }}</a>
+                                  </td>
+                                  <td>
+                                    <a href="{% url 'product_view' finding.report.product.id %}">{{ finding.report.product.name | bleach }}</a>
                                   </td>
                                   <td align="center">
                                       <a href="/finding/view/{{ finding.pk }}"><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
 
                                       {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                        <a href="/finding/edit/{{ finding.pk }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
+                                        <a href="{% url 'finding_edit' finding.pk %}#{{ finding.get_cvss_score_anchor }}"><button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{finding.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
                                         <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                       {% endif %}
                                       
@@ -120,6 +125,26 @@
                                 <div class="modal-footer justify-content-between">
                                   <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
                                   <button type="button" onclick="DeleteID({{finding.pk}});" class="btn btn-outline-light">{% translate "Delete Finding" %}</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="modal modal-warning fade mm-modal-clone-{{finding.pk}}" id="modal-warning">
+                            <div class="modal-dialog">
+                              <div class="modal-content bg-warning">
+                                <div class="modal-header">
+                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <p>{% translate "Clone Finding" %}&hellip;</p>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                  <button type="button" onclick="DuplicateID({{finding.pk}});" class="btn btn-outline-light">{% translate "Clone Finding" %}</button>
                                 </div>
                               </div>
                             </div>
@@ -162,17 +187,34 @@
   function DeleteID(del_id) {
         $.ajax({
             type: 'POST',
-            url: "/en/finding/delete/",
+            url: "{% url 'finding_delete' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/finding/open/"; 
+              document.location.href = "{% url 'openfindings' %}";
             }
         })
   }
+
+
+  function DuplicateID(dup_id) {
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'finding_duplicate' %}",
+        headers:{
+          "X-CSRFToken": '{{ csrf_token }}'
+        },
+        data : { 'duplicate_id': dup_id},
+
+        success : function(json) {
+          document.location.href = "{% url 'openfindings' %}";
+        }
+    })
+  }
+  
 </script>
 
 {% endblock javascripts %}

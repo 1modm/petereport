@@ -1,8 +1,9 @@
 {% extends 'home/template.html' %}
 
 {% load i18n %}
+{% load bleach_tags %}
 
-{% block title %} {% translate "Finding Templates" %} {% endblock title %}
+{% block title %} {% translate "Add Finding Template" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -20,7 +21,7 @@
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-          <li class="breadcrumb-item"><a href="/template/list/">{% translate "Templates" %}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'template_list' %}">{% translate "Templates" %}</a></li>
           <li class="breadcrumb-item active">{% translate "Add Template" %}</li>
         </ol>
       </div>
@@ -70,7 +71,7 @@
                       <div class="modal-dialog">
                           <div class="alert alert-success alert-dismissible">
                               <a  class="close" data-dismiss="modal" aria-label="close">&times;</a>
-                              <strong> {% translate "CVSS Calculator" %} </strong> <a href="https://www.first.org/cvss/calculator/3.0">Common Vulnerability Scoring System Version 3.0 Calculator</a>
+                              <strong> {% translate "CVSS Calculator" %} </strong> <a href="https://www.first.org/cvss/calculator/3.1">Common Vulnerability Scoring System Version 3.1 Calculator</a>
 
                             </div>
                       </div>
@@ -266,6 +267,13 @@ The Specification is available in the list of links on the left, along with a Us
                     <label class="col-sm-2 col-form-label">CWE</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.cwe }}
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">OWASP</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.owasp }}
                     </div>
                   </div>
 
@@ -601,9 +609,9 @@ cvssCalculator();
 
 
 <script>
-// In your Javascript (external .js resource or <script> tag)
 $(document).ready(function() {
     $('.select2CWE').select2();
+    $('.select2OWASP').select2();
 });
 </script>
 {% endblock javascripts %}

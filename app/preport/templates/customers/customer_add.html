@@ -1,0 +1,99 @@
+{% extends 'home/template.html' %}
+
+{% load i18n %}
+{% load bleach_tags %}
+
+{% block title %} {% translate "Customers" %} {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>{% translate "Customer" %}</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'customer_list' %}">{% translate "Customers" %}</a></li>
+          <li class="breadcrumb-item active">{% translate "Add or Edit customer" %}</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-primary">
+              <div class="card-header">
+                <h3 class="card-title">{% translate "Customer details" %}</h3>
+              </div>
+
+              <form role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card-body">
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Name" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.name }}
+                      </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Contact" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.contact }}
+                    </div>
+                  </div>
+                 
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Description" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.description }}
+                    </div>
+                  </div>
+
+
+                </div>
+
+                {% if form.errors %}
+                   {% for field in form %}
+                       {% for error in field.errors %}
+                          <div class="container">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                              <div class="alert alert-danger alert-dismissible ">
+                              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                              <h5><i class="icon fas fa-ban"></i> Error</h5>
+                              {{ field.name }}: {{ error|escape }}
+                              </div>
+                            </div>
+                          </div>
+                       {% endfor %}
+                   {% endfor %}
+                {% endif %}
+
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary">{% translate "Save Customer" %}</button>
+                </div>
+              </form>
+            </div>
+
+        </div>
+      </div>
+    </div>
+</section>
+
+
+{% endblock content %}

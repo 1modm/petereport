@@ -1,6 +1,19 @@
 Changelog
 =========
 
+## Version 1.4.0
+
+### Enhancements and Bugfixes:
+
+* Mayor upgrades and enhancement from bat_bast contributions
+* Dashboard enhancement
+* Customers management
+* Deliverables management
+* Reports and findings clone option
+* Multiple output templates
+* Findings OWASP top 10 categories [#5](https://github.com/1modm/petereport/issues/5)
+* Settings section configuration added
+
 ## Version 1.3.3
 
 ### Enhancements and Bugfixes:

@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load i18n %}
+{% load bleach_tags %}
 
 {% block title %} {% translate "Upload Findings" %} {% endblock title %}
 
@@ -9,8 +10,6 @@
 {% endblock stylesheets %}
 
 {% block content %}
-
-
 
   <section class="content-header">
     <div class="container-fluid">
@@ -21,7 +20,9 @@
         <div class="col-sm-8">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-            <li class="breadcrumb-item"><a href="/report/view/{{ DB_report_query.pk}}">{{ DB_report_query.title}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report_query.product.customer.pk %}">{{ DB_report_query.product.customer.name | bleach}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report_query.product.pk %}">{{ DB_report_query.product.name | bleach}}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'report_view' DB_report_query.pk %}">{{ DB_report_query.title}}</a></li>
             <li class="breadcrumb-item active">{% translate "Upload Findings" %}</a></li>
           </ol>
         </div>
@@ -31,9 +32,6 @@
 
 
   <section class="content">
-
-
-
 
 
     <div class="container-fluid">

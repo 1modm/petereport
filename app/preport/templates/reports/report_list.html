@@ -1,5 +1,6 @@
 {% extends 'home/template.html' %}
 {% load i18n %}
+{% load bleach_tags %}
 
 {% load app_filters %}
 
@@ -44,11 +45,12 @@
           <table id="reportlist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                    <th style="width: 18%">{% translate "ID" %}</th>
-                    <th style="width: 33%">{% translate "Report" %}</th>
-                    <th style="width: 12%">{% translate "Product" %}</th>
-                    <th style="width: 12%">{% translate "Findings" %}</th>
-                    <th style="width: 25%" class="text-center">{% translate "Actions" %}</th>
+                    <th style="width: 18%" class="text-center">{% translate "ID" %}</th>
+                    <th style="width: 25%" class="text-center">{% translate "Report" %}</th>
+                    <th style="width: 10%" class="text-center">{% translate "Customer" %}</th>
+                    <th style="width: 12%" class="text-center">{% translate "Product" %}</th>
+                    <th style="width: 12%" class="text-center">{% translate "Findings" %}</th>
+                    <th style="width: 22%" class="text-center">{% translate "Actions" %}</th>
                   </tr>
               </thead>
               <tbody>
@@ -57,6 +59,7 @@
                   <tr>
                     <td>{{ report.report_id }} </td>
                     <td>{{ report.title }} </td>
+                    <td><a href="{% url 'customer_view' report.product.customer.pk %}">{{ report.product.customer.name }}</a></td>
                     <td>{{ report.product.name }} </td>
                     <td>
                       <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
@@ -65,6 +68,9 @@
                         <a href="/report/view/{{ report.pk }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
                         
                         {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+
+                          <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{report.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
+
                           <a href="/report/edit/{{ report.pk }}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a> 
                           <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{report.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %} </button>
                         {% endif %}
@@ -92,6 +98,30 @@
                             </div>
                           </div>
                         </div>
+
+
+
+                        <div class="modal modal-warning fade mm-modal-clone-{{report.pk}}" id="modal-warning">
+                          <div class="modal-dialog">
+                            <div class="modal-content bg-warning">
+                              <div class="modal-header">
+                                <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <p>{% translate "Clone Report and Findings" %}&hellip;</p>
+                              </div>
+                              <div class="modal-footer justify-content-between">
+                                <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                                <button type="button" onclick="DuplicateID({{report.pk}});" class="btn btn-outline-light">{% translate "Clone Report and Findings" %}</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+
 
                 {% endfor %}
 
@@ -135,10 +165,26 @@
             data : { 'delete_id': del_id},
 
             success : function(json) {
-              document.location.href = "/report/list/"; 
+              document.location.href = "{% url 'report_list' %}";
             }
         })
   }
+
+  function DuplicateID(dup_id) {
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'report_findings_duplicate' %}",
+        headers:{
+          "X-CSRFToken": '{{ csrf_token }}'
+        },
+        data : { 'duplicate_id': dup_id},
+
+        success : function(json) {
+          document.location.href = "{% url 'report_list' %}";
+        }
+    })
+  }
+
 </script>
 
 {% endblock javascripts %}

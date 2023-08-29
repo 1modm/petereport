@@ -1,5 +1,6 @@
 {% extends 'home/template.html' %}
 {% load i18n %}
+{% load bleach_tags %}
 
 {% block title %} {% translate "Finding" %} {% endblock title %}
 
@@ -19,8 +20,10 @@
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-          <li class="breadcrumb-item"><a href="/product/view/{{ DB_report.product.pk}}">{{ DB_report.product.name }}</a></li>
-          <li class="breadcrumb-item active">{{ DB_report.report_id }}</li>
+          <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report.product.customer.pk %}">{{ DB_report.product.customer.name}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report.product.pk %}">{{ DB_report.product.name}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'report_view' DB_report.pk %}">{{ DB_report.title}}</a></li>
+          <li class="breadcrumb-item active">{% translate "Finding" %}</a></li>
         </ol>
       </div>
     </div>
@@ -76,7 +79,7 @@
                       <div class="modal-dialog">
                           <div class="alert alert-success alert-dismissible">
                               <a  class="close" data-dismiss="modal" aria-label="close">&times;</a>
-                              <strong> {% translate "CVSS Calculator" %} </strong> <a href="https://www.first.org/cvss/calculator/3.0">Common Vulnerability Scoring System Version 3.0 Calculator</a>
+                              <strong> {% translate "CVSS Calculator" %} </strong> <a href="https://www.first.org/cvss/calculator/3.1">Common Vulnerability Scoring System Version 3.1 Calculator</a>
 
                             </div>
                       </div>
@@ -277,6 +280,13 @@ The Specification is available in the list of links on the left, along with a Us
                   </div>
 
                   <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">OWASP</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.owasp }}
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
                     <label class="col-sm-2 col-form-label">Description</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.description }}
@@ -287,6 +297,13 @@ The Specification is available in the list of links on the left, along with a Us
                     <label class="col-sm-2 col-form-label">Location</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.location }}
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Proof of Concept</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.poc }}
                     </div>
                   </div>
 
@@ -608,6 +625,7 @@ cvssCalculator();
 // In your Javascript (external .js resource or <script> tag)
 $(document).ready(function() {
     $('.select2CWE').select2();
+    $('.select2OWASP').select2();
 });
 </script>
 {% endblock javascripts %}

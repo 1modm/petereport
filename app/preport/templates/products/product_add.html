@@ -1,6 +1,7 @@
 {% extends 'home/template.html' %}
 
 {% load i18n %}
+{% load bleach_tags %}
 
 {% block title %} {% translate "Products" %} {% endblock title %}
 
@@ -48,6 +49,14 @@
                         {{ form.name }}
                       </div>
                   </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Customer" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.customer }}
+                      </div>
+                  </div>
+                  
                   <div class="form-group row">
                     <label class="col-sm-2 col-form-label">{% translate "Product Description" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
