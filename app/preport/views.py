@@ -752,7 +752,6 @@ def uploadsummaryfindings(request,pk):
         owasp_ext = formatf.split('/')[-1]
         dataOWASP = ContentFile(base64.b64decode(owasp_summary_categories_finding_file_str))
 
-
         DB_report_query.executive_summary_image = summary_finding_file_base64
         DB_report_query.cwe_categories_summary_image = summary_categories_file_base64
         DB_report_query.owasp_categories_summary_image = owasp_summary_categories_file_base64
@@ -1561,12 +1560,11 @@ def downloadfindingscsv(request,pk):
         deliverable.save()
 
     if os.path.exists(csv_file_output):
-        with open(csv_file_output, 'rb') as fh:
+        with open(csv_file_output, 'rb') as data_csv_file_output:
             # Create the HttpResponse object with the appropriate CSV header.
-            response = HttpResponse(content_type='text/csv')
+            response = HttpResponse(data_csv_file_output, content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(name_file)
             return response
-
     else:
         raise Http404
 

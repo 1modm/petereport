@@ -32,6 +32,12 @@
 {{finding.impact|safe}}
 {% endif %}
 
+{% if finding.poc %}
+**{% translate "Proof of Concept" %}**
+
+{{finding.poc|safe}}
+{% endif %}
+
 {% if finding.recommendation %}
 **{% translate "Recommendation" %}**
 

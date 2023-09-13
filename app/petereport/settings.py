@@ -131,7 +131,7 @@ LANGUAGES = (
 )
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -150,6 +150,7 @@ STATICFILES_DIRS = (
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
+
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/'
@@ -228,10 +229,7 @@ MARTOR_MARKDOWN_EXTENSION_CONFIGS = {}
 CSRF_COOKIE_HTTPONLY = False
 
 # Upload to locale storage
-#uploads_format = 'uploads/{}'.format(time.strftime("%Y/%m/%d/"))
-#MARTOR_UPLOAD_PATH = 'images/uploads/{}'.format(time.strftime("%Y/%m/%d/"))
 MARTOR_UPLOAD_PATH = os.path.join(MEDIA_ROOT, 'images/uploads')
-#MARTOR_UPLOAD_PATH = os.path.join(MEDIA_ROOT, uploads_format)
 MARTOR_UPLOAD_URL = '/api/uploader/'  # change to local uploader
 MARTOR_MEDIA_URL = os.path.join(PETEREPORT_MARKDOWN['media_host'], MEDIA_URL)
 

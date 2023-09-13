@@ -47,6 +47,14 @@
 </tr>
 {% endif %}
 
+{% if finding.poc %}
+<tr>
+<td style="width: 15%">**{% translate "Proof of Concept" %}**</td>
+<td>{{finding.poc | safe_markdown | bleach}}</td>
+</tr>
+{% endif %}
+
+
 {% if finding.recommendation %}
 <tr>
 <td style="width: 15%">**{% translate "Recommendation" %}**</td>

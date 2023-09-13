@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## Version 1.4.1
+
+### Enhancements and Bugfixes:
+
+* Set martor to a fixed version 1.6.26 [#210](https://github.com/agusmakmun/django-markdown-editor/issues/210)
+* POC section added to reports
+
 ## Version 1.4.0
 
 ### Enhancements and Bugfixes:

@@ -96,4 +96,4 @@ urlpatterns = [
     path('deliverable/list/', views.deliverable_list, name='deliverable_list'),
     path('deliverable/delete/', views.deliverable_delete, name='deliverable_delete'),
     path('deliverable/download/<int:pk>', views.deliverable_download, name='deliverable_download'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
