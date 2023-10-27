@@ -2824,7 +2824,7 @@ def share_deliverable(request):
         if ShareClass:
             shareobj = ShareClass(report.share_deliverable)
             file = os.path.join(REPORTS_MEDIA_ROOT, deliverable.filetype, deliverable.filename)
-            share_date, share_uuid = shareobj(filename=file, project=report.report_id)
+            share_date, share_uuid = shareobj(filename=file, project=report.report_id, name=report.title)
             #share_date = datetime.utcnow()
             deliverable.share_date = share_date
             deliverable.share_uuid = share_uuid
@@ -2832,10 +2832,12 @@ def share_deliverable(request):
             data = json.dumps({
                     'status': 200
                     }, cls=LazyEncoder)
-            return HttpResponse(
-                data, content_type='application/json', status=200)
-    data = json.dumps({
-                'status': 405,
-                'error': _('Bad Function')
-                }, cls=LazyEncoder)
+            return HttpResponse(data, content_type='application/json', status=200)
+    
+    data = json.dumps(
+        {
+            'status': 405,
+            'error': _('Bad Function')
+        },
+        cls=LazyEncoder)
     return HttpResponse(data, content_type='application/json', status=405)
