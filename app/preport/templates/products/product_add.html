@@ -34,7 +34,6 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
-
             <div class="card card-outline card-primary">
               <div class="card-header">
                 <h3 class="card-title">{% translate "Product details" %}</h3>
@@ -55,18 +54,37 @@
                         {{ form.customer }}
                       </div>
                   </div>
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Tags" %}</label>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.tags }}
-                  </div>
+                  
                   <div class="form-group row">
                     <label class="col-sm-2 col-form-label">{% translate "Product Description" %}</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.description }}
                     </div>
                   </div>
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Product Recovery" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.recovery }}
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Product Installation" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.installation }}
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Product Usage" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.usage }}
+                    </div>
+                  </div>
+                </div>
 
+                <div class="form-group row">
+                  <label class="col-sm-2 col-form-label">{% translate "Tags" %}</label>
+                  <div class="col-md-10 col-sm-10 col-xs-12">
+                    {{ form.tags }}
                 </div>
 
                 {% if form.errors %}
@@ -84,13 +102,11 @@
                        {% endfor %}
                    {% endfor %}
                 {% endif %}
-
                 <div class="card-footer">
                   <button type="submit" class="btn btn-primary">{% translate "Save Product" %}</button>
                 </div>
               </form>
             </div>
-
         </div>
       </div>
     </div>

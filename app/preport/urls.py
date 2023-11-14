@@ -36,7 +36,7 @@ urlpatterns = [
     path('report/view/<int:pk>', views.report_view, name='report_view'),
     path('report/edit/<int:pk>', views.report_edit, name='report_edit'),
     path('report/delete/', views.report_delete, name='report_delete'),
-    path('report-findings/duplicate/', views.report_findings_duplicate, name='report_findings_duplicate'),
+    path('report/duplicate/', views.report_duplicate, name='report_duplicate'),
     path('report/uploadsummaryfindings/<int:pk>', views.report_uploadsummaryfindings, name='report_uploadsummaryfindings'),
     path('report/download/markdown/<str:cst>/<int:pk>', views.report_download_markdown, name='report_download_markdown'),
     path('report/download/html/<str:cst>/<int:pk>', views.report_download_html, name='report_download_html'),
@@ -44,6 +44,7 @@ urlpatterns = [
     path('report/download/jupyter/<str:cst>/<int:pk>', views.report_download_jupyter, name='report_download_jupyter'),
     path('report/download/<str:export_type>/<str:cst>/<int:pk>', views.report_download, name='report_download'),
     path('report/findings/<int:pk>', views.report_findings, name='report_findings'),
+    path('report/cspn/<int:pk>', views.report_cspn_evaluations, name='report_cspn_evaluations'),
     # Findings
     path('finding/list/', views.finding_list, name='finding_list'),
     path('finding/add/<int:pk>', views.finding_add, name='finding_add'),
@@ -59,6 +60,13 @@ urlpatterns = [
     path('findings/defectdojo/import/<int:pk>/<int:ddpk>', views.defectdojo_import, name='defectdojo_import'),
     path('findings/defectdojo/viewfindings/<int:pk>/<int:ddpk>', views.defectdojo_viewfindings, name='defectdojo_viewfindings'),
     path('findings/defectdojo/importfinding/<int:pk>/<int:ddpk>', views.defectdojo_import_finding, name='defectdojo_import_finding'),
+    # CSPN
+    path('cspn/list/', views.cspn_list, name='cspn_list'),
+    path('cspn/add/<int:pk>', views.cspn_add, name='cspn_add'),
+    path('cspn/edit/<int:pk>', views.cspn_edit, name='cspn_edit'),
+    path('cspn/delete/', views.cspn_delete, name='cspn_delete'),
+    path('cspn/view/<int:pk>', views.cspn_view, name='cspn_view'),
+    path('cspn/duplicate/', views.cspn_duplicate, name='cspn_duplicate'),
     # Custom Fields
     path('field/add/<int:pk>', views.field_add, name='field_add'),
     path('finding/customfields/<int:pk>', views.customfields, name='fields'),

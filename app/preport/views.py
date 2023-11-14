@@ -24,10 +24,12 @@ import preport.utils.utils as uutils
 
 import django.db
 # Forms
-from .forms import CustomDeliverableReportForm, NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewShareForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm, NewFTSForm
+from .forms import CustomDeliverableReportForm, NewSettingsForm, NewCustomerForm, NewProductForm, NewReportForm, NewShareForm, NewFindingForm, NewAppendixForm, NewFindingTemplateForm, AddUserForm, NewCWEForm, NewOWASPForm, NewFieldForm, NewFTSForm, NewCSPNEvaluationForm
+
 
 # Model
-from .models import DB_Deliverable, DB_Report, DB_ShareConnection, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow, DB_FTSModel
+from .models import DB_Deliverable, DB_Report, DB_ShareConnection, DB_Settings, DB_CSPN_Evaluation, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_Custom_field, DB_AttackFlow, DB_FTSModel
+
 
 # Decorators
 from .decorators import allowed_users
@@ -628,7 +630,7 @@ def report_delete(request):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def report_findings_duplicate(request):
+def report_duplicate(request):
 
     if request.method == 'POST':
         duplicate_id = request.POST['duplicate_id']
@@ -658,6 +660,20 @@ def report_findings_duplicate(request):
                 finding.finding_id = DB_Finding.objects.filter(finding_id__contains = finding.finding_id, finding_id__endswith = copy_datetime).latest("creation_date").finding_id
                 finding.finding_id = finding.finding_id + copy_datetime
                 finding.save()
+
+        # Now, duplicate CSPN Evaluations
+        DB_cspn_query = DB_CSPN_Evaluation.objects.filter(report_id=duplicate_id)
+        for cspn_eval in DB_cspn_query:
+            cspn_eval.pk = None
+            cspn_eval._state.adding = True
+            cspn_eval.cspn_id = cspn_eval.cspn_id + copy_datetime
+            cspn_eval.report_id = report.pk
+            try:
+                cspn_eval.save()
+            except django.db.utils.IntegrityError:
+                cspn_eval.cspn_id = DB_CSPN_Evaluation.objects.filter(cspn_id__contains = cspn_eval.cspn_id, cspn_id__endswith = copy_datetime).latest("creation_date").cspn_id
+                cspn_eval.cspn_id = cspn_eval.cspn_id + copy_datetime
+                cspn_eval.save()
 
         return HttpResponse('{"status":"success"}', content_type='application/json')
     else:
@@ -1219,6 +1235,7 @@ def report_download_pdf(request, cst, pk):
         # DB
         DB_report_query = get_object_or_404(DB_Report, pk=pk)
         DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+        DB_cspn_query = DB_CSPN_Evaluation.objects.filter(report=DB_report_query).order_by('stage__cspn_id')
         DB_settings_query = DB_Settings.objects.get()
 
         # Datetime
@@ -1237,12 +1254,14 @@ def report_download_pdf(request, cst, pk):
 
         # INIT
         vulnerabilities = []
-        template_findings = template_appendix = pdf_finding_summary = ''
+        cspn_evaluations = []
+        template_findings = template_appendix = pdf_finding_summary = template_cspn_evaluations = pdf_cspn_eval_summary = ''
         counter_appendix = 0
         md_author = DB_settings_query.company_name
         md_subject = PETEREPORT_MARKDOWN['subject']
         md_website = DB_settings_query.company_website
-        counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = count_findings_summary = 0
+        counter_finding = counter_finding_critical = counter_finding_high = counter_finding_medium = counter_finding_low = counter_finding_info = 0
+        counter_cspn_eval = count_findings_summary = 0
         title_background_image = os.path.join(tpl_cst_dir, PETEREPORT_TEMPLATES['report_pdf_title_background'])
         pages_background_image = os.path.join(tpl_cst_dir, PETEREPORT_TEMPLATES['report_pdf_pages_background'])
 
@@ -1376,6 +1395,40 @@ def report_download_pdf(request, cst, pk):
                 end_finding = timer()
                 logger.debug('Finding: [' + finding.finding_id + '] ' + finding.title + ' ⇨ ' + str(end_finding - start_finding) + ' s')
 
+
+        if str(cst).startswith('cspn'):
+            logger.debug('Generating CSPN Evaluations')
+            for cspn_eval in DB_cspn_query:
+                start_cspn_eval = timer()
+                counter_cspn_eval += 1
+
+                if cspn_eval.status == 'Evaluated':
+                    icon_cspn = 'lownote'
+                    evaluated_color = 'lowcolor'
+                    evaluated_box = 'lowbox'
+                else:
+                    icon_cspn = 'debugnote'
+                    evaluated_color = 'debugcolor'
+                    evaluated_box = 'infobox'
+
+                pdf_cspn_eval_summary += render_to_string(os.path.join('tpl', 'pdf', cst, 'pdf_cspn_eval_summary.md'),
+                                                            {'cspn_eval': cspn_eval,
+                                                            'evaluated_box': evaluated_box})
+
+                evaluated_color_cspn_eval = "\\textcolor{" + f"{evaluated_color}" +"}{" + f"{cspn_eval.status}" + "}"
+                    
+                
+                # cspn evals
+                pdf_cspn_evaluations = render_to_string(os.path.join('tpl', 'pdf', cst, 'pdf_cspn_evaluation.md'),
+                                                                        {   'cspn_eval': cspn_eval,
+                                                                            'icon_cspn': icon_cspn,
+                                                                            'evaluated_color': evaluated_color,
+                                                                            'evaluated_color_cspn_eval': evaluated_color_cspn_eval})
+                template_cspn_evaluations += ''.join(pdf_cspn_evaluations)
+
+                end_cspn_eval = timer()
+                logger.debug('CSPN Evaluations: [' + cspn_eval.cspn_id + '] ' + cspn_eval.stage.cspn_id + ' ⇨ ' + str(end_cspn_eval - start_cspn_eval) + ' s')
+
         start_report_yaml = timer()
         pdf_markdown_report = render_to_string(os.path.join('tpl', 'pdf', cst, 'pdf_header.yaml'),
                                                                          {  'DB_report_query': DB_report_query,
@@ -1402,9 +1455,11 @@ def report_download_pdf(request, cst, pk):
                                                                             'report_cwe_categories_image': report_cwe_categories_image,
                                                                             'report_owasp_categories_image': report_owasp_categories_image,
                                                                             'pdf_finding_summary': pdf_finding_summary,
+                                                                            'pdf_cspn_eval_summary': pdf_cspn_eval_summary,
                                                                             'template_findings': template_findings,
                                                                             'template_appendix': template_appendix,
-                                                                            'counter_appendix': counter_appendix})
+                                                                            'counter_appendix': counter_appendix,
+                                                                            'template_cspn_evaluations': template_cspn_evaluations})
 
         final_markdown = textwrap.dedent(pdf_markdown_report)
         final_markdown_output = mark_safe(final_markdown)
@@ -1714,11 +1769,135 @@ def deliverable_delete(request):
     else:
         return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
 
+# ----------------------------------------------------------------------
+#                           CSPN Evaluations
+# ----------------------------------------------------------------------
+
+@login_required
+def report_cspn_evaluations(request,pk):
+    DB_report_query = get_object_or_404(DB_Report, pk=pk)
+    DB_cspn_query = DB_CSPN_Evaluation.objects.filter(report=DB_report_query).order_by('stage__cspn_id')
+    count_cspn_query = DB_cspn_query.count()
+
+    return render(request, 'cspn/reportcspn.html',
+                  {'DB_report_query': DB_report_query,
+                   'DB_cspn_query': DB_cspn_query,
+                   'count_cspn_query': count_cspn_query})
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def cspn_add(request,pk):
+
+    DB_report_query = get_object_or_404(DB_Report, pk=pk)
+
+    if request.method == 'POST':
+        form = NewCSPNEvaluationForm(request.POST)
+
+        if form.is_valid():
+            cspn = form.save(commit=False)
+            cspn.report = DB_report_query
+            cspn.cspn_id = uuid.uuid4()
+            cspn.save()
+            form.save_m2m() # Save tags
+            if '_finish' in request.POST:
+                return redirect('report_cspn_evaluations', pk=pk)
+            elif '_next' in request.POST:
+                return redirect('cspn_add', pk=pk)
+
+    else:
+        form = NewCSPNEvaluationForm()
+        form.fields['evaluation'].initial = ""
+        form.fields['expert_notice'].initial = ""
+        form.fields['stage'].initial = '-1'
+
+    return render(request, 'cspn/cspn_add.html', {
+        'form': form, 'DB_report': DB_report_query})
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def cspn_delete(request):
+
+    if request.method == 'POST':
+        delete_id = request.POST['delete_id']
+        DB_CSPN_Evaluation.objects.filter(pk=delete_id).delete()
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def cspn_duplicate(request):
+
+    if request.method == 'POST':
+        duplicate_id = request.POST['duplicate_id']
+        cspn = DB_CSPN_Evaluation.objects.get(pk=duplicate_id)
+        cspn.pk = None
+        cspn._state.adding = True
+        copy_datetime = '-COPY-' + str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))
+        cspn.cspn_id = cspn.cspn_id + copy_datetime
+
+        try:
+            cspn.save()
+        except django.db.utils.IntegrityError:
+            cspn.cspn_id = DB_CSPN_Evaluation.objects.filter(cspn_id__contains = cspn.cspn_id, cspn_id__endswith = copy_datetime).latest("creation_date").cspn_id
+            cspn.cspn_id = cspn.icspn_idd + copy_datetime
+            cspn.save()
+
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+
+@login_required
+def cspn_view(request,pk):
+    cspn = get_object_or_404(DB_CSPN_Evaluation, pk=pk)
+    DB_cspn_query = DB_CSPN_Evaluation.objects.filter(pk=pk).order_by('stage__cspn_id')
+    cspn_tags = u", ".join(o.name for o in cspn.tags.all())
+
+    return render(request, 'cspn/cspn_view.html', {'DB_report': cspn.report,
+                                                          'cspn': cspn,
+                                                          'cspn_tags': cspn_tags})
+
+@login_required
+def cspn_list(request):
+    DB_cspn_query = DB_CSPN_Evaluation.objects.order_by('stage__cspn_id')
+    count_cspn_query = DB_cspn_query.count()
+
+    return render(request, 'cspn/cspn_list.html',
+                  {'Status': '',
+                   'Link': 'list',
+                   'DB_cspn_query': DB_cspn_query, 
+                   'count_cspn_query': count_cspn_query})
+
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def cspn_edit(request,pk):
+
+    cspn = get_object_or_404(DB_CSPN_Evaluation, pk=pk)
+    report = cspn.report
+    DB_report_query = get_object_or_404(DB_Report, pk=report.pk)
+
+    if request.method == 'POST':
+        form = NewCSPNEvaluationForm(request.POST, instance=cspn)
+        if form.is_valid():
+            cspn = form.save(commit=False)
+            cspn.save()
+            form.save_m2m() # Save tags
+            if '_finish' in request.POST:
+                return redirect('report_cspn_evaluations', pk=report.pk)
+            elif '_next' in request.POST:
+                return redirect('cspn_add', pk=report.pk)
+
+    else:
+        form = NewCSPNEvaluationForm(instance=cspn)
+    return render(request, 'cspn/cspn_add.html', {
+        'form': form, 'DB_report': DB_report_query
+    })
 
 # ----------------------------------------------------------------------
 #                           Findings
 # ----------------------------------------------------------------------
-
 
 @login_required
 def report_findings(request,pk):
@@ -1783,8 +1962,6 @@ def finding_add(request,pk):
 
     return render(request, 'findings/finding_add.html', {
         'form': form, 'DB_report': DB_report_query})
-
-
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
@@ -1862,8 +2039,6 @@ def finding_view(request,pk):
                                                           'DB_attackflow': DB_attackflow,
                                                           'DB_field': DB_field,
                                                           'finding_tags': finding_tags})
-
-
 
 @login_required
 def findings_download_csv(request,pk):

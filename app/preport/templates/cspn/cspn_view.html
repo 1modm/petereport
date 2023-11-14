@@ -1,0 +1,190 @@
+{% extends 'home/template.html' %}
+
+{% load i18n %}
+{% load martortags %}
+{% load bleach_tags %}
+
+{% block title %} {% translate "CSPN Evaluation" %} {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+
+          <div class="col-sm-3">
+            <h1>{% translate "CSPN Evaluation Details" %}</h1>
+          </div>
+          <div class="col-sm-9">
+            <ol class="breadcrumb float-sm-right">
+
+              <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'customer_view' cspn.report.product.customer.pk %}">{{ cspn.report.product.customer.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'product_view' cspn.report.product.pk %}">{{ cspn.report.product.name | bleach}}</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'report_view' cspn.report.pk %}">{{ cspn.report.title}}</a></li>
+              <li class="breadcrumb-item active">{{ cspn.title | bleach }}</li>
+
+            </ol>
+          </div>
+        </div>
+
+         <br>
+
+        <div class="row">
+            <div class="col-md-7">
+                {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                  <a href="{% url 'cspn_edit' cspn.pk %}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Edit CSPN Evaluation" %}</button></a>
+                  <a href="{% url 'fields' cspn.pk %}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "CSPN Evaluation custom fields" %}</button></a>
+                {% endif %}
+            </div>
+        </div>
+
+        <br>
+
+      </div>
+    </section>
+
+  <section class="content">
+    <div class="container-fluid">
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <i class="far fa-chart-bar"></i>
+                    <b>{% translate "Summary" %}</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+
+
+                  <div class="row">
+                      <div class="col-12 col-sm-4">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "CSPN Evaluation ID" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ cspn.cspn_id | safe_markdown | bleach}}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-4">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "Product" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_report.product.name | safe_markdown | bleach}}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-4">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "Report" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_report.title | safe_markdown | bleach}}<span>
+                          </span></span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="row">
+                    <div class="col-12 col-sm-10">
+                      <div class="info-box bg-light">
+                        <div class="info-box-content">
+                          <span class="info-box-number text-center text-muted">{% translate "Stage" %}</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ cspn.stage.get_label }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-sm-2">
+                      <div class="info-box bg-light">
+                        <div class="info-box-content">
+                          <span class="info-box-number text-center text-muted">{% translate "Status" %}</span>
+                              {% if cspn.status == "Evaluated" %}
+                                  <b><font color="green">Evaluated</font></b>
+                              {% else %}
+                                  <b><font color="orange">Not Evaluated</font></b>
+                              {% endif %}
+                          </span>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+      </div>
+
+
+      {% if cspn.evaluation %}
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>{% translate "Evaluation" %}</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ cspn.evaluation | safe_markdown | bleach }}
+                </div>
+              </div>
+
+        </div>
+      </div>
+      {% endif %}
+
+      {% if cspn.expert_notice %}
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <b>{% translate "Expert Notice" %}</b>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  {{ cspn.expert_notice | safe_markdown | bleach }}
+                </div>
+              </div>
+
+        </div>
+      </div>
+      {% endif %}
+  </div>
+</section>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+{% endblock javascripts %}

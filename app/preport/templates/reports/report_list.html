@@ -45,11 +45,12 @@
           <table id="reportlist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                    <th style="width: 18%">{% translate "ID" %}</th>
+                    <th style="width: 10%">{% translate "ID" %}</th>
                     <th style="width: 23%">{% translate "Report" %}</th>
                     <th style="width: 12%">{% translate "Product" %}</th>
                     <th style="width: 10%">{% translate "Customer" %}</th>
-                    <th style="width: 12%">{% translate "Findings" %}</th>
+                    <th style="width: 10%">{% translate "Findings" %}</th>
+                    <th style="width: 10%">{% translate "CSPN" %}</th>
                     <th style="width: 25%" class="text-center">{% translate "Actions" %}</th>
                   </tr>
               </thead>
@@ -63,6 +64,9 @@
                     <td><a href="{% url 'customer_view' report.product.customer.pk %}">{{ report.product.customer.name }}</a></td>
                     <td>
                       <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
+                    </td>
+                    <td>
+                      <span class="pull-right badge bg-primary">{{ report.db_cspn_evaluation_set.count }}</span> {% translate "CSPN" %}{{ report.db_cspn_evaluation_set.count|pluralize:"s" }}
                     </td>
                     <td class="text-center">
                         <a href="{% url 'report_view' report.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
@@ -166,7 +170,7 @@
   function DuplicateID(dup_id) {
         $.ajax({
             type: 'POST',
-            url: "{% url 'report_findings_duplicate' %}",
+            url: "{% url 'report_duplicate' %}",
             headers:{
               "X-CSRFToken": '{{ csrf_token }}'
             },

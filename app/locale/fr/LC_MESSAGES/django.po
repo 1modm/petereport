@@ -1187,3 +1187,9 @@ msgstr ""
 #: preport/views.py:646 preport/views.py:776 preport/views.py:923
 msgid "**Attack Flow**"
 msgstr ""
+
+msgid "Evaluated"
+msgstr "Evalué"
+
+msgid "Not Evaluated"
+msgstr "Non évalué"

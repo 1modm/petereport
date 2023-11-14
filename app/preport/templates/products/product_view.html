@@ -118,6 +118,74 @@
       </div>
       {% endif%}
 
+      {% if DB_product_query.recovery %}
+      <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <dt>{% translate "Recovery" %}</dt>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                    <p>{{ DB_product_query.recovery | safe_markdown | bleach }}</p>
+                </div>
+              </div>
+        </div>
+      </div>
+      {% endif%}
+
+      {% if DB_product_query.installation %}
+      <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <dt>{% translate "Installation" %}</dt>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                    <p>{{ DB_product_query.installation | safe_markdown | bleach }}</p>
+                </div>
+              </div>
+        </div>
+      </div>
+      {% endif%}
+
+      {% if DB_product_query.usage %}
+      <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <dt>{% translate "Usage" %}</dt>
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-body">
+                    <p>{{ DB_product_query.usage | safe_markdown | bleach }}</p>
+                </div>
+              </div>
+        </div>
+      </div>
+      {% endif%}
+
+      
+
       {% if product_tags %}
       <div class="row">
         <div class="col-md-12">
@@ -153,7 +221,8 @@
                     <th style="width: 20%">{% translate "ID" %}</th>
                     <th style="width: 35%">{% translate "Report" %}</th>
                     <th style="width: 5%">{% translate "Date" %}</th>
-                    <th style="width: 15%">{% translate "Findings" %}</th>
+                    <th style="width: 10%">{% translate "Findings" %}</th>
+                    <th style="width: 10%">{% translate "CSPN Eval." %}</th>
                     <th style="width: 25%" class="text-center">{% translate "Actions" %}</th>
                   </tr>
               </thead>
@@ -166,6 +235,9 @@
                     <td>{{ report.creation_date | date:"Y-m-d" }} </td>
                     <td>
                       <span class="pull-right badge bg-red">{{ report.db_finding_set.count }}</span> {% translate "Finding" %}{{ report.db_finding_set.count|pluralize:"s" }}
+                    </td>
+                    <td>
+                      <span class="pull-right badge bg-primary">{{ report.db_cspn_evaluation_set.count }}</span> {% translate "CSPN" %}{{ report.db_cspn_evaluation_set.count|pluralize:"s" }}
                     </td>
                     <td class="text-center">
                         <a href="{% url 'report_view' report.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
@@ -269,7 +341,7 @@
   function DuplicateID(dup_id) {
     $.ajax({
         type: 'POST',
-        url: "{% url 'report_findings_duplicate' %}",
+        url: "{% url 'report_duplicate' %}",
         headers:{
           "X-CSRFToken": '{{ csrf_token }}'
         },

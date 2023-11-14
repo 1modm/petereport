@@ -37,6 +37,18 @@ class DB_OWASP(models.Model):
 	def get_label (self):
 		return "%s - %s" % (self.owasp_full_id, self.owasp_name)
 
+# ---------- CSPN Evaluation Stage ------------
+
+class DB_CSPN_Evaluation_Stage(models.Model):
+	cspn_id = models.CharField(blank=False, unique=True,max_length=4)
+	name = models.CharField(max_length=255, blank=True)
+	fts_enabled = True
+	class Meta:
+		verbose_name_plural = "CSPN Evaluation Stages"
+	def __str__(self):
+		return str(self.cspn_id)
+	def get_label (self):
+		return "%s - %s" % (self.cspn_id, self.name)
 
 # ---------- CWE ------------
 
@@ -65,7 +77,7 @@ class DB_Customer(models.Model):
 	class Meta:
 		verbose_name_plural = "Customers"
 	def __str__(self):
-		return self.name
+		return str(self.name)
 	def get_label (self):
 		return self.name
 
@@ -75,13 +87,16 @@ class DB_Product(models.Model):
 	customer = models.ForeignKey(DB_Customer, blank=False, on_delete=models.CASCADE)
 	name = models.CharField(max_length=255, blank=False)
 	description = MartorField(blank=True)
+	recovery = MartorField(blank=True)
+	installation = MartorField(blank=True)
+	usage = MartorField(blank=True)
 	tags = TaggableManager(blank=True)
 	fts_enabled = True
 	fts_excluded_fields = ['customer']
 	class Meta:
 		verbose_name_plural = "Products"
 	def __str__(self):
-		return self.name
+		return str(self.name)
 	def get_label (self):
 		return self.name
 
@@ -120,7 +135,7 @@ class DB_ShareConnection(models.Model):
 	tags = TaggableManager(blank=True)
 
 	def __str__(self) -> str:
-		return self.title
+		return str(self.title)
 	def get_label(self) -> str:
 		return str(self)
 	class Meta:
@@ -134,6 +149,11 @@ class DB_Report(models.Model):
 	share_finding = models.ForeignKey(DB_ShareConnection, on_delete=models.SET_NULL, null=True, blank=True, related_name='share_finding')
 	report_id = models.CharField(max_length=255, blank=False, unique=True)
 	title = models.CharField(max_length=255, blank=False)
+	classification = models.CharField(max_length=255, blank=True)
+	version = models.CharField(max_length=255, blank=True)
+	status = models.CharField(max_length=255, blank=True)
+	approver = models.CharField(max_length=255, blank=True)
+	author = models.CharField(max_length=255, blank=True)
 	executive_summary_image = models.TextField(blank=True)
 	cwe_categories_summary_image = models.TextField(blank=True)
 	owasp_categories_summary_image = models.TextField(blank=True)
@@ -151,7 +171,7 @@ class DB_Report(models.Model):
 	fts_enabled = True
 	fts_excluded_fields = ['report_id', 'product', 'share_deliverable', 'share_finding']
 	def __str__(self):
-		return self.title
+		return str(self.title)
 	def get_label (self):
 		return self.title
 	class Meta:
@@ -171,9 +191,30 @@ class DB_Deliverable(models.Model):
 	def get_label (self):
 		return self.filename
 	def __str__(self):
-		return self.filename
+		return str(self.filename)
 	class Meta:
 		verbose_name_plural = "Deliverables"
+
+# ---------- CSPN Evaluation ------------
+
+class DB_CSPN_Evaluation(models.Model):
+	report = models.ForeignKey(DB_Report, on_delete=models.CASCADE)
+	cspn_id = models.CharField(blank=True, max_length=200)
+	status = models.CharField(blank=True, max_length=200, default="Not Evaluated")
+	evaluation = MartorField(blank=True)
+	expert_notice = MartorField(blank=True)
+	stage = models.ForeignKey(DB_CSPN_Evaluation_Stage, default=0, on_delete=models.SET_DEFAULT, null=False, blank=False)
+	tags = TaggableManager(blank=True)
+	fts_enabled = True
+	fts_excluded_fields = ['report', 'cspn_id', 'stage']
+
+	def __str__(self):
+		return str(self.stage)
+	def get_label (self):
+		return str(self.stage)
+
+	class Meta:
+		verbose_name_plural = "CSPN Evaluations"
 
 # ---------- Finding ------------
 
@@ -200,7 +241,7 @@ class DB_Finding(models.Model):
 	fts_excluded_fields = ['report', 'finding_id', 'cwe', 'owasp']
 
 	def __str__(self):
-		return self.title
+		return str(self.title)
 	def get_label (self):
 		return self.title
 

@@ -38,6 +38,7 @@
               <a href="{% url 'report_findings' DB_report_query.pk %}"><button type="button" class="btn btn-danger"><i class="fa fa-bug"></i> {% translate "Findings" %}</button></a>
               <a href="{% url 'report_appendix' DB_report_query.pk %}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Appendix" %}</button></a>
               <a href="{% url 'reportattackflow' DB_report_query.pk %}"><button type="button" class="btn btn-warning"><i class="fa fa-sitemap"></i> {% translate "Attack Flows" %}</button></a>
+              <a href="{% url 'report_cspn_evaluations' DB_report_query.pk %}"><button type="button" class="btn btn-primary"><i class="fa fa-check-square"></i> {% translate "CSPN Evaluations" %}</button></a>
 
             </div>
 
@@ -218,8 +219,9 @@
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
                         <div class="info-box-content">
-                          <span class="info-box-number text-center text-muted">{% translate "Product" %}</span>
-                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.product.name | safe | bleach}}<span>
+                          <span class="info-box-number text-center text-muted">{% translate "Classification &amp; Status" %}</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.classification | safe | bleach}}<span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.status | safe | bleach}}<span>
                         </span></span></div>
                       </div>
                     </div>
@@ -246,8 +248,9 @@
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
                         <div class="info-box-content">
-                          <span class="info-box-number text-center text-muted">{% translate "Report ID" %}</span>
-                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_id | safe | bleach}}<span>
+                          <span class="info-box-number text-center text-muted">{% translate "Report ID / Version" %}</span>
+                          <span class="info-box-text text-center text-muted mb-0">{{ DB_report_query.report_id | safe | bleach}} / 
+                          {{ DB_report_query.version | safe | bleach}}<span>
                         </span></span></div>
                       </div>
                     </div>
@@ -271,6 +274,30 @@
                         <div class="card card-outline">
                           <div class="card-body">
                             {{ DB_report_query.audit_objectives | safe_markdown | bleach}}
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                  {% if DB_report_query.approver %}
+                  <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-outline">
+                          <div class="card-body">
+                            {{ DB_report_query.approver | safe_markdown | bleach}}
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                  {% if DB_report_query.author %}
+                  <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-outline">
+                          <div class="card-body">
+                            {{ DB_report_query.author | safe_markdown | bleach}}
                           </div>
                         </div>
                     </div>

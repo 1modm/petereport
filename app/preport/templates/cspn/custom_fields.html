@@ -1,0 +1,159 @@
+{% extends 'home/template.html' %}
+
+{% load i18n %}
+{% load martortags %}
+{% load bleach_tags %}
+
+{% block title %} {% translate "Custom fields" %} {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>{% translate "Custom Fields" %}</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_cspn_query.report.product.customer.pk %}">{{ DB_cspn_query.report.product.customer.name | bleach}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'product_view' DB_cspn_query.report.product.pk %}">{{ DB_cspn_query.report.product.name | bleach}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'report_view' DB_cspn_query.report.pk %}">{{ DB_cspn_query.report.title}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'cspn_view' DB_cspn_query.pk %}">{{ DB_cspn_query.title | bleach}}</a></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <section class="content">
+    <div class="container-fluid">
+
+
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    {{ count_custom_query }} {% translate "Custom fields" %}
+                  </h3>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+
+                </div>
+                <div class="card-body">
+
+                  <table id="fieldlist" class="table table-bordered table-hover">
+                    <thead>
+                      <tr>
+                        <th style="width: 55%">{% translate "Custom Field" %}</th>
+                        <th style="width: 20%"class="text-center"> {% translate "Actions" %}</th>
+                      </tr>
+                    </thead>
+
+
+                    <tbody>
+                      {% for field in DB_custom_query %}
+                      <tr>
+
+                        <td>
+                            {{field.title}}
+                        </td>
+
+                        <td align="center">
+                            {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                              <a href="{% url 'field_edit' field.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                              <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-{{field.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
+                            {% endif %}
+                        </td>
+
+                      </tr>
+
+                      <div class="modal modal-danger fade mm-modal-{{field.pk}}" id="modal-danger">
+                        <div class="modal-dialog">
+                          <div class="modal-content bg-danger">
+                            <div class="modal-header">
+                              <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <p>{% translate "Delete custom field" %}&hellip;</p>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                              <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                              <button type="button" onclick="DeleteID({{field.pk}});" class="btn btn-outline-light">{% translate "Delete Custom Field" %}</button>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      {% endfor %}
+
+                    </tbody>
+                  </table>
+
+
+                </div>
+              </div>
+
+        </div>
+      </div>
+
+
+
+      </div>
+    </section>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super }}
+
+<script>
+  $(function () {
+    $("#fieldlist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true,
+      "lengthChange": false,
+      "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#fieldlist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+
+<script>
+  function DeleteID(del_id) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'field_delete' %}",
+            headers:{
+              "X-CSRFToken": '{{ csrf_token }}'
+            },
+            data : { 'delete_id': del_id},
+
+            success : function(json) {
+              document.location.href = "{% url 'customfields' DB_cspn_query.pk %}";
+            }
+        })
+  }
+</script>
+
+{% endblock javascripts %}

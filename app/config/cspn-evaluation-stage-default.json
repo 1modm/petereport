@@ -1,0 +1,10 @@
+[
+    {
+        "model": "preport.db_cspn_evaluation_stage",
+        "pk": 0,
+        "fields": {
+            "cspn_id": "-1",
+            "name": "Not categorized"
+        }
+    }
+]

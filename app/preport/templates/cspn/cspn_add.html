@@ -1,9 +1,8 @@
 {% extends 'home/template.html' %}
-
 {% load i18n %}
 {% load bleach_tags %}
 
-{% block title %} {% translate "Customers" %} {% endblock title %}
+{% block title %} {% translate "CSPN Evaluations" %} {% endblock title %}
 
 {% block stylesheets %}
   {{ block.super }}
@@ -16,13 +15,15 @@
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <h1>{% translate "Customer" %}</h1>
+        <h1>{% translate "CSPN Evaluation" %}</h1>
       </div>
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-          <li class="breadcrumb-item"><a href="{% url 'customer_list' %}">{% translate "Customers" %}</a></li>
-          <li class="breadcrumb-item active">{% translate "Add or Edit customer" %}</li>
+          <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report.product.customer.pk %}">{{ DB_report.product.customer.name}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report.product.pk %}">{{ DB_report.product.name}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'report_view' DB_report.pk %}">{{ DB_report.title}}</a></li>
+          <li class="breadcrumb-item active">{% translate "Add CSPN Evaluation" %}</a></li>
         </ol>
       </div>
     </div>
@@ -35,53 +36,49 @@
       <div class="row">
         <div class="col-md-12">
 
-            <div class="card card-outline card-primary">
+            <div class="card card-outline card-danger">
               <div class="card-header">
-                <h3 class="card-title">{% translate "Customer details" %}</h3>
+                <h3 class="card-title">{% translate "CSPN Evaluation" %}</h3>
               </div>
+
 
               <form role="form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="card-body">
+
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Customer Name" %}</label>
-                      <div class="col-md-10 col-sm-10 col-xs-12">
-                        {{ form.name }}
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Contacts Emails" %}</label>
+                    <label class="col-sm-2 col-form-label">Stage</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.contact_list }}
-                    </div>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Security Email" %}</label>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.contact_sp_mail }}
-                    </div>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Contract Email" %}</label>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.contact_dp_mail }}
-                    </div>
-                  </div>
-                 
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Customer Description" %}</label>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.description }}
+                      {{ form.stage }}
                     </div>
                   </div>
 
                   <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Tags" %}</label>
+                    <label class="col-sm-2 col-form-label">Status</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.status }}
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Evaluation" %}</label>
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.evaluation }}
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Expert Notice" %}</label>
+                    <div class="col-md-8 col-sm-8 col-xs-10">
+                      {{ form.expert_notice }}
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Tags</label>
                     <div class="col-md-10 col-sm-10 col-xs-12">
                       {{ form.tags }}
-                    </div>
-                  </div>
-
+                   </div>
 
                 </div>
 
@@ -102,7 +99,8 @@
                 {% endif %}
 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">{% translate "Save Customer" %}</button>
+                  <button type="submit" class="btn btn-danger" value="Save" name="_finish">Save and finish</button>
+                  <button type="submit" class="btn btn-primary" value="Next" name="_next">Save and add a new CSPN Evaluation</button>
                 </div>
               </form>
             </div>
@@ -112,5 +110,14 @@
     </div>
 </section>
 
-
 {% endblock content %}
+
+{% block javascripts %}
+  {{ block.super}}
+
+  <script>
+$(document).ready(function() {
+    $('.select2CSPNEvaluationStage').select2();
+});
+</script>
+{% endblock javascripts %}

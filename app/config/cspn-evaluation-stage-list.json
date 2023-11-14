@@ -1,0 +1,91 @@
+[
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 1,
+    "fields": {
+        "cspn_id": "1",
+        "name": "Analyse de la cible de sécurité"
+    }
+},
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 2,
+    "fields": {
+        "cspn_id": "2",
+        "name": "Installation du produit"
+    }
+},
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 3,
+    "fields": {
+        "cspn_id": "3",
+        "name": "Analyse de la conformité – analyse de la documentation"
+    }
+},
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 4,
+    "fields": {
+        "cspn_id": "4",
+        "name": "Analyse de la conformité – revue du code source (si disponible)"
+    }
+},
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 5,
+    "fields": {
+        "cspn_id": "5",
+        "name": "Analyse de la conformité – tests du produit"
+    }
+},
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 6,
+    "fields": {
+        "cspn_id": "6",
+        "name": "Résistance des mécanismes/fonctions"
+    }
+},
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 7,
+    "fields": {
+        "cspn_id": "7",
+        "name": "Analyse de vulnérabilité (intrinsèque, de construction, d’exploitation, etc.)"
+    }
+},
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 8,
+    "fields": {
+        "cspn_id": "7bis",
+        "name": "Analyse de vulnérabilité du système hôte"
+    }
+},
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 9,
+    "fields": {
+        "cspn_id": "8",
+        "name": "Analyse de la facilité d’emploi"
+    }
+},
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 10,
+    "fields": {
+        "cspn_id": "9",
+        "name": "Entretien avec les développeurs"
+    }
+},
+{
+    "model": "preport.db_cspn_evaluation_stage",
+    "pk": 11,
+    "fields": {
+        "cspn_id": "10",
+        "name": "Evaluation de la cryptographie (si le produit implémente des mécanismes cryptographiques)"
+    }
+}
+
+]

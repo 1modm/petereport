@@ -210,6 +210,24 @@
           </li>
 
           <li class="nav-item">
+            <a href="{% url 'cspn_list' %}" class="nav-link">
+              <i class="nav-icon fas fa-check-square text-primary"></i>
+              <p>
+                {% translate "CSPN Evaluations" %}
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'cspn_list' %}" class="nav-link">
+                  <i class="nav-icon fas fa-table"></i>
+                  <p>{% translate "All CSPN Evaluations" %}</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
             <a href="{% url 'share_list' %}" class="nav-link">
               <i class="nav-icon fa fa-share text-light"></i>
               <p>

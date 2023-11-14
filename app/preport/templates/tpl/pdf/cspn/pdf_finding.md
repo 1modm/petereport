@@ -1,0 +1,65 @@
+{% load i18n %}
+
+## {{finding.title|safe}}
+
+::: {{icon_finding}}
+**{% translate "Severity" %}:** {{severity_color_finding}}
+
+{% if finding.cvss_base_score != "0" %}
+**{% translate "CVSS Score" %}:** [{{finding.cvss_base_score|safe}}](https://www.first.org/cvss/calculator/3.1#{{finding.get_cvss_score_anchor|safe}})
+{% endif %}
+
+**{% translate "Status" %}:** {{finding.status}}
+:::
+
+**{% translate "OWASP" %}**
+
+[OWASP-{{finding.owasp.owasp_full_id}} - {{finding.owasp.owasp_name|safe}}]({{finding.owasp.owasp_url}})
+
+{% if finding.description %}
+**{% translate "Description" %}**
+
+{{finding.description|safe}}
+{% endif %}
+
+{% if finding.poc %}
+**{% translate "Proof of Concept" %}**
+
+{{finding.poc|safe}}
+{% endif %}
+
+{% if finding.location %}
+**{% translate "Location" %}**
+
+{{finding.location|safe}}
+{% endif %}
+
+{% if finding.impact %}
+**{% translate "Impact" %}**
+
+{{finding.impact|safe}}
+{% endif %}
+
+{% if finding.recommendation %}
+**{% translate "Recommendation" %}**
+
+{{finding.recommendation|safe}}
+{% endif %}
+
+{% if finding.ref %}
+**{% translate "References" %}**
+
+{{finding.ref|safe}}
+{% endif %}
+
+{% if template_custom_fields %}
+{{template_custom_fields | safe}}
+{% endif %}
+
+{% if template_appendix_in_finding %}
+{{template_appendix_in_finding|safe}}
+{% endif %}
+
+{% if template_attackflow_in_finding %}
+{{template_attackflow_in_finding|safe}}
+{% endif %}

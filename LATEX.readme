@@ -1,0 +1,14 @@
+sudo tlmgr install  footnotebackref \
+                    fontawesome5 \
+                    tcolorbox \
+                    environ \
+                    background \
+                    everypage \
+                    pagecolor \
+                    csquotes \
+                    mdframed \
+                    zref \
+                    needspace \
+                    sourcesanspro \
+                    sourcecodepro \
+                    titling

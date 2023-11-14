@@ -1,0 +1,107 @@
+{% extends 'home/template.html' %}
+
+{% load i18n %}
+{% load bleach_tags %}
+
+{% block title %} {% translate "Custom Fields" %} {% endblock title %}
+
+{% block stylesheets %}
+  {{ block.super }}
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>{{DB_cspn_query.title}} {% translate "CSPN Evaluation" %}</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_cspn_query.report.product.customer.pk %}">{{ DB_cspn_query.report.product.customer.name | bleach}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'product_view' DB_cspn_query.report.product.pk %}">{{ DB_cspn_query.report.product.name | bleach}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'report_view' DB_cspn_query.report.pk %}">{{ DB_cspn_query.report.title}}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'cspn_view' DB_cspn_query.pk %}">{{ DB_cspn_query.title | bleach}}</a></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+
+            <div class="card card-outline card-danger">
+              <div class="card-header">
+                <h3 class="card-title">{% translate "Custom Field" %}</h3>
+              </div>
+
+              <form role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card-body">
+
+                  <div class="form-group row">
+                    <div class="col-md-10 col-sm-10 col-xs-12">
+                      {{ form.cspn.as_hidden }}
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Custom Field Title" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.title }}
+                      </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">{% translate "Custom Field Description" %}</label>
+                      <div class="col-md-10 col-sm-10 col-xs-12">
+                        {{ form.description }}
+                      </div>
+                  </div>
+
+                </div>
+
+                {% if form.errors %}
+                   {% for field in form %}
+                       {% for error in field.errors %}
+                          <div class="container">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                              <div class="alert alert-danger alert-dismissible ">
+                              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                              <h5><i class="icon fas fa-ban"></i> {% translate "Error" %}</h5>
+                              {{ field.name }}: {{ error|escape }}
+                              </div>
+                            </div>
+                          </div>
+                       {% endfor %}
+                   {% endfor %}
+                {% endif %}
+
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-danger" value="Save" name="_finish">{% translate "Save and finish" %}</button>
+                  <button type="submit" class="btn btn-primary" value="Next" name="_next">{% translate "Save and add a new custom field" %}</button>
+                </div>
+              </form>
+            </div>
+
+
+        </div>
+      </div>
+    </div>
+</section>
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ block.super}}
+{% endblock javascripts %}
