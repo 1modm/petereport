@@ -1,0 +1,13 @@
+FROM nginx:stable
+
+COPY ./nginx/petereport_local.conf /etc/nginx/conf.d/petereport.conf
+COPY ./nginx/petereport_local.crt /opt/petereport/nginx/petereport.crt
+COPY ./nginx/petereport_local.key /opt/petereport/nginx/petereport.key
+ADD ./app/petereport/static /opt/petereport/app/petereport/static
+
+RUN chown root:nginx /opt /opt/petereport
+RUN chmod 750 /opt /opt/petereport
+RUN chown -R root:nginx /opt/petereport/app
+RUN chmod -R 750 /opt/petereport/app
+RUN chown -R root:root /etc/nginx/conf.d/petereport.conf /opt/petereport/nginx
+RUN chmod -R 700 /etc/nginx/conf.d/petereport.conf /opt/petereport/nginx

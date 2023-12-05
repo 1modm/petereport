@@ -18,6 +18,8 @@ from preport.models import (DB_Customer,
                             DB_Appendix,
                             DB_CWE,
                             DB_OWASP,
+                            DB_CSPN_Evaluation,
+                            DB_CSPN_Evaluation_Stage,
                             DB_Settings,
                             DB_Deliverable,
                             DB_FTSModel,
@@ -106,6 +108,8 @@ def main():
         DB_Appendix.objects.all().delete()
         DB_CWE.objects.all().delete()
         DB_OWASP.objects.all().delete()
+        DB_CSPN_Evaluation.objects.all().delete()
+        DB_CSPN_Evaluation_Stage.objects.all().delete()
         DB_Settings.objects.all().delete()
         DB_Deliverable.objects.all().delete()
         DB_FTSModel.objects.all().delete()

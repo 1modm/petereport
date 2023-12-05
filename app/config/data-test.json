@@ -82,10 +82,10 @@
         "executive_summary": "Good application",
         "audit_objectives": "Check IAM",
         "recommendation": "Patch old services",
-        "creation_date": "2023-01-01",
-        "report_date": "2023-02-11",
-        "audit_start": "2023-02-01",
-        "audit_end": "2023-02-10"
+        "creation_date": "2023-11-20T14:52:35+0100",
+        "report_date": "2023-11-30",
+        "audit_start": "2023-11-21",
+        "audit_end": "2023-11-29"
     }
 },
 {
@@ -102,9 +102,9 @@
         "executive_summary": "Bad application",
         "audit_objectives": "Check Internet exposition",
         "recommendation": "Patch old services",
-        "creation_date": "2023-01-02",
-        "report_date": "2023-02-12",
-        "audit_start": "2023-02-01"
+        "creation_date": "2023-11-20T14:52:35+0100",
+        "report_date": "2023-11-30",
+        "audit_start": "2023-11-21"
     }
 },
 {
@@ -121,8 +121,8 @@
         "executive_summary": "Very good application",
         "audit_objectives": "Check source code and VM evasion",
         "recommendation": "TODO",
-        "creation_date": "2023-01-03",
-        "report_date": "2023-02-13"
+        "creation_date": "2023-11-20T14:52:35+0100",
+        "report_date": "2023-11-30"
     }
 },
 
@@ -201,7 +201,7 @@
         "func": "PostFile",
         "url": "http://example.com",
         "credentials": "test:test",
-        "creation_date": "2023-01-03"
+        "creation_date": "2023-11-20T14:52:35+0100"
     }
 }
 ]

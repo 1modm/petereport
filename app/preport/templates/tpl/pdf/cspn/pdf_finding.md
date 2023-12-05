@@ -3,13 +3,13 @@
 ## {{finding.title|safe}}
 
 ::: {{icon_finding}}
-**{% translate "Severity" %}:** {{severity_color_finding}}
+**Sévérité:** {{severity_color_finding}}
 
 {% if finding.cvss_base_score != "0" %}
-**{% translate "CVSS Score" %}:** [{{finding.cvss_base_score|safe}}](https://www.first.org/cvss/calculator/3.1#{{finding.get_cvss_score_anchor|safe}})
+**Score CVSS** [{{finding.cvss_base_score|safe}}](https://www.first.org/cvss/calculator/3.1#{{finding.get_cvss_score_anchor|safe}})
 {% endif %}
 
-**{% translate "Status" %}:** {{finding.status}}
+**Statut** {{finding.status}}
 :::
 
 **{% translate "OWASP" %}**
@@ -23,13 +23,13 @@
 {% endif %}
 
 {% if finding.poc %}
-**{% translate "Proof of Concept" %}**
+**Preuve de concept**
 
 {{finding.poc|safe}}
 {% endif %}
 
 {% if finding.location %}
-**{% translate "Location" %}**
+**Localisation**
 
 {{finding.location|safe}}
 {% endif %}
@@ -41,13 +41,13 @@
 {% endif %}
 
 {% if finding.recommendation %}
-**{% translate "Recommendation" %}**
+**Recommandation**
 
 {{finding.recommendation|safe}}
 {% endif %}
 
 {% if finding.ref %}
-**{% translate "References" %}**
+**Références**
 
 {{finding.ref|safe}}
 {% endif %}

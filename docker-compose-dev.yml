@@ -37,14 +37,6 @@ services:
       sleep 1 &&
       pipenv install --deploy --ignore-pipfile --python 3.11 &&
       pip freeze &&
-      pipenv run ./app/manage.py makemigrations &&
-      pipenv run ./app/manage.py migrate &&
-      pipenv run ./app/manage.py createfts &&
-      pipenv run ./app/manage.py loaddata ./app/config/cwe-list.json &&
-      pipenv run ./app/manage.py loaddata ./app/config/cwe-default.json &&
-      pipenv run ./app/manage.py loaddata ./app/config/owasp-list.json &&
-      pipenv run ./app/manage.py loaddata ./app/config/owasp-default.json &&
-      pipenv run ./app/manage.py loaddata ./app/config/data-test.json &&
       pipenv run gunicorn --chdir ./app petereport.wsgi:application --timeout 550 --graceful-timeout 60 --bind 0.0.0.0:8000 --reload"
     volumes:
       - .:/opt/petereport

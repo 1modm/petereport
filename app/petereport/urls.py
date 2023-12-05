@@ -24,8 +24,8 @@ from preport.views import markdown_uploader
 urlpatterns = [
     # Needed for locale change
     path('i18n/', include('django.conf.urls.i18n')),
+    path('martor/api/uploader/', markdown_uploader, name='markdown_uploader_page'),
     path('martor/', include('martor.urls')),
-    path('api/uploader/', markdown_uploader, name='markdown_uploader'),
 ]
 urlpatterns += i18n_patterns(
     path('', include('preport.urls')),

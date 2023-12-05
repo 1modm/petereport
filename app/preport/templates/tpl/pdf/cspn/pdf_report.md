@@ -22,7 +22,7 @@
 
 ## {% translate "Avertissement sur ce document" %}
 
-Le présent document, réalisé dans le cadre de l’évaluation de sécurité selon le schéma [CSPN](https://www.ssi.gouv.fr/administration/produits-certifies/cspn/les-procedures-formulaires-et-methodologies/) promu par l’ANSSI et adapté à notre contexte, est le rapport de l'évaluation :
+Le présent document, réalisé dans le cadre de l’évaluation de sécurité selon le schéma [CSPN](https://cyber.gouv.fr/documents-applicables-la-certification-de-securite-de-premier-niveau-cspn/) promu par l’ANSSI et adapté à notre contexte, est le rapport de l'évaluation :
 
 * du produit **{{DB_report_query.product.name}}**,
 * réalisée par **{{md_author}}**,
@@ -35,13 +35,13 @@ Toute communication, publication, divulgation, diffusion ou reproduction de ce r
 
 ## {% translate "Classification des niveaux de risques" %}
 
-Pour chaque vulnérabilité, vous une mitigation des risques est attendue (pour les points de faiblesse ne faisant pas l'objet d'une acceptation des risques) selon les délais indiqués dans le tableau ci-dessous.
+Pour chaque vulnérabilité, une mitigation des risques est attendue (pour les points de faiblesse ne faisant pas l'objet d'une acceptation des risques) selon les délais indiqués dans le tableau ci-dessous.
 
 \begin{center}
 \begin{tabular}{cc}
     \hline
     \rowcolor{blue!30}
-    Niveae de risque & Délais de mitigation des risques \\
+    Niveau de risque & Délais de mitigation des risques \\
     \hline\hline
     \rowcolor{criticalcolor}
     Critique & 1 jour \\

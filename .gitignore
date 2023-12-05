@@ -142,4 +142,6 @@ dmypy.json
 /app/db/petereport.sqlite3-journal
 /app/storage_reports/*
 /app/media/uploads/*
-test.sh
+/backups/*
+/nginx/petereport_local.key
+/nginx/petereport_local.crt

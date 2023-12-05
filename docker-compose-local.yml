@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.nginx.local
+    image: petereport_nginx_local
+    container_name: petereport_nginx_local
+    volumes:
+      - ./nginx:/opt/petereport/nginx
+      - ./nginx/petereport.conf:/etc/nginx/conf.d/petereport.conf
+      - ./app/petereport/static:/opt/petereport/app/petereport/static
+      - ./app/media:/opt/petereport/app/media
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - petereport
+
+  petereport:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.petereport.local
+    image: petereport_django_local
+    container_name: petereport_django_local
+    environment:
+      - PETEREPORT_ADMIN_EMAIL=redteam@thalesdigital.io
+      - PETEREPORT_APPLICATION_NAME="RT Reports"
+      - PETEREPORT_COMPANY_ADDRESS="54/56 avenue Hoche 75008 Paris"
+      - PETEREPORT_COMPANY_NAME="TDF RedTeam"
+      - PETEREPORT_COMPANY_WEBSITE=https://thalesdigital.sharepoint.com/sites/redteam
+      - PETEREPORT_DEBUG_PANDOC_ON_ERROR=True
+      - PETEREPORT_DJANGO_ALLOWED_HOSTS=reports2.redteam.corp,*
+      - PETEREPORT_DJANGO_AMIN_MODULE=True
+      - PETEREPORT_DJANGO_CSRF_TRUSTED_ORIGINS=https://report2.redteam.corp
+      - PETEREPORT_DJANGO_DEBUG=True
+      - PETEREPORT_DJANGO_LOG_LEVEL=WARNING
+      - PETEREPORT_DJANGO_SENDFILE_BACKEND=django_sendfile.backends.nginx
+      - PETEREPORT_DJANGO_SERVER_HOST=https://report2.redteam.corp
+      - PETEREPORT_LOG_LEVEL=INFO
+      - PETEREPORT_MARKDOWN_MEDIA_INCLUDE=LOCAL_FS
+      - PETEREPORT_MARTOR_UPLOAD_METHOD=MEDIA
+      - PETEREPORT_MEDIA_HOST=https://report2.redteam.corp
+      - PETEREPORT_PDF_ENGINE=xelatex
+      - PETEREPORT_REPORT_TITLEPAGE_COLOR=ffffff
+    command: bash -c "
+      sleep 1 &&
+      pipenv install --deploy --ignore-pipfile --python 3.11 &&
+      pip freeze &&
+      pipenv run gunicorn --chdir ./app petereport.wsgi:application --timeout 550 --graceful-timeout 60 --bind 0.0.0.0:8000 --reload"
+    volumes:
+      - .:/opt/petereport
+    expose:
+      - 8000
+    restart: unless-stopped
