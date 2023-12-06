@@ -3,13 +3,13 @@
 ## {{finding.title|safe}}
 
 ::: {{icon_finding}}
-**Sévérité:** {{severity_color_finding}}
+**Sévérité ** {{severity_color_finding}}
 
 {% if finding.cvss_base_score != "0" %}
-**Score CVSS** [{{finding.cvss_base_score|safe}}](https://www.first.org/cvss/calculator/3.1#{{finding.get_cvss_score_anchor|safe}})
+**Score CVSS ** [{{finding.cvss_base_score|safe}}](https://www.first.org/cvss/calculator/3.1#{{finding.get_cvss_score_anchor|safe}})
 {% endif %}
 
-**Statut** {{finding.status}}
+**Statut ** {{finding.status}}
 :::
 
 **{% translate "OWASP" %}**

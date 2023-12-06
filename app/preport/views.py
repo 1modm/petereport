@@ -901,7 +901,7 @@ def report_download_markdown(request, cst, pk):
 
         # DB
         DB_report_query = get_object_or_404(DB_Report, pk=pk)
-        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score', 'status').reverse()
 
         # Datetime
         now = datetime.datetime.utcnow()
@@ -1037,7 +1037,7 @@ def report_download_html(request, cst, pk):
     if tpl_cst_dir_pp.is_relative_to(tpl_dir):
         # DB
         DB_report_query = get_object_or_404(DB_Report, pk=pk)
-        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score', 'status').reverse()
 
         # Datetime
         now = datetime.datetime.utcnow()
@@ -1234,7 +1234,7 @@ def report_download_pdf(request, cst, pk):
     if tpl_cst_dir_pp.is_relative_to(tpl_dir):
         # DB
         DB_report_query = get_object_or_404(DB_Report, pk=pk)
-        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score', 'status').reverse()
         DB_cspn_query = DB_CSPN_Evaluation.objects.filter(report=DB_report_query).order_by('stage__cspn_id')
         DB_settings_query = DB_Settings.objects.get()
 
@@ -1558,7 +1558,7 @@ def report_download_jupyter(request, cst, pk):
     if tpl_cst_dir_pp.is_relative_to(tpl_dir):
         # DB
         DB_report_query = get_object_or_404(DB_Report, pk=pk)
-        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score', 'status').reverse()
 
         # Datetime
         now = datetime.datetime.utcnow()
