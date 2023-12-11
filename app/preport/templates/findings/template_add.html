@@ -7,6 +7,8 @@
 
 {% block stylesheets %}
   {{ block.super }}
+<link rel="stylesheet" href="/static/cvss-v4-calculator/spectre_petereport.css">
+<link rel="stylesheet" href="/static/cvss-v4-calculator/styles.css?v=6">
 {% endblock stylesheets %}
 
 {% block content %}
@@ -53,215 +55,180 @@
                   </div>
 
 
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "Severity" %}</label>
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.severity }}
-                    </div>
-                  </div>
-   
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">{% translate "CVSS Score" %}</label>
-                    <div class="col-md-8 col-sm-8 col-xs-10">
-                      {{ form.cvss_base_score }}
-                    </div>
+<!--
+Copyright (c) 2023 FIRST.ORG, Inc., Red Hat, and contributors
 
-                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#cvssModal">{% translate "Help" %}</button>
-                    <div class="modal fade" id="cvssModal" role="dialog">
-                      <div class="modal-dialog">
-                          <div class="alert alert-success alert-dismissible">
-                              <a  class="close" data-dismiss="modal" aria-label="close">&times;</a>
-                              <strong> {% translate "CVSS Calculator" %} </strong> <a href="https://www.first.org/cvss/calculator/3.1">Common Vulnerability Scoring System Version 3.1 Calculator</a>
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
 
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+
+
+
+{% verbatim %}
+<div id="appCVSS">  
+
+
+  <div class="form-group row">
+    {% endverbatim %}
+      <label class="col-sm-2 col-form-label">{% translate "Severity" %}</label>
+      <div class="col-md-10 col-sm-10 col-xs-12">
+        {{ form.severity }}
+      </div>
+    {% verbatim %}
+  </div>
+
+  <div class="form-group row">
+    {% endverbatim %}
+      <label class="col-sm-2 col-form-label">{% translate "CVSS Vector" %}</label>
+      <div class="col-md-10 col-sm-10 col-xs-12">
+        {{ form.cvss_vector }}
+      </div>
+  
+    {% verbatim %}
+  </div>
+
+
+  <div class="form-group row">
+    {% endverbatim %}
+    <label class="col-sm-2 col-form-label">{% translate "CVSS Score" %}</label>
+    <div class="col-md-10 col-sm-10 col-xs-12">
+      {{ form.cvss_score }}
+    </div>
+    {% verbatim %}
+  </div>
+
+  
+  <!-- needed to update the values -->
+  <p style="color: transparent;">{{ vector }} {{ score }} {{ qualScore }} {{ macroVector }}</p>
+  
+  <div class="form-group row">
+    {% endverbatim %}
+    <label class="col-sm-2 col-form-label">{% translate "CVSS v4.0 calculator" %}</label>
+    {% verbatim %}
+    
+    <div class="col-md-10 col-sm-10 col-xs-12" :style="{'margin-top': header_height + 10 + 'px'}">
+        <div class="column col-12 col-xl-12">
+            <div class="metric-type" v-for="(metricTypeData, metricType) in cvssConfigData">
+                <h4 class="text-center">
+                    {{ metricType }}
+                    </span>
+                </h4>
+
+                
+                <div class="metric-group" v-for="(metricGroupData, metricGroup) in metricTypeData.metric_groups">
+                    <h5 class="text-center">{{ metricGroup }}</h5>
+                    <div>
+
+                        <div class="" v-for="(metricData, metric) in metricGroupData">
+
+                            <!-- Multiple ways of rendering metrics based on screen size -->
+                            <div class="columns hide-xl mb-2">
+                                <div class="col-3 text-right pr-2" v-if="metricData.tooltip"><abbr :title="metricData.tooltip">{{ metric }}</abbr>:</div>
+                                <div class="col-3 text-right pr-2" v-else>{{metric}}:</div>
+
+                                <div class="col-9 columns">
+                                    <div class="col-2 pl-2" v-for="(optionData, option) in metricData.options">
+                                        <span :class="buttonClass(cvssSelected[metricData.short] == optionData.value)" v-if="option"
+                                                @click="onButton(metricData.short, optionData.value)">
+                                            <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
+                                            <span v-else>{{ option }}</span>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
-                      </div>
+
+                            <div class="show-xl hide-lg">
+                                <div class="mb-1" v-if="metricData.tooltip"><abbr :title="metricData.tooltip">{{ metric }}</abbr>:</div>
+                                <div class="mb-1" v-else>{{metric}}:</div>
+
+                                <div class="columns">
+                                    <div class="col-2 pl-2" v-for="(optionData, option) in metricData.options">
+                                        <span :class="buttonClass(cvssSelected[metricData.short] == optionData.value)" v-if="option"
+                                                @click="onButton(metricData.short, optionData.value)">
+                                            <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
+                                            <span v-else>{{ option }}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="show-lg hide-md">
+                                <div class="mb-1" v-if="metricData.tooltip"><abbr :title="metricData.tooltip">{{ metric }}</abbr>:</div>
+                                <div class="mb-1" v-else>{{metric}}:</div>
+
+                                <div class="columns pl-2">
+                                    <div class="col-4 pb-2 pr-2" v-for="(optionData, option) in metricData.options">
+                                        <span :class="buttonClass(cvssSelected[metricData.short] == optionData.value)" v-if="option"
+                                                @click="onButton(metricData.short, optionData.value)">
+                                            <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
+                                            <span v-else>{{ option }}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="show-md hide-sm">
+                                <div class="mb-1" v-if="metricData.tooltip"><abbr :title="metricData.tooltip">{{ metric }}</abbr>:</div>
+                                <div class="mb-1" v-else>{{metric}}:</div>
+
+                                <div class="columns pl-2">
+                                    <div class="col-6 pb-2 pr-2" v-for="(optionData, option) in metricData.options">
+                                        <span :class="buttonClass(cvssSelected[metricData.short] == optionData.value)" v-if="option"
+                                                @click="onButton(metricData.short, optionData.value)">
+                                            <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
+                                            <span v-else>{{ option }}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="show-sm">
+                                <div class="mb-1" v-if="metricData.tooltip"><abbr :title="metricData.tooltip">{{ metric }}</abbr>:</div>
+                                <div class="mb-1" v-else>{{metric}}:</div>
+
+                                <div class="columns pl-2">
+                                    <div class="col-12 pb-2 pr-2" v-for="(optionData, option) in metricData.options">
+                                        <span :class="buttonClass(cvssSelected[metricData.short] == optionData.value, true)" v-if="option"
+                                                @click="onButton(metricData.short, optionData.value)">
+                                            <abbr v-if="optionData.tooltip" :title="optionData.tooltip">{{ option }}</abbr>
+                                            <span v-else>{{ option }}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
                     </div>
-                  </div>
-
-                 
-<!-- CVSS Calculator content start - add a <base href="http://www.first.org" /> to the head for offline editing -->
-<!--
-https://www.first.org/cvss/v3.1/use-design#techdesign
--->
-<div id="c1" class="cvss-calculator"><!-- CVSS Calculator content start - add a <base href="http://www.first.org" /> to the head for offline editing -->
-
-<!--
-  Copyright (c) 2019, FIRST.ORG, INC.
-  All rights reserved.
-
-  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
-  following conditions are met:
-  1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following
-     disclaimer.
-  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
-     following disclaimer in the documentation and/or other materials provided with the distribution.
-  3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
-     products derived from this software without specific prior written permission.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-
-<style type="text/css">
-  #cvssReference { font-size: 100%; }
-  fieldset { position: relative; background-color: #f2f2f2; margin-top: 50px; border:0; padding: 1em 0; }
-  fieldset legend { background-color: #666666; color: #ffffff; margin: 0; width: 100%; padding: 0.5em 0px; text-indent: 1em; }
-  fieldset div.metric { padding: 0; margin: 0.5em 0; }
-
-@media only screen and (min-width:768px) {
-  fieldset div.column { width: 45%; margin: 0 0 0 1em; }
-  fieldset div.column-left { float: left; height: auto; }
-  fieldset div.column-right { float: right; height: auto; }
-}
-  fieldset h3 { font-size: 1em; margin: 0; padding-left: 0.1em; }
-  fieldset input { display: none; width:auto; }
-  fieldset label {
-    background: #cccccc; display: inline-block; margin: 3px; padding: 2px 5px; border: 0; cursor: pointer; font-size: 90%;
-    border-radius: 5px; color: #666666; border: 1px solid #999999;
-    user-select: none; -webkit-user-select: none; -moz-user-select: -moz-none; -ms-user-select: none; user-select: none;
-  }
-  fieldset label:hover { background: #666666; color: #ffffff; border: 1px solid #666666 }
-  fieldset input:checked + label { background: green; border: 1px solid green; color: #ffffff; }
-
-  #vector         { margin: 0 1em;padding:0; }
-  #vectorString   { display: none; border: 0; padding: 0; margin: 0; background-color: #090; color: #ffffff; font-weight: bold;font-size:0.8em;width:80em;max-width:100%; }
-
-  .scoreRating { position: absolute; top:-36px; right:0; padding: 0 0.4em; margin: 0 15px; border: 2px solid #666666; background: #dddddd;
-    font-size:11px; border-radius: 10px; width: 100px; height: auto; line-height: 150%; text-align: center; }
-  .scoreRating.none,
-  .scoreRating.low,
-  .scoreRating.medium,
-  .scoreRating.high,
-  .scoreRating.critical { color:#ffffff;}
-
-  .scoreRating.none     { background:#53aa33; border:2px solid #53aa33; }
-  .scoreRating.low      { background:#ffcb0d; border:2px solid #ffcb0d; }
-  .scoreRating.medium   { background:#f9a009; border:2px solid #f9a009; }
-  .scoreRating.high     { background:#df3d03; border:2px solid #df3d03; }
-  .scoreRating.critical { background:#cc0500; border:2px solid #cc0500; }
-  .scoreRating span     { font-size: 150%; font-weight: bold; width: 100%; }
-  .needBaseMetrics      { text-align:center; line-height:100%; padding-top:5px; font-size:15px; }
-
-  #baseMetricScore,
-  #temporalMetricScore,
-  #environmentalMetricScore { display: block; font-size: 32px; line-height: 32px; font-weight: normal; margin-top: 4px; }
-
-  #baseSeverity,
-  #temporalSeverity,
-  #environmentalSeverity { font-size: 16px; font-weight: normal; margin-bottom: 5px; display: block; }
-
-  div#scriptWarning { border: solid red 2px; background: #f5dddd; padding: 1em 1em 1em 1em; margin: 0.4em 0; }
-
-</style>
-
-<!--
-<noscript><div id="scriptWarning">This page requires JavaScript. If you have disabled scripting, please enable it.</div></noscript>
-
-<p><img alt="CVSS logo" src="/cvss/identity/cvss_web.png" width="125"></p>
-
-<h1 id="mainTitle">Common Vulnerability Scoring System Version 3.1 Calculator</h1>
-
-<form action="#">
-
-
-<p id="cvssReference">Hover over metric group names, metric names and metric values for a summary of the information in the official CVSS v3.1 Specification Document.
-The Specification is available in the list of links on the left, along with a User Guide providing additional scoring guidance, an Examples document of scored vulnerabilities, and notes on using this calculator (including its design and an XML representation for CVSS v3.1).</p>
--->
-
-<fieldset id="baseMetricGroup">
-  <legend id="baseMetricGroup_Legend" title="The Base Metric group represents the intrinsic  characteristics of a vulnerability that are constant over time and across user environments. Determine the vulnerable component and score Attack Vector, Attack Complexity, Privileges Required and User Interaction relative to this.">Base Score</legend>
-
-  <div class="column column-left">
-
-    <div class="metric">
-      <h3 id="AV_Heading" title="This metric reflects the context by which vulnerability exploitation is possible. The Base Score increases the more remote (logically, and physically) an attacker can be in order to exploit the vulnerable component.">Attack Vector (AV)</h3>
-      <input name="AV" value="N" id="AV_N" type="radio"><label for="AV_N" id="AV_N_Label" title="The vulnerable component is bound to the network stack and the set of possible attackers extends beyond the other options listed, up to and including the entire Internet. Such a vulnerability is often termed 'remotely exploitable' and can be thought of as an attack being exploitable at the protocol level one or more network hops away (e.g., across one or more routers).">Network (N)</label>
-      <input name="AV" value="A" id="AV_A" type="radio"><label for="AV_A" id="AV_A_Label" title="The vulnerable component is bound to the network stack, but the attack is limited at the protocol level to a logically adjacent topology. This can mean an attack must be launched from the same shared physical (e.g., Bluetooth or IEEE 802.11) or logical (e.g., local IP subnet) network, or from within a secure or otherwise limited administrative domain (e.g., MPLS, secure VPN to an administrative network zone).">Adjacent (A)</label>
-      <input name="AV" value="L" id="AV_L" type="radio"><label for="AV_L" id="AV_L_Label" title="The vulnerable component is not bound to the network stack and the attacker’s path is via read/write/execute capabilities. Either: the attacker exploits the vulnerability by accessing the target system locally (e.g., keyboard, console), or remotely (e.g., SSH); or the attacker relies on User Interaction by another person to perform actions required to exploit the vulnerability (e.g., tricking a legitimate user into opening a malicious document).">Local (L)</label>
-      <input name="AV" value="P" id="AV_P" type="radio"><label for="AV_P" id="AV_P_Label" title="The attack requires the attacker to physically touch or manipulate the vulnerable component. Physical interaction may be brief or persistent.">Physical (P)</label>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="metric">
-      <h3 id="AC_Heading" title="This metric describes the conditions beyond the attacker’s control that must exist in order to exploit the vulnerability. Such conditions may require the collection of more information about the target or computational exceptions. The assessment of this metric excludes any requirements for user interaction in order to exploit the vulnerability. If a specific configuration is required for an attack to succeed, the Base metrics should be scored assuming the vulnerable component is in that configuration.">Attack Complexity (AC)</h3>
-      <input name="AC" value="L" id="AC_L" type="radio"><label for="AC_L" id="AC_L_Label" title="Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success against the vulnerable component.">Low (L)</label>
-      <input name="AC" value="H" id="AC_H" type="radio"><label for="AC_H" id="AC_H_Label" title="A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected. For example, a successful attack may require an attacker to: gather knowledge about the environment in which the vulnerable target/component exists; prepare the target environment to improve exploit reliability; or inject themselves into the logical network path between the target and the resource requested by the victim in order to read and/or modify network communications (e.g., a man in the middle attack).">High (H)</label>
-    </div>
-
-    <div class="metric">
-      <h3 id="PR_Heading" title="This metric describes the level of privileges an attacker must possess before successfully exploiting the vulnerability.">Privileges Required (PR)</h3>
-      <input name="PR" value="N" id="PR_N" type="radio"><label for="PR_N" id="PR_N_Label" title="The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files to carry out an attack.">None (N)</label>
-      <input name="PR" value="L" id="PR_L" type="radio"><label for="PR_L" id="PR_L_Label" title="The attacker is authorized with (i.e., requires) privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges may have the ability to cause an impact only to non-sensitive resources.">Low (L)</label>
-      <input name="PR" value="H" id="PR_H" type="radio"><label for="PR_H" id="PR_H_Label" title="The attacker is authorized with (i.e., requires) privileges that provide significant (e.g., administrative) control over the vulnerable component that could affect component-wide settings and files.">High (H)</label>
-    </div>
-
-    <div class="metric">
-      <h3 id="UI_Heading" title="This metric captures the requirement for a user, other than the attacker, to participate in the successful compromise the vulnerable component. This metric determines whether the vulnerability can be exploited solely at the will of the attacker, or whether a separate user (or user-initiated process) must participate in some manner.">User Interaction (UI)</h3>
-      <input name="UI" value="N" id="UI_N" type="radio"><label for="UI_N" id="UI_N_Label" title="The vulnerable system can be exploited without any interaction from any user.">None (N)</label>
-      <input name="UI" value="R" id="UI_R" type="radio"><label for="UI_R" id="UI_R_Label" title="Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited.">Required (R)</label>
-    </div>
-
-  </div>
+</div>
 
 
-  <div class="column column-right">
-
-    <div class="metric">
-      <h3 id="S_Heading" title="Does a successful attack impact a component other than the vulnerable component? If so, the Base Score increases and the Confidentiality, Integrity and Authentication metrics should be scored relative to the impacted component.">Scope (S)</h3>
-      <input name="S" value="U" id="S_U" type="radio"><label for="S_U" id="S_U_Label" title="An exploited vulnerability can only affect resources managed by the same security authority. In this case, the vulnerable component and the impacted component are either the same, or both are managed by the same security authority.">Unchanged (U)</label>
-      <input name="S" value="C" id="S_C" type="radio"><label for="S_C" id="S_C_Label" title="An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component. In this case, the vulnerable component and the impacted component are different and managed by different security authorities.">Changed (C)</label>
-    </div>
-
-    <div class="metric">
-      <h3 id="C_Heading" title="This metric measures the impact to the confidentiality of the information resources managed by a software component due to a successfully exploited vulnerability. Confidentiality refers to limiting information access and disclosure to only authorized users, as well as preventing access by, or disclosure to, unauthorized ones.">Confidentiality (C)</h3>
-      <input name="C" value="N" id="C_N" type="radio"><label for="C_N" id="C_N_Label" title="There is no loss of confidentiality within the impacted component.">None (N)</label>
-      <input name="C" value="L" id="C_L" type="radio"><label for="C_L" id="C_L_Label" title="There is some loss of confidentiality. Access to some restricted information is obtained, but the attacker does not have control over what information is obtained, or the amount or kind of loss is limited. The information disclosure does not cause a direct, serious loss to the impacted component.">Low (L)</label>
-      <input name="C" value="H" id="C_H" type="radio"><label for="C_H" id="C_H_Label" title="There is total loss of confidentiality, resulting in all resources within the impacted component being divulged to the attacker. Alternatively, access to only some restricted information is obtained, but the disclosed information presents a direct, serious impact.">High (H)</label>
-    </div>
-
-    <div class="metric">
-      <h3 id="I_Heading" title="This metric measures the impact to integrity of a successfully exploited vulnerability. Integrity refers to the trustworthiness and veracity of information.">Integrity (I)</h3>
-      <input name="I" value="N" id="I_N" type="radio"><label for="I_N" id="I_N_Label" title="There is no loss of integrity within the impacted component.">None (N)</label>
-      <input name="I" value="L" id="I_L" type="radio"><label for="I_L" id="I_L_Label" title="Modification of data is possible, but the attacker does not have control over the consequence of a modification, or the amount of modification is limited. The data modification does not have a direct, serious impact on the impacted component.">Low (L)</label>
-      <input name="I" value="H" id="I_H" type="radio"><label for="I_H" id="I_H_Label" title="There is a total loss of integrity, or a complete loss of protection. For example, the attacker is able to modify any/all files protected by the impacted component. Alternatively, only some files can be modified, but malicious modification would present a direct, serious consequence to the impacted component.">High (H)</label>
-    </div>
-
-    <div class="metric">
-      <h3 id="A_Heading" title="This metric measures the impact to the availability of the impacted component resulting from a successfully exploited vulnerability. It refers to the loss of availability of the impacted component itself, such as a networked service (e.g., web, database, email). Since availability refers to the accessibility of information resources, attacks that consume network bandwidth, processor cycles, or disk space all impact the availability of an impacted component.">Availability (A)</h3>
-      <input name="A" value="N" id="A_N" type="radio"><label for="A_N" id="A_N_Label" title="There is no impact to availability within the impacted component.">None (N)</label>
-      <input name="A" value="L" id="A_L" type="radio"><label for="A_L" id="A_L_Label" title="Performance is reduced or there are interruptions in resource availability. Even if repeated exploitation of the vulnerability is possible, the attacker does not have the ability to completely deny service to legitimate users. The resources in the impacted component are either partially available all of the time, or fully available only some of the time, but overall there is no direct, serious consequence to the impacted component.">Low (L)</label>
-      <input name="A" value="H" id="A_H" type="radio"><label for="A_H" id="A_H_Label" title="There is total loss of availability, resulting in the attacker being able to fully deny access to resources in the impacted component; this loss is either sustained (while the attacker continues to deliver the attack) or persistent (the condition persists even after the attack has completed). Alternatively, the attacker has the ability to deny some availability, but the loss of availability presents a direct, serious consequence to the impacted component (e.g., the attacker cannot disrupt existing connections, but can prevent new connections; the attacker can repeatedly exploit a vulnerability that, in each instance of a successful attack, leaks a only small amount of memory, but after repeated exploitation causes a service to become completely unavailable).">High (H)</label>
-    </div>
-
-  </div>
-
-
-  <div class="scoreRating">
-    <p class="needBaseMetrics">Select values for all base metrics to generate score</p>
-    <span id="baseMetricScore"></span>
-    <span id="baseSeverity"></span>
-  </div>
-</fieldset>
-<div class="end"></div>
-
-<!-- CVSS Calculator end --></div>
-
-
-
-              
+{% endverbatim %}
 
                 <br>
-
-
-                  <div class="form-group row">
-                    <div class="col-md-10 col-sm-10 col-xs-12">
-                      {{ form.cvss_score.as_hidden }}
-                    </div>
-                  </div>
 
                   <div class="form-group row">
                     <label class="col-sm-2 col-form-label">CWE</label>
@@ -355,264 +322,21 @@ The Specification is available in the list of links on the left, along with a Us
 {% block javascripts %}
   {{ block.super}}
 
-  <script nonce="" type="text/javascript" async="async" src="/static/cvsscalc31.js"></script>
-  <script nonce="" type="text/javascript" async="async" src="/static/cvsscalc31_helptext.js"></script>
-
-
-<script type="text/javascript">
-
-"use strict";
-
-const language = navigator.language;
-
-function updateScores() {
-    var result = CVSS31.calculateCVSSFromMetrics(inputValue('input[type="radio"][name=AV]:checked'), inputValue('input[type="radio"][name=AC]:checked'), inputValue('input[type="radio"][name=PR]:checked'), inputValue('input[type="radio"][name=UI]:checked'), inputValue('input[type="radio"][name=S]:checked'), inputValue('input[type="radio"][name=C]:checked'), inputValue('input[type="radio"][name=I]:checked'), inputValue('input[type="radio"][name=A]:checked'), inputValue('input[type="radio"][name=E]:checked'), inputValue('input[type="radio"][name=RL]:checked'), inputValue('input[type="radio"][name=RC]:checked'), inputValue('input[type="radio"][name=CR]:checked'), inputValue('input[type="radio"][name=IR]:checked'), inputValue('input[type="radio"][name=AR]:checked'), inputValue('input[type="radio"][name=MAV]:checked'), inputValue('input[type="radio"][name=MAC]:checked'), inputValue('input[type="radio"][name=MPR]:checked'), inputValue('input[type="radio"][name=MUI]:checked'), inputValue('input[type="radio"][name=MS]:checked'), inputValue('input[type="radio"][name=MC]:checked'), inputValue('input[type="radio"][name=MI]:checked'), inputValue('input[type="radio"][name=MA]:checked'));
-    if (result.success === true) {
-
-        document.getElementById("id_cvss_base_score").value = result.baseMetricScore + " (" + result.vectorString + ")";
-        document.getElementById("id_severity").value = result.baseSeverity;
-        document.getElementById("id_cvss_score").value = result.baseMetricScore;
-
-
-        var L = document.querySelectorAll(".needBaseMetrics"), i = L.length;
-        while (i--) {
-            hide(L[i]);
-        }
-        parentNode(text("#baseMetricScore", result.baseMetricScore), ".scoreRating").className = "scoreRating " + result.baseSeverity.toLowerCase();
-        text("#baseSeverity", "(" + result.baseSeverity + ")");
-        parentNode(text("#temporalMetricScore", result.temporalMetricScore), ".scoreRating").className = "scoreRating " + result.temporalSeverity.toLowerCase();
-        text("#temporalSeverity", "(" + result.temporalSeverity + ")");
-        parentNode(text("#environmentalMetricScore", result.environmentalMetricScore), ".scoreRating").className = "scoreRating " + result.environmentalSeverity.toLowerCase();
-        text("#environmentalSeverity", "(" + result.environmentalSeverity + ")");
-        show(inputValue("#vectorString", result.vectorString));
-        window.location.hash = result.vectorString;
-    } else {
-        if (result.error === "Not all base metrics were given - cannot calculate scores.") {
-            var L = document.querySelectorAll(".needBaseMetrics"), i = L.length;
-            while (i--) {
-                show(L[i]);
-            }
-            hide("#vectorString");
-        }
-    }
-}
-
-function delayedUpdateScores() {
-    setTimeout(updateScores, 100);
-}
-
-window.Element && function (ElementPrototype) {
-    ElementPrototype.matchesSelector = ElementPrototype.matchesSelector || ElementPrototype.mozMatchesSelector || ElementPrototype.msMatchesSelector || ElementPrototype.oMatchesSelector || ElementPrototype.webkitMatchesSelector || function (selector) {
-        var node = this,
-            nodes = (node.parentNode || node.document).querySelectorAll(selector),
-            i = -1;
-        while (nodes[++i] && nodes[i] != node) {
-        }
-        return !!nodes[i];
-    };
-}(Element.prototype);
-var matchesSelector = function (node, selector) {
-    if (!("parentNode" in node) || !node.parentNode) {
-        return false;
-    }
-    return Array.prototype.indexOf.call(node.parentNode.querySelectorAll(selector)) != -1;
-};
-
-function node() {
-    for (var i = 0; i < arguments.length; i++) {
-        var o = arguments[i];
-        if (typeof (o) == "string" && o) {
-            return document.querySelector(o);
-        } else {
-            if ("nodeName" in o) {
-                return o;
-            } else {
-                if ("jquery" in o) {
-                    return o.get(0);
-                }
-            }
-        }
-    }
-    return false;
-}
-
-function parentNode(p, q) {
-    if (!p || !(p = node(p))) {
-        return;
-    } else {
-        if ((typeof (q) == "string" && p.matchesSelector(q)) || p == q) {
-            return p;
-        } else {
-            if (p.nodeName.toLowerCase() != "html") {
-                return parentNode(p.parentNode, q);
-            } else {
-                return;
-            }
-        }
-    }
-}
-
-function bind(q, tg, fn) {
-    var o = node(q);
-    if (!o) {
-        return;
-    }
-    if (o.addEventListener) {
-        o.addEventListener(tg, fn, false);
-    } else {
-        if (o.attachEvent) {
-            o.attachEvent("on" + tg, fn);
-        } else {
-            o["on" + tg] = fn;
-        }
-    }
-    return o;
-}
-
-function text(q, s) {
-    var e = node(q);
-    if (!e) {
-        return;
-    }
-    if (arguments.length > 1) {
-        if ("textContent" in e) {
-            e.textContent = s;
-        } else {
-            e.innerText = s;
-        }
-        return e;
-    }
-    return e.textContent || e.innerText;
-}
-
-function hide(q) {
-    var e = node(q);
-    if (!e) {
-        return;
-    }
-    e.setAttribute("style", "display:none");
-    return e;
-}
-
-function show(q) {
-    var e = node(q);
-    if (!e) {
-        return;
-    }
-    e.setAttribute("style", "display:inline-block");
-    return e;
-}
-
-function inputValue(q, v) {
-    var e = document.querySelector(q);
-    if (!e || e.nodeName.toLowerCase() != "input") {
-        return;
-    }
-    if (arguments.length > 1) {
-        e.value = v;
-        return e;
-    }
-    return e.value;
-}
-
-function setMetricsFromVector(vectorString) {
-    var result = true;
-    var urlMetric;
-    var metricValuesToSet = {
-        AV: undefined,
-        AC: undefined,
-        PR: undefined,
-        UI: undefined,
-        S: undefined,
-        C: undefined,
-        I: undefined,
-        A: undefined,
-        E: "X",
-        RL: "X",
-        RC: "X",
-        CR: "X",
-        IR: "X",
-        AR: "X",
-        MAV: "X",
-        MAC: "X",
-        MPR: "X",
-        MUI: "X",
-        MS: "X",
-        MC: "X",
-        MI: "X",
-        MA: "X",
-    };
-    var vectorStringRegex_31 = /^CVSS:3.1\/((AV:[NALP]|AC:[LH]|PR:[UNLH]|UI:[NR]|S:[UC]|[CIA]:[NLH]|E:[XUPFH]|RL:[XOTWU]|RC:[XURC]|[CIA]R:[XLMH]|MAV:[XNALP]|MAC:[XLH]|MPR:[XUNLH]|MUI:[XNR]|MS:[XUC]|M[CIA]:[XNLH])\/)*(AV:[NALP]|AC:[LH]|PR:[UNLH]|UI:[NR]|S:[UC]|[CIA]:[NLH]|E:[XUPFH]|RL:[XOTWU]|RC:[XURC]|[CIA]R:[XLMH]|MAV:[XNALP]|MAC:[XLH]|MPR:[XUNLH]|MUI:[XNR]|MS:[XUC]|M[CIA]:[XNLH])$/;
-    if (vectorStringRegex_31.test(vectorString)) {
-        var urlMetrics = vectorString.substring("CVSS:3.1/".length).split("/");
-        for (var p in urlMetrics) {
-            var urlMetric = urlMetrics[p].split(":");
-            metricValuesToSet[urlMetric[0]] = urlMetric[1];
-        }
-        if (metricValuesToSet.AV !== undefined && metricValuesToSet.AC !== undefined && metricValuesToSet.PR !== undefined && metricValuesToSet.UI !== undefined && metricValuesToSet.S !== undefined && metricValuesToSet.C !== undefined && metricValuesToSet.I !== undefined && metricValuesToSet.A !== undefined) {
-            for (var p in metricValuesToSet) {
-                document.getElementById(p + "_" + metricValuesToSet[p]).checked = true;
-            }
-        } else {
-            result = "NotAllBaseMetricsProvided";
-        }
-    } else {
-        result = "MalformedVectorString";
-    }
-    updateScores();
-    return result;
-}
-
-var CVSSVectorInURL;
-
-function urlhash() {
-    var h = window.location.hash;
-    CVSSVectorInURL = h;
-    setMetricsFromVector(h.substring(1));
-}
-
-function inputSelect() {
-    this.setSelectionRange(0, this.value.length);
-}
-
-function cvssCalculator() {
-    if (!("CVSS31" in window) || !("CVSS31_Help" in window)) {
-        setTimeout(cvssCalculator, 100);
-        return;
-    }
-
-    const helpText = CVSS31_Help[`helpText_${language}`] || CVSS31_Help[`helpText_en-US`];
-
-    var L, i, n;
-    L = document.querySelectorAll(".cvss-calculator input");
-    i = L.length;
-    while (i--) {
-        bind(L[i], "click", delayedUpdateScores);
-    }
-    for (n in helpText) {
-        document.getElementById(n).setAttribute("title", helpText[n]);
-    }
-    urlhash();
-    if (("onhashchange" in window)) {
-        window.onhashchange = urlhash;
-    }
-    bind(bind("#vectorString", "click", inputSelect), "contextmenu", inputSelect);
-}
-
-
-
-cvssCalculator();
-
-
-</script>
-
-
-
 <script>
+// In your Javascript (external .js resource or <script> tag)
 $(document).ready(function() {
     $('.select2CWE').select2();
     $('.select2OWASP').select2();
 });
 </script>
-{% endblock javascripts %}
 
+<script src="/static/cvss-v4-calculator/vue.global.prod.js"></script>
+<script src="/static/cvss-v4-calculator/cvss_config.js?v=2"></script>
+<script src="/static/cvss-v4-calculator/cvss_details.js?v=1"></script>
+<script src="/static/cvss-v4-calculator/cvss_lookup.js?v=5"></script>
+<script src="/static/cvss-v4-calculator/max_composed.js?v=1"></script>
+<script src="/static/cvss-v4-calculator/max_severity.js?v=1"></script>
+<script src="/static/cvss-v4-calculator/metrics.js?v=1"></script>
+<script src="/static/cvss-v4-calculator/app.js?v=7"></script>
+
+{% endblock javascripts %}

@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## Version 1.4.2
+
+### Enhancements and Bugfixes:
+
+* Upgraded editor to use CVSS4 calculator
+* Minor upgrades and enhancement
+
 ## Version 1.4.1
 
 ### Enhancements and Bugfixes:

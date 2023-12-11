@@ -1152,8 +1152,6 @@ def reportdownloadpdf(request, template, pk):
                 else:
                     template_attackflow_in_finding += ''.join("\\pagebreak")
 
-
-
                 # finding
                 pdf_finding = render_to_string(os.path.join(template_pdf_dir, 'pdf_finding.md'), {'finding': finding, 'icon_finding': icon_finding, 'severity_color': severity_color, 'severity_color_finding': severity_color_finding, 'template_appendix_in_finding': template_appendix_in_finding, 'template_attackflow_in_finding': template_attackflow_in_finding, 'template_custom_fields': template_custom_fields})
 
@@ -1172,7 +1170,6 @@ def reportdownloadpdf(request, template, pk):
         PDF_HEADER_FILE = os.path.join(template_pdf_dir, 'pdf_header.tex')
 
         PETEREPORT_LATEX_FILE = os.path.join(template_pdf_dir, PETEREPORT_TEMPLATES['pdf_latex_template'])
-
         
         # Remove Unicode characters, not parsed by pdflatex
         final_markdown_output = final_markdown_output.encode(encoding="utf-8", errors="ignore").decode()
@@ -1191,8 +1188,6 @@ def reportdownloadpdf(request, template, pk):
                                             '--filter', 'pandoc-latex-environment',
                                             '--pdf-engine', PETEREPORT_MARKDOWN['pdf_engine'],
                                             '--listings'])
-
-
 
         deliverable = DB_Deliverable(report=DB_report_query, filename=name_file, generation_date=now, filetemplate=template, filetype='pdf')
         deliverable.save()
@@ -1506,7 +1501,7 @@ def downloadfindingscsv(request,pk):
     csv.register_dialect('MMDialect', quoting=csv.QUOTE_ALL, skipinitialspace=True)
     with open(csv_file_output, 'w') as fh:
         writer = csv.writer(fh, dialect='MMDialect')
-        writer.writerow(["ID", "Status", "Title", "Severity", "CVSS Base Score", "CVSS Score", "CWE", "CWE ID", "OWASP", "OWASP ID", "Description", "POC", "Location", "Impact", "Recommendation", "References", "Appendix", "Appendix Description"])
+        writer.writerow(["ID", "Status", "Title", "Severity", "CVSS Vector", "CVSS Score", "CWE", "CWE ID", "OWASP", "OWASP ID", "Description", "POC", "Location", "Impact", "Recommendation", "References", "Appendix", "Appendix Description"])
         for finding in DB_finding_query:
             if finding.cwe:
                 cwe_title = f"CWE-{finding.cwe.cwe_id} - {finding.cwe.cwe_name}"
@@ -1544,7 +1539,7 @@ def downloadfindingscsv(request,pk):
             writer.writerow([finding.finding_id,
                             finding.status,
                             finding_title_encoded,
-                            finding.severity, finding.cvss_base_score, finding.cvss_score,
+                            finding.severity, finding.cvss_vector, finding.cvss_score,
                             cwe_title, cwe_id,
                             owasp_title, owasp_id,
                             finding_description_encoded,
@@ -1591,10 +1586,10 @@ def upload_csv_findings(request,pk):
         f_status = header.index("Status")
         f_title = header.index("Title")
         f_severity = header.index("Severity")
-        f_cvss_score = header.index("CVSS Base Score")
+        f_cvss_score = header.index("CVSS Vector")
         f_cvss = header.index("CVSS Score")
         f_cwe = header.index("CWE ID")
-        f_owasp = header.index("OWASP ID")
+        f_owasp_id = header.index("OWASP ID")
         f_description = header.index("Description")
         f_location = header.index("Location")
         f_impact = header.index("Impact")
@@ -1613,7 +1608,7 @@ def upload_csv_findings(request,pk):
             fcvss_score = row[f_cvss_score]
             fcvss = row[f_cvss]
             fcwe = row[f_cwe]
-            fowasp = row[f_owasp]
+            fowasp = row[f_owasp_id]
             fdescription = row[f_description]
             flocation = row[f_location]
             fimpact = row[f_impact]
@@ -1625,10 +1620,10 @@ def upload_csv_findings(request,pk):
             List.append([fid,ftitle,fstatus,fseverity,fcvss_score,fcvss,fcwe,fowasp,fdescription,flocation,fimpact,frecommendation,fref,fappendix,fappendixdescription])
 
             DB_cwe = get_object_or_404(DB_CWE, cwe_id=fcwe)
-            DB_owasp = get_object_or_404(DB_OWASP, owasp_id=fowasp)
+            DB_owasp = get_object_or_404(DB_OWASP, owasp_full_id=fowasp)
 
             # Save finding
-            finding_to_DB = DB_Finding(report=DB_report_query, finding_id=fid, title=ftitle, status=fstatus, severity=fseverity, cvss_base_score=fcvss_score, cvss_score=fcvss, description=fdescription, location=flocation, impact=fimpact, recommendation=frecommendation, references=fref, cwe=DB_cwe, owasp=DB_owasp)
+            finding_to_DB = DB_Finding(report=DB_report_query, finding_id=fid, title=ftitle, status=fstatus, severity=fseverity, cvss_vector=fcvss_score, cvss_score=fcvss, description=fdescription, location=flocation, impact=fimpact, recommendation=frecommendation, references=fref, cwe=DB_cwe, owasp=DB_owasp)
             finding_to_DB.save()
 
             # Save appendix
@@ -1759,7 +1754,7 @@ def defectdojo_import(request,pk,ddpk):
         cweDB = DB_CWE.objects.filter(cwe_id=finding_cwe).first() or DB_CWE.objects.filter(cwe_id=0).first()
 
         #Save Finding
-        finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_hash_code, status = 'Open', title=finding_title, severity=finding_severity, cvss_base_score=finding_cvssv3, cvss_score=finding_cvssv3_score, description=finding_final_description, location=finding_file_path, impact=finding_impact, recommendation=finding_mitigation, references=finding_references, cwe=cweDB)
+        finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_hash_code, status = 'Open', title=finding_title, severity=finding_severity, cvss_vector=finding_cvssv3, cvss_score=finding_cvssv3_score, description=finding_final_description, location=finding_file_path, impact=finding_impact, recommendation=finding_mitigation, references=finding_references, cwe=cweDB)
         finding_to_DB.save()
 
     return redirect('report_view', pk=pk)
@@ -1804,7 +1799,7 @@ def defectdojo_import_finding(request,pk,ddpk):
     cweDB = DB_CWE.objects.filter(cwe_id=finding_cwe).first() or DB_CWE.objects.filter(cwe_id=0).first()
 
     #Save Finding
-    finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_hash_code, status = 'Open', title=finding_title, severity=finding_severity, cvss_base_score=finding_cvssv3, cvss_score=finding_cvssv3_score, description=finding_final_description, location=finding_file_path, impact=finding_impact, recommendation=finding_mitigation, references=finding_references, cwe=cweDB)
+    finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_hash_code, status = 'Open', title=finding_title, severity=finding_severity, cvss_vector=finding_cvssv3, cvss_score=finding_cvssv3_score, description=finding_final_description, location=finding_file_path, impact=finding_impact, recommendation=finding_mitigation, references=finding_references, cwe=cweDB)
     finding_to_DB.save()
 
     return redirect('report_view', pk=pk)
@@ -2122,7 +2117,7 @@ def templateaddreport(request,pk,reportpk):
     # save template in DB
     finding_uuid = uuid.uuid4()
     finding_status = "Open"
-    finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_uuid, title=DB_finding_template_query.title, severity=DB_finding_template_query.severity, cvss_base_score=DB_finding_template_query.cvss_base_score, cvss_score=DB_finding_template_query.cvss_score, description=DB_finding_template_query.description, status=finding_status, location=DB_finding_template_query.location, impact=DB_finding_template_query.impact, recommendation=DB_finding_template_query.recommendation, references=DB_finding_template_query.references, cwe=DB_finding_template_query.cwe, owasp=DB_finding_template_query.owasp)
+    finding_to_DB = DB_Finding(report=DB_report_query, finding_id=finding_uuid, title=DB_finding_template_query.title, severity=DB_finding_template_query.severity, cvss_vector=DB_finding_template_query.cvss_vector, cvss_score=DB_finding_template_query.cvss_score, description=DB_finding_template_query.description, status=finding_status, location=DB_finding_template_query.location, impact=DB_finding_template_query.impact, recommendation=DB_finding_template_query.recommendation, references=DB_finding_template_query.references, cwe=DB_finding_template_query.cwe, owasp=DB_finding_template_query.owasp)
 
     finding_to_DB.save()
 

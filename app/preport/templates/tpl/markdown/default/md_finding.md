@@ -3,11 +3,18 @@
 
 **{% translate "Severity" %}:** {{finding.severity|safe}}
 
-{% if finding.cvss_base_score != "0" %}
-**{% translate "CVSS Score" %}:** {{finding.cvss_base_score|safe}}
+{% if finding.cvss_vector != "0" %}
+**{% translate "CVSS Vector" %}:** {{finding.cvss_vector|safe}}
+{% endif %}
+
+{% if finding.cvss_score != "0" %}
+**{% translate "CVSS Score" %}:** {{finding.cvss_score|safe}}
 {% endif %}
 
 **{% translate "CWE" %}:** {{finding.cwe.cwe_id|safe}} - {{finding.cwe.cwe_name|safe}}
+
+**{% translate "OWASP" %}:** {{finding.owasp.owasp_id|safe}} - {{finding.owasp.owasp_name|safe}}
+
 
 {% if finding.description %}
 **{% translate "Description" %}**

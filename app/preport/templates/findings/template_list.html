@@ -46,9 +46,9 @@
           <table id="templatelist" class="table table-bordered table-hover">
               <thead>
                   <tr>
-                    <th style="width: 35%" class="text-center">{% translate "Finding title" %}</th>
-                    <th style="width: 5%" class="text-center">{% translate "Severity" %}</th>
-                    <th style="width: 25%" class="text-center">{% translate "CVSS Score" %}</th>
+                    <th style="width: 50%" class="text-center">{% translate "Finding title" %}</th>
+                    <th style="width: 10%" class="text-center">{% translate "Severity" %}</th>
+                    <th style="width: 10%" class="text-center">{% translate "CVSS Score" %}</th>
                     <th style="width: 7%" class="text-center">{% translate "CWE" %}</th>
                     <th style="width: 7%" class="text-center">{% translate "OWASP" %}</th>
                     <th style="width: 20%" class="text-center">{% translate "Actions" %}</th>
@@ -79,7 +79,7 @@
                     </td>
 
                     <td>
-                        {{template.cvss_base_score}}
+                        {{template.cvss_score}}
                     </td>
 
                     <td>

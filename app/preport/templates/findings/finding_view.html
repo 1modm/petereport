@@ -79,11 +79,33 @@
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "Finding ID" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.finding_id | safe_markdown | bleach}}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.finding_id | safe | bleach}}</span>
                           </div>
                         </div>
                       </div>
                       <div class="col-12 col-sm-4">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "Status" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.status | safe | bleach}}<span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-sm-4">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "Date" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.creation_date | date:"d-m-Y H:m:s" | safe | bleach}}<span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div class="row">
+
+                      <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "Product" %}</span>
@@ -91,16 +113,15 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-12 col-sm-4">
+                      <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "Report" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">{{ DB_report.title | safe_markdown | bleach}}<span>
-                          </span></span></div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-
+                  </div>
 
 
                   <div class="row">
@@ -116,37 +137,34 @@
                       <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">{% translate "CVSS Score" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_base_score | safe | bleach}}<span>
-                          </span></span>
-                        </div>
-                        </div>
-                      </div>
-
-                  </div>
-
-        
-                  <div class="row">
-     
-                      <div class="col-12 col-sm-4">
-                        <div class="info-box bg-light">
-                          <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "OWASP" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">{{ finding.owasp.owasp_id | safe | bleach}} - {{finding.owasp.owasp_name |safe| bleach}}</span>
                           </div>
                         </div>
                       </div>
+                  </div>
 
-                      <div class="col-12 col-sm-4">
+        
+                  <div class="row">
+                      <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">{% translate "Status" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.status | safe | bleach}}<span>
+                            <span class="info-box-number text-center text-muted">{% translate "CVSS Vector" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_vector | safe | bleach}}<span>
+                        </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-sm-3">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "CVSS Score" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_score | safe | bleach}}<span>
                           </div>
                         </div>
                       </div>
 
-                      <div class="col-12 col-sm-4">
+                      <div class="col-12 col-sm-3">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "Severity" %}</span>
@@ -162,7 +180,7 @@
                                   {% elif finding.severity == "Info" %}
                                       <span><b><font color="#45a7f7">{{finding.severity| safe | bleach}}</font></b></span>
                                   {% else %}
-                                      <span><b>{{finding.severity}}</b></span> ({% translate "will not appear in the report" %})
+                                      <span><b>{{ finding.cvss_score | safe | bleach}} - {{finding.severity | safe | bleach}}</b></span> ({% translate "will not appear in the report" %})
                                 {% endif %}
                           </span>
                           </div>

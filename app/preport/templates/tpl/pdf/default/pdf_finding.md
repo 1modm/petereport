@@ -5,14 +5,26 @@
 ::: {{icon_finding}}
 **{% translate "Severity" %}:** {{severity_color_finding}}
 
-{% if finding.cvss_base_score != "0" %}
-**{% translate "CVSS Score" %}:** {{finding.cvss_base_score|safe}}
+{% if finding.cvss_score != "0" %}
+**{% translate "CVSS Score" %}:** {{finding.cvss_score|safe}}
+{% endif %}
+
+{% if finding.cvss_vector != "0" %}
+**{% translate "CVSS Vector" %}:** {{finding.cvss_vector|safe}}
 {% endif %}
 :::
 
+{% if finding.cwe %}
 **{% translate "CWE" %}**
 
 {{finding.cwe.cwe_id}} - {{finding.cwe.cwe_name|safe}}
+{% endif %}
+
+{% if finding.owasp %}
+**{% translate "OWASP" %}**
+
+{{finding.owasp.owasp_id|safe}} - {{finding.owasp.owasp_name|safe}}
+{% endif %}
 
 {% if finding.description %}
 **{% translate "Description" %}**

@@ -57,9 +57,6 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Translations
-*.mo
-*.pot
 
 # Django stuff:
 *.log

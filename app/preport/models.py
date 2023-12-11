@@ -133,7 +133,7 @@ class DB_Finding(models.Model):
 	closed_at = models.DateTimeField(blank=True, null=True)
 	title = models.CharField(blank=True, max_length=200)
 	severity = models.CharField(blank=True, max_length=200)
-	cvss_base_score = models.CharField(blank=True, max_length=200)
+	cvss_vector = models.CharField(blank=True, max_length=200)
 	cvss_score = models.DecimalField(max_digits=3, decimal_places=1, default=0)
 	description = MartorField(blank=True)
 	location = MartorField(blank=True)
@@ -155,7 +155,7 @@ class DB_Finding(models.Model):
 		super().save(*args, **kwargs)
 
 	def get_cvss_score_anchor(self):
-		m = cvss_regex.search(self.cvss_base_score)
+		m = cvss_regex.search(self.cvss_vector)
 		if m:
 			return m.group(1)
 	class Meta:
@@ -168,7 +168,7 @@ class DB_Finding_Template(models.Model):
 	finding_id = models.CharField(blank=False, max_length=200)
 	title = models.CharField(blank=False, max_length=200)
 	severity = models.CharField(blank=True, max_length=200)
-	cvss_base_score = models.CharField(blank=True, max_length=200)
+	cvss_vector = models.CharField(blank=True, max_length=200)
 	cvss_score = models.DecimalField(max_digits=3, decimal_places=1, default=0)
 	description = MartorField(blank=True)
 	location = MartorField(blank=True)
@@ -183,7 +183,7 @@ class DB_Finding_Template(models.Model):
 		return self.title
 
 	def get_cvss_score_anchor(self):
-		m = cvss_regex.search(self.cvss_base_score)
+		m = cvss_regex.search(self.cvss_vector)
 		if m:
 			return m.group(1)
 

@@ -41,12 +41,9 @@ class ShareChoiceField(ModelChoiceField):
 class NewReportForm(forms.ModelForm):
 
     product_placeholder = _('(Select a product)')
-
     product = CustomModelChoiceField(queryset=DB_Product.objects.all(), empty_label=product_placeholder, widget=forms.Select(attrs={'class': 'form-control'}))
-
     audit = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control float-right', 'data-toggle': 'datetimepicker', 'data-target': '#audit', 'data-date-format': 'YYYY-MM-DD', 'id': "audit"}))
 
- 
     class Meta:
         today = datetime.date.today().strftime('%Y-%m-%d')
         nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
@@ -58,7 +55,6 @@ class NewReportForm(forms.ModelForm):
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Report Name')}),
             'report_date': TextInput(attrs={'class': 'form-control datetimepicker-input', 'type': "text", 'data-toggle': 'datetimepicker', 'data-target': '#reportdate', 'data-date-format': 'YYYY-MM-DD', 'id': "reportdate", 'required': "required"}),
         }
-
 
 
 class CWEModelChoiceField(ModelChoiceField):
@@ -94,14 +90,14 @@ class NewFindingForm(forms.ModelForm):
 
     class Meta:
         model = DB_Finding
-        fields = ('title', 'status', 'severity', 'cvss_score', 'cvss_base_score', 'description', 'location', 'poc', 'impact', 'recommendation', 'references', 'cwe', 'owasp')
+        fields = ('title', 'status', 'severity', 'cvss_score', 'cvss_vector', 'description', 'location', 'poc', 'impact', 'recommendation', 'references', 'cwe', 'owasp')
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Finding title")}),
-            'cvss_base_score': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Base Score")}),
+            'cvss_vector': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Vector")}),
+            'cvss_score': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Score"),}),
            }
         
-
 
 class NewFindingTemplateForm(forms.ModelForm):
 
@@ -115,8 +111,6 @@ class NewFindingTemplateForm(forms.ModelForm):
         ('None', _('None')),
     )
 
-
-
     severity = forms.ChoiceField(choices=severity_choices, required=True, widget=forms.Select(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Critical/High/Medium/Low/Info/None")}))
     cwe = CWEModelChoiceField(queryset=DB_CWE.objects.all(), empty_label=_("(Select a CWE)"), widget=forms.Select(attrs={'class': 'form-control select2CWE'}))
     
@@ -124,15 +118,14 @@ class NewFindingTemplateForm(forms.ModelForm):
 
     class Meta:
         model = DB_Finding_Template
-        fields = ('title', 'severity', 'cvss_score', 'cvss_base_score', 'description', 'location', 'impact', 'recommendation', 'references', 'cwe', 'owasp')
+        fields = ('title', 'severity', 'cvss_score', 'cvss_vector', 'description', 'location', 'impact', 'recommendation', 'references', 'cwe', 'owasp')
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Finding title")}),
-            'cvss_base_score': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Base Score")}),
-        }
+            'cvss_vector': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Vector")}),
+            'cvss_score': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("CVSS Score"),}),
+           }
         
-
-
 
 class FindingModelChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
@@ -158,8 +151,6 @@ class NewAppendixForm(forms.ModelForm):
         }
 
 
-
-
 class AddUserForm(UserCreationForm):
 
     group = ModelChoiceField(queryset=Group.objects.all(), empty_label=_("(Select a group)"), widget=forms.Select(attrs={'class': 'form-control'}))
@@ -182,7 +173,6 @@ class AddUserForm(UserCreationForm):
         self.fields['username'].widget.attrs.update({'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Username")})
         self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Secret P@ssW0rd'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Secret P@ssW0rd'})
-
 
 
 class NewAttackTreeForm(forms.ModelForm):
@@ -255,7 +245,6 @@ class NewSettingsForm(forms.ModelForm):
             'report_subject': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _('Report subject')}),
             'company_picture': FileInput(attrs={'class': 'form-control', 'type': "file", 'placeholder': _('Company picture')}),
         }
-
 
 
 class NewCustomerForm(forms.ModelForm):

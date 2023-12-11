@@ -18,8 +18,18 @@
 </tr>
 
 <tr>
+<td style="width: 15%">**{% translate "CVSS Vector" %}**</td>
+<td>**<span style="color:#{{color_text_severity}}">{{finding.cvss_vector | safe | bleach}} </span>**</td>
+</tr>
+
+<tr>
 <td style="width: 15%">**CWE**</td>
 <td>{{finding.cwe.cwe_id}} - {{finding.cwe.cwe_name | safe | bleach}}</td>
+</tr>
+
+<tr>
+<td style="width: 15%">**OWASP**</td>
+<td>{{finding.owasp.owasp_id|safe}} - {{finding.owasp.owasp_name|safe}}</td>
 </tr>
 
 {% if finding.description %}

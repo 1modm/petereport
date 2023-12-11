@@ -68,9 +68,9 @@
                       <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">{% translate "CVSS Score" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cvss_base_score }}<span>
-                          </span></span></div>
+                            <span class="info-box-number text-center text-muted">{% translate "Title" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.title | safe | bleach}}<span>
+                          </div>
                         </div>
                       </div>
 
@@ -80,24 +80,41 @@
 
         
                     <div class="row">
-     
-                      <div class="col-12 col-sm-4">
+                      <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "CVSS Vector" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cvss_vector | safe | bleach}}<span>
+                        </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-sm-3">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "CVSS Score" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cvss_score | safe | bleach}}<span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-sm-3">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "Severity" %}</span>
                             <span class="info-box-text text-center text-muted mb-0">
                                 {% if DB_Template.severity == "Critical" %}
-                                      <span><b><font color="#cc0000">{{DB_Template.severity}}</font></b></span>
+                                      <span><b><font color="#cc0000">{{DB_Template.severity| safe | bleach}}</font></b></span>
                                   {% elif DB_Template.severity == "High" %}
-                                      <span><b><font color="#ff403d">{{DB_Template.severity}}</font></b></span>
+                                      <span><b><font color="#ff403d">{{DB_Template.severity| safe | bleach}}</font></b></span>
                                   {% elif DB_Template.severity == "Medium" %}
-                                      <span><b><font color="#fc7f03">{{DB_Template.severity}}</font></b></span>
+                                      <span><b><font color="#fc7f03">{{DB_Template.severity| safe | bleach}}</font></b></span>
                                   {% elif DB_Template.severity == "Low" %}
-                                      <span><b><font color="#05b04f">{{DB_Template.severity}}</font></b></span>
+                                      <span><b><font color="#05b04f">{{DB_Template.severity| safe | bleach}}</font></b></span>
                                   {% elif DB_Template.severity == "Info" %}
-                                      <span><b><font color="#45a7f7">{{DB_Template.severity}}</font></b></span>
+                                      <span><b><font color="#45a7f7">{{DB_Template.severity| safe | bleach}}</font></b></span>
                                   {% else %}
-                                      <span>{{DB_Template.severity}}</span>
+                                      <span><b>{{ DB_Template.cvss_score | safe | bleach}} - {{DB_Template.severity | safe | bleach}}</b></span> ({% translate "will not appear in the report" %})
                                 {% endif %}
                           </span>
                           </div>
@@ -105,26 +122,35 @@
                       </div>
 
 
+                    </div>
 
 
-                      <div class="col-12 col-sm-8">
+
+
+                    <div class="row">
+                      <div class="col-12 col-sm-6">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
                             <span class="info-box-number text-center text-muted">{% translate "CWE" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cwe.cwe_id }} - {{DB_Template.cwe.cwe_name }}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.cwe.cwe_id | safe | bleach}} - {{DB_Template.cwe.cwe_name |safe| bleach}}</span>
                           </div>
-                          <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">{% translate "OWASP" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.owasp.owasp_id }} - {{DB_Template.owasp.owasp_name }}</span>
-                          </div>
-
                         </div>
                       </div>
 
+                      <div class="col-12 col-sm-6">
+                        <div class="info-box bg-light">
+                          <div class="info-box-content">
+                            <span class="info-box-number text-center text-muted">{% translate "OWASP" %}</span>
+                            <span class="info-box-text text-center text-muted mb-0">{{ DB_Template.owasp.owasp_id | safe | bleach}} - {{DB_Template.owasp.owasp_name |safe| bleach}}</span>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
 
 
 
-                    </div>
+
+                  
 
 
                 </div>

@@ -1,0 +1,463 @@
+/*! Spectre.css v0.5.9 | MIT License | github.com/picturepan2/spectre */
+/* Manually forked from Normalize.css */
+/* normalize.css v5.0.0 | MIT License | github.com/necolas/normalize.css */
+/** 1. Change the default font family in all browsers (opinionated). 2. Correct the line height in all browsers. 3. Prevent adjustments of font size after orientation changes in IE on Windows Phone and in iOS. */
+/* Document ========================================================================== */
+
+.cvss-btn {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: #fff;
+  border: .05rem solid #5755d9;
+  border-radius: .1rem;
+  color: #5755d9;
+  cursor: pointer;
+  display: inline-block;
+  font-size: .9rem;
+  height: 1.8rem;
+  line-height: 1.2rem;
+  outline: none;
+  padding: .25rem .4rem;
+  text-align: center;
+  text-decoration: none;
+  transition: background .2s, border .2s, box-shadow .2s, color .2s;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.cvss-btn:focus {
+  box-shadow: 0 0 0 .1rem rgba(87, 85, 217, .2);
+}
+
+.cvss-btn:focus,
+.cvss-btn:hover {
+  background: #f1f1fc;
+  border-color: #4b48d6;
+  text-decoration: none;
+}
+
+.cvss-btn:active,
+.cvss-btn.active {
+  background: #4b48d6;
+  border-color: #3634d2;
+  color: #fff;
+  text-decoration: none;
+}
+
+.cvss-btn:active.loading::after,
+.cvss-btn.active.loading::after {
+  border-bottom-color: #fff;
+  border-left-color: #fff;
+}
+
+.cvss-btn[disabled],
+.cvss-btn:disabled,
+.cvss-btn.disabled {
+  cursor: default;
+  opacity: .5;
+  pointer-events: none;
+}
+
+.cvss-btn.cvss-btn-primary {
+  background: #5755d9;
+  border-color: #4b48d6;
+  color: #fff;
+}
+
+.cvss-btn.cvss-btn-primary:focus,
+.cvss-btn.cvss-btn-primary:hover {
+  background: #4240d4;
+  border-color: #3634d2;
+  color: #fff;
+}
+
+.cvss-btn.cvss-btn-primary:active,
+.cvss-btn.cvss-btn-primary.active {
+  background: #3a38d2;
+  border-color: #302ecd;
+  color: #fff;
+}
+
+.cvss-btn.cvss-btn-primary.loading::after {
+  border-bottom-color: #fff;
+  border-left-color: #fff;
+}
+
+.cvss-btn.cvss-btn-success {
+  background: #32b643;
+  border-color: #2faa3f;
+  color: #fff;
+}
+
+.cvss-btn.cvss-btn-success:focus {
+  box-shadow: 0 0 0 .1rem rgba(50, 182, 67, .2);
+}
+
+.cvss-btn.cvss-btn-success:focus,
+.cvss-btn.cvss-btn-success:hover {
+  background: #30ae40;
+  border-color: #2da23c;
+  color: #fff;
+}
+
+.cvss-btn.cvss-btn-success:active,
+.cvss-btn.cvss-btn-success.active {
+  background: #2a9a39;
+  border-color: #278e34;
+  color: #fff;
+}
+
+.cvss-btn.cvss-btn-success.loading::after {
+  border-bottom-color: #fff;
+  border-left-color: #fff;
+}
+
+.cvss-btn.cvss-btn-error {
+  background: #e85600;
+  border-color: #d95000;
+  color: #fff;
+}
+
+.cvss-btn.cvss-btn-error:focus {
+  box-shadow: 0 0 0 .1rem rgba(232, 86, 0, .2);
+}
+
+.cvss-btn.cvss-btn-error:focus,
+.cvss-btn.cvss-btn-error:hover {
+  background: #de5200;
+  border-color: #cf4d00;
+  color: #fff;
+}
+
+.cvss-btn.cvss-btn-error:active,
+.cvss-btn.cvss-btn-error.active {
+  background: #c44900;
+  border-color: #b54300;
+  color: #fff;
+}
+
+.cvss-btn.cvss-btn-error.loading::after {
+  border-bottom-color: #fff;
+  border-left-color: #fff;
+}
+
+.cvss-btn.cvss-btn-link {
+  background: transparent;
+  border-color: transparent;
+  color: #5755d9;
+}
+
+.cvss-btn.cvss-btn-link:focus,
+.cvss-btn.cvss-btn-link:hover,
+.cvss-btn.cvss-btn-link:active,
+.cvss-btn.cvss-btn-link.active {
+  color: #302ecd;
+}
+
+.cvss-btn.cvss-btn-sm {
+  font-size: .9rem;
+  height: 1.4rem;
+  padding: .05rem .3rem;
+}
+
+.cvss-btn.cvss-btn-lg {
+  font-size: .9rem;
+  height: 2rem;
+  padding: .35rem .6rem;
+}
+
+.cvss-btn.cvss-btn-block {
+  display: block;
+  width: 100%;
+}
+
+.cvss-btn.cvss-btn-action {
+  padding-left: 0;
+  padding-right: 0; 
+  width: 1.8rem;
+}
+
+.cvss-btn.cvss-btn-action.cvss-btn-sm {
+  width: 1.4rem;
+}
+
+.cvss-btn.cvss-btn-action.cvss-btn-lg {
+  width: 2rem;
+}
+
+.cvss-btn.cvss-btn-clear {
+  background: transparent;
+  border: 0;
+  color: currentColor;
+  height: 1rem;
+  line-height: .8rem;
+  margin-left: .2rem;
+  margin-right: -2px;
+  opacity: 1;
+  padding: .1rem;
+  text-decoration: none;
+  width: 1rem;
+}
+
+.cvss-btn.cvss-btn-clear:focus,
+.cvss-btn.cvss-btn-clear:hover {
+  background: rgba(247, 248, 249, .5);
+  opacity: .95;
+}
+
+.cvss-btn.cvss-btn-clear::before {
+  content: "\2715";
+}
+
+.cvss-btn-group {
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+.cvss-btn-group .cvss-btn {
+  -ms-flex: 1 0 auto;
+  flex: 1 0 auto;
+}
+
+.cvss-btn-group .cvss-btn:first-child:not(:last-child) {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.cvss-btn-group .cvss-btn:not(:first-child):not(:last-child) {
+  border-radius: 0;
+  margin-left: -.05rem;
+}
+
+.cvss-btn-group .cvss-btn:last-child:not(:first-child) {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  margin-left: -.05rem;
+}
+
+.cvss-btn-group .cvss-btn:focus,
+.cvss-btn-group .cvss-btn:hover,
+.cvss-btn-group .cvss-btn:active,
+.cvss-btn-group .cvss-btn.active {
+  z-index: 1;
+}
+
+.cvss-btn-group.cvss-btn-group-block {
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.cvss-btn-group.cvss-btn-group-block .cvss-btn {
+  -ms-flex: 1 0 0;
+  flex: 1 0 0;
+}
+
+
+.show-xs,
+.show-sm,
+.show-md,
+.show-lg,
+.show-xl {
+  display: none !important;
+}
+
+.cols,
+.columns {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  margin-left: -.4rem;
+  margin-right: -.4rem;
+}
+
+.cols.col-gapless,
+.columns.col-gapless {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.cols.col-gapless > .column,
+.columns.col-gapless > .column {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.cols.col-oneline,
+.columns.col-oneline {
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+[class~="col-"],
+.column {
+  -ms-flex: 1;
+  flex: 1;
+  max-width: 100%;
+  padding-left: .4rem;
+  padding-right: .4rem;
+}
+
+[class~="col-"].col-12,
+[class~="col-"].col-11,
+[class~="col-"].col-10,
+[class~="col-"].col-9,
+[class~="col-"].col-8,
+[class~="col-"].col-7,
+[class~="col-"].col-6,
+[class~="col-"].col-5,
+[class~="col-"].col-4,
+[class~="col-"].col-3,
+[class~="col-"].col-2,
+[class~="col-"].col-1,
+[class~="col-"].col-auto,
+.column.col-12,
+.column.col-11,
+.column.col-10,
+.column.col-9,
+.column.col-8,
+.column.col-7,
+.column.col-6,
+.column.col-5,
+.column.col-4,
+.column.col-3,
+.column.col-2,
+.column.col-1,
+.column.col-auto {
+  -ms-flex: none;
+  flex: none;
+}
+
+.col-12 {
+  width: 100%;
+}
+
+.col-11 {
+  width: 91.66666667%;
+}
+
+.col-10 {
+  width: 83.33333333%;
+}
+
+.col-9 {
+  width: 75%;
+}
+
+.col-8 {
+  width: 66.66666667%;
+}
+
+.col-7 {
+  width: 58.33333333%;
+}
+
+.col-6 {
+  width: 50%;
+}
+
+.col-5 {
+  width: 41.66666667%;
+}
+
+.col-4 {
+  width: 33.33333333%;
+}
+
+.col-3 {
+  width: 25%;
+}
+
+.col-2 {
+  width: 16.66666667%;
+}
+
+.col-1 {
+  width: 8.33333333%;
+}
+
+.col-auto {
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  max-width: none;
+  width: auto;
+}
+
+.col-mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.col-ml-auto {
+  margin-left: auto;
+}
+
+.col-mr-auto {
+  margin-right: auto;
+}
+
+.bg-primary {
+  background: #5755d9 !important;
+  color: #fff;
+}
+
+.bg-secondary {
+  background: #f1f1fc !important;
+}
+
+.bg-dark {
+  background: #303742 !important;
+  color: #fff;
+}
+
+.bg-gray {
+  background: #f7f8f9 !important;
+}
+
+.bg-success {
+  background: #32b643 !important;
+  color: #fff;
+}
+
+.bg-warning {
+  background: #ffb700 !important;
+  color: #fff;
+}
+
+.bg-error {
+  background: #e85600 !important;
+  color: #fff;
+}
+
+.c-hand {
+  cursor: pointer;
+}
+
+.c-move {
+  cursor: move;
+}
+
+.c-zoom-in {
+  cursor: zoom-in;
+}
+
+.c-zoom-out {
+  cursor: zoom-out;
+}
+
+.c-not-allowed {
+  cursor: not-allowed;
+}
+
+.c-auto {
+  cursor: auto;
+}
+
