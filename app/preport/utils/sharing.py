@@ -44,7 +44,7 @@ class Sharepoint(Abstract):
         if 'filename' in kwargs:
             f = kwargs.get('filename', 'NoFile')
             project = kwargs.get('project', '')
-            name = kwargs.get("name", "report.pdf")
+            name = kwargs.get("name", "report") + ".pdf"
             file = {name: open(f,'rb')}
             res = requests.post(self.url, params={"id": project}, files=file, headers={"x-functions-key": self.credentials})
             res.raise_for_status()
