@@ -26,7 +26,6 @@
               <li class="breadcrumb-item"><a href="{% url 'product_view' DB_finding_query.report.product.pk %}">{{ DB_finding_query.report.product.name | bleach}}</a></li>
               <li class="breadcrumb-item"><a href="{% url 'report_view' DB_finding_query.report.pk %}">{{ DB_finding_query.report.title}}</a></li>
               <li class="breadcrumb-item"><a href="{% url 'finding_view' DB_finding_query.pk %}">{{ DB_finding_query.title | bleach}}</a></li>
-              <li class="breadcrumb-item"><a href="{% url 'report_view' DB_report_query.pk %}">{{ DB_report_query.title}}</a></li>
             </ol>
           </div>
         </div>

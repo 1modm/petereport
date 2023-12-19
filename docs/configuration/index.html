@@ -291,20 +291,6 @@
 
             
           
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../django/" class="md-nav__link">
-        Django
-      </a>
-    </li>
-  
-
-            
-          
         </ul>
       </nav>
     </li>
@@ -697,7 +683,7 @@
 <p>Report information and media host configuration:</p>
 <ul>
 <li><strong>BASE64</strong>: Stores images in Database</li>
-<li><strong>MEDIA</strong>: Stores the images in the server (it is recommended to restrict the access to the server and encrypt the data to mitigate the leak or disclosure of the evidences). The path is not protected, must be set 'debug': True. This is highly insecure and not encouraged for production use. Should be configured the web server (apache, nginx, etc) to serve the media content using a protected link.</li>
+<li><strong>MEDIA</strong>: Stores the images in the server (it is recommended to restrict the access to the server and encrypt the data to mitigate the leak or disclosure of the evidences). The path is not protected. This is highly insecure and not encouraged for production use. Should be configured the web server (apache, nginx, etc) to serve the media content using a protected link.</li>
 </ul>
 <pre><code>PETEREPORT_MARKDOWN = {
     'author': 'Pentest company',

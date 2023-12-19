@@ -36,7 +36,7 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 - [x] PDF Output format
 - [x] Jupyter Notebook Output format
 - [x] Markdown Output format
-- [x] CVSS 3.1 Score
+- [x] CVSS 4 Score
 - [x] Docker installation
 - [x] DefectDojo integration
 - [x] User management
@@ -52,10 +52,7 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 
 ## Demo
 
-[Demo](http://1modm.pythonanywhere.com/) **admin/P3t3r3p0rt**
-
-<video src="https://raw.githubusercontent.com/1modm/petereport/main/images/demo.webm" controls></video>
-
+[Demo](https://petereport.mpsec.eu/) **admin/P3t3r3p0rt**
 
 
 ## Sample Reports
