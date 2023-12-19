@@ -14,15 +14,11 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
   <br>
 </h1>
 
-
 ## Documentation
 
 [Documentation](https://1modm.github.io/petereport/)
 
-### Installation and deployment
-
-- [Docker](https://1modm.github.io/petereport/docker/)
-- [Django](https://1modm.github.io/petereport/django/)
+[Installation and deployment](https://1modm.github.io/petereport/docker/)
 
 ## Features
 
