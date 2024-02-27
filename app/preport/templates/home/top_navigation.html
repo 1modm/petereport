@@ -45,11 +45,14 @@
       </li>
 
       <li class="nav-item">
-        <a class="nav-link" href="/accounts/logout/" role="button">
-          <i class="fas fa-sign-out-alt"></i> {% translate "Logout" %} {{ request.user }} {% translate "session" %}
-        </a>
+        <form id="logout-form" method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <a class="nav-link" role="button" href="#" onclick="document.getElementById('logout-form').submit(); return false;">
+            <i class="fas fa-sign-out-alt"></i> {% translate "Logout" %} {{ request.user }} {% translate "session" %}
+          </a>
+        </form>
       </li>
-
+  
     </ul>
 
   </nav>

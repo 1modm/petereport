@@ -66,7 +66,7 @@ def markdown_uploader(request):
     Makdown image upload for locale storage
     and represent as json to markdown editor.
     """
-    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if 'markdown-image-upload' in request.FILES:
             image = request.FILES['markdown-image-upload']
             image_types = [
