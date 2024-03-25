@@ -15,7 +15,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django_sendfile import sendfile
 from dal import autocomplete
 from taggit.models import Tag
-import uuid, time
+import uuid
+import time
 
 import preport.utils.fts as ufts
 import preport.utils.urls as uurls
@@ -40,7 +41,6 @@ import textwrap
 import requests
 import base64
 import bleach
-import uuid
 import json
 import csv
 import io
