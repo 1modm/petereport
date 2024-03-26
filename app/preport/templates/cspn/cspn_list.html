@@ -10,131 +10,124 @@
 {% endblock stylesheets %}
 
 {% block content %}
-
-  <section class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1>{% translate "CSPN Evaluations List" %}</h1>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
-            <li class="breadcrumb-item active">{% translate Status %} {% translate "CSPN Evaluations" %}</a></li>
-          </ol>
-        </div>
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>{% translate "CSPN Evaluations List" %}</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
+          <li class="breadcrumb-item active">{% translate Status %} {% translate "CSPN Evaluations" %}</a></li>
+        </ol>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
+<section class="content">
 
-  <section class="content">
+  <div class="container-fluid">
+    <div class="card card-outline card-danger">
+      <div class="card-header">
+        <h3 class="card-title">{{ count_cspn_query }} {% translate Status %} {% translate "CSPN Evaluations" %}</h3>
 
-    <div class="container-fluid">
-      <div class="card card-outline card-danger">
-        <div class="card-header">
-          <h3 class="card-title">{{ count_cspn_query }} {% translate Status %} {% translate "CSPN Evaluations" %}</h3>
+        <div class="card-tools">
+          <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+            <i class="fas fa-minus"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12">
+            <table id="cspnlist" class="table table-bordered table-hover">
 
-          <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-              <i class="fas fa-minus"></i>
-            </button>
+              <thead>
+                <tr>
+                  <th style="width: 60%">{% translate "Stage" %}</th>
+                  <th style="width: 10%">{% translate "Status" %}</th>
+                  <th style="width: 30%"class="text-center">{% translate "Actions" %}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for cspn in DB_cspn_query %}
+                <tr>
+                        <td>
+                          {{ cspn.stage.get_label  | bleach }}
+                        </td>
+                        <td>
+                          {% if cspn.status == "Evaluated" %}
+                              <b><font color="green">Evaluated</font></b>
+                          {% else %}
+                              <b><font color="orange">Not Evaluated</font></b>
+                          {% endif %}
+
+                        </td>
+                        <td align="center">
+                          <a href="{% url 'cspn_view' cspn.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
+
+                          {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                            <a href="{% url 'cspn_edit' cspn.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
+                            <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{cspn.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
+                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{cspn.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
+                          {% endif %}
+
+                      </td>
+                </tr>
+
+                <div class="modal modal-danger fade mm-modal-{{cspn.pk}}" id="modal-danger">
+                  <div class="modal-dialog">
+                    <div class="modal-content bg-danger">
+                      <div class="modal-header">
+                        <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p>{% translate "Delete CSPN Evaluation" %}&hellip;</p>
+                      </div>
+                      <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                        <button type="button" onclick="DeleteID({{cspn.pk}});" class="btn btn-outline-light">{% translate "Delete CSPN Evaluation" %}</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="modal modal-warning fade mm-modal-clone-{{cspn.pk}}" id="modal-warning">
+                  <div class="modal-dialog">
+                    <div class="modal-content bg-warning">
+                      <div class="modal-header">
+                        <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p>{% translate "Clone CSPN Evaluation" %}&hellip;</p>
+                      </div>
+                      <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
+                        <button type="button" onclick="DuplicateID({{cspn.pk}});" class="btn btn-outline-light">{% translate "Clone CSPN Evaluation" %}</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {% endfor %}
+
+              </tbody>
+            </table>
           </div>
         </div>
-        <div class="card-body">
-
-          <div class="row">
-            <div class="col-md-12">
-
-                  <table id="cspnlist" class="table table-bordered table-hover">
-
-                        <thead>
-                          <tr>
-                            <th style="width: 60%">{% translate "Stage" %}</th>
-                            <th style="width: 10%">{% translate "Status" %}</th>
-                            <th style="width: 30%"class="text-center">{% translate "Actions" %}</th>
-                          </tr>
-                        </thead>
-
-                        <tbody>
-                          {% for cspn in DB_cspn_query %}
-                          <tr>
-                                  <td>
-                                    {{ cspn.stage.get_label  | bleach }}
-                                  </td>
-                                  <td>
-                                    {% if cspn.status == "Evaluated" %}
-                                        <b><font color="green">Evaluated</font></b>
-                                    {% else %}
-                                        <b><font color="orange">Not Evaluated</font></b>
-                                    {% endif %}
-
-                                  </td>
-                                  <td align="center">
-                                    <a href="{% url 'cspn_view' cspn.pk %}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder"></i> {% translate "View" %}</button></a>
-
-                                    {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                                      <a href="{% url 'cspn_edit' cspn.pk %}"><button type="button" class="btn btn-info btn-sm"><i class="fa fa-edit"></i> {% translate "Edit" %}</button></a>
-                                      <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-{{cspn.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
-                                      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-{{cspn.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
-                                    {% endif %}
-
-                                </td>
-                          </tr>
-
-                          <div class="modal modal-danger fade mm-modal-{{cspn.pk}}" id="modal-danger">
-                            <div class="modal-dialog">
-                              <div class="modal-content bg-danger">
-                                <div class="modal-header">
-                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
-                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                  </button>
-                                </div>
-                                <div class="modal-body">
-                                  <p>{% translate "Delete CSPN Evaluation" %}&hellip;</p>
-                                </div>
-                                <div class="modal-footer justify-content-between">
-                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
-                                  <button type="button" onclick="DeleteID({{cspn.pk}});" class="btn btn-outline-light">{% translate "Delete CSPN Evaluation" %}</button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="modal modal-warning fade mm-modal-clone-{{cspn.pk}}" id="modal-warning">
-                            <div class="modal-dialog">
-                              <div class="modal-content bg-warning">
-                                <div class="modal-header">
-                                  <h4 class="modal-title">{% translate "Are you sure?" %}</h4>
-                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                  </button>
-                                </div>
-                                <div class="modal-body">
-                                  <p>{% translate "Clone CSPN Evaluation" %}&hellip;</p>
-                                </div>
-                                <div class="modal-footer justify-content-between">
-                                  <button type="button" class="btn btn-outline-light" data-dismiss="modal">{% translate "Close" %}</button>
-                                  <button type="button" onclick="DuplicateID({{cspn.pk}});" class="btn btn-outline-light">{% translate "Clone CSPN Evaluation" %}</button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {% endfor %}
-
-                        </tbody>
-                      </table>
-
-                </div>
-               </div>
-
-        </div>
       </div>
     </div>
-  </section>
-
+  </div>
+</section>
 
 
 {% endblock content %}
@@ -144,14 +137,65 @@
 
 <script>
   $(function () {
+    $('#cspnlist thead tr')
+    .clone(true)
+    .addClass('filters')
+    .appendTo('#cspnlist thead');
     $("#cspnlist").DataTable({
       "paging": true,
       "searching": true,
       "responsive": true,
       "lengthChange": false,
       "autoWidth": false,
+      "orderCellsTop": true,
+      "fixedHeader": true,
+      initComplete: function () {
+        var api = this.api();
+
+        // For each column
+        api
+          .columns()
+          .eq(0)
+          .each(function (colIdx) {
+              // Set the header cell to contain the input element
+              var cell = $('.filters th').eq(
+                $(api.column(colIdx).header()).index()
+              );
+              var title = $(cell).text().trim();
+              if(title != "{% translate 'Actions' %}"){
+                $(cell).html('<input type="text" placeholder="' + title + '" />');
+
+                // On every keypress in this input
+                $('input',
+                    $('.filters th').eq($(api.column(colIdx).header()).index())
+                ).off('keyup change')
+                  .on('change', function (e) {
+                    // Get the search value
+                    $(this).attr('title', $(this).val());
+                    var regexr = '({search})';
+                    var cursorPosition = this.selectionStart;
+                    // Search the column for that value
+                    api.column(colIdx)
+                        .search(
+                        this.value != '' ? regexr.replace('{search}', '(((' + this.value + ')))') : '',
+                        this.value != '',
+                        this.value == ''
+                        )
+                        .draw();
+                    })
+                    .on('keyup', function (e) {
+                      e.stopPropagation();
+                      $(this).trigger('change');
+                      $(this)
+                        .focus()[0]
+                        .setSelectionRange(cursorPosition, cursorPosition);
+                    });
+                } else {
+                  $(cell).html('');
+                };
+              });
+      },
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
-      order: [[ 3, 'desc' ], [ 1, 'asc' ], [ 0, 'asc' ]]
     }).buttons().container().appendTo('#cspnlist_wrapper .col-md-6:eq(0)');
   });
 </script>
