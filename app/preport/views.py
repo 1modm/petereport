@@ -1799,10 +1799,10 @@ def cspn_add(request,pk):
             cspn.cspn_id = uuid.uuid4()
             cspn.save()
             form.save_m2m() # Save tags
-            if '_finish' in request.POST:
-                return redirect('report_cspn_evaluations', pk=pk)
-            elif '_next' in request.POST:
+            if '_next' in request.POST:
                 return redirect('cspn_add', pk=pk)
+            else:
+                return redirect('report_cspn_evaluations', pk=pk)
 
     else:
         form = NewCSPNEvaluationForm()
@@ -1884,10 +1884,11 @@ def cspn_edit(request,pk):
             cspn = form.save(commit=False)
             cspn.save()
             form.save_m2m() # Save tags
-            if '_finish' in request.POST:
-                return redirect('report_cspn_evaluations', pk=report.pk)
-            elif '_next' in request.POST:
+
+            if '_next' in request.POST:
                 return redirect('cspn_add', pk=report.pk)
+            else:
+                 return redirect('report_cspn_evaluations', pk=report.pk)
 
     else:
         form = NewCSPNEvaluationForm(instance=cspn)
@@ -1945,10 +1946,11 @@ def finding_add(request,pk):
             finding.finding_id = uuid.uuid4()
             finding.save()
             form.save_m2m() # Save tags
-            if '_finish' in request.POST:
-                return redirect('report_findings', pk=pk)
-            elif '_next' in request.POST:
+
+            if '_next' in request.POST:
                 return redirect('finding_add', pk=pk)
+            else:
+                return redirect('report_findings', pk=pk)
 
     else:
         form = NewFindingForm()
@@ -1977,10 +1979,11 @@ def finding_edit(request,pk):
             finding = form.save(commit=False)
             finding.save()
             form.save_m2m() # Save tags
-            if '_finish' in request.POST:
-                return redirect('report_findings', pk=report.pk)
-            elif '_next' in request.POST:
+            
+            if '_next' in request.POST:
                 return redirect('finding_add', pk=report.pk)
+            else:
+                return redirect('report_findings', pk=report.pk)
 
     else:
         form = NewFindingForm(instance=finding)
@@ -2373,10 +2376,10 @@ def appendix_add(request,pk):
             appendix.save()
             appendix.finding.add(finding_pk)
 
-            if '_finish' in request.POST:
-                return redirect('report_appendix', pk=pk)
-            elif '_next' in request.POST:
+            if '_next' in request.POST:
                 return redirect('appendix_add', pk=pk)
+            else:
+                return redirect('report_appendix', pk=pk)
     else:
         form = NewAppendixForm(reportpk=pk)
         form.fields['description'].initial = ''
@@ -2408,10 +2411,10 @@ def appendix_edit(request,pk):
             appendix.save()
             appendix.finding.set(New_DB_finding, clear=True)
 
-            if '_finish' in request.POST:
-                return redirect('report_appendix', pk=report.pk)
-            elif '_next' in request.POST:
+            if '_next' in request.POST:
                 return redirect('appendix_add', pk=report.pk)
+            else:
+                return redirect('report_appendix', pk=report.pk)
     else:
         form = NewAppendixForm(reportpk=report.pk, instance=appendix, initial={'finding': finding_pk})
 
@@ -2470,10 +2473,10 @@ def field_add(request,pk):
             custom_field.finding = DB_finding_query
             custom_field.save()
 
-            if '_finish' in request.POST:
-                return redirect('finding_view', pk=pk)
-            elif '_next' in request.POST:
+            if '_next' in request.POST:
                 return redirect('field_add', pk=pk)
+            else:
+                return redirect('finding_view', pk=pk)
     else:
         form = NewFieldForm()
         form.fields['description'].initial = ''
@@ -2540,10 +2543,11 @@ def template_add(request):
             template.finding_id = uuid.uuid4()
             template.save()
             form.save_m2m() # Save tags
-            if '_finish' in request.POST:
-                return redirect('template_list')
-            elif '_next' in request.POST:
+            
+            if '_next' in request.POST:
                 return redirect('template_add')
+            else:
+                return redirect('template_list')
     else:
         form = NewFindingTemplateForm()
         form.fields['description'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
@@ -2570,10 +2574,11 @@ def template_edit(request, pk):
             template = form.save(commit=False)
             template.save()
             form.save_m2m() # Save tags
-            if '_finish' in request.POST:
-                return redirect('template_list')
-            elif '_next' in request.POST:
+
+            if '_next' in request.POST:
                 return redirect('template_add')
+            else:
+                return redirect('template_list')
     else:
         form = NewFindingTemplateForm(instance=template)
 

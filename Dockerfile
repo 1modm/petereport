@@ -27,7 +27,7 @@ RUN apt -y install pipenv
 RUN apt -y purge python3-gunicorn gunicorn
 
 ARG TARGETARCH
-ARG PANDOC_VERSION=3.1.9
+ARG PANDOC_VERSION=3.1.12.3
 RUN wget https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-${TARGETARCH}.deb
 RUN dpkg -i pandoc-${PANDOC_VERSION}-1-${TARGETARCH}.deb && rm -f pandoc-${PANDOC_VERSION}-1-${TARGETARCH}.deb
 

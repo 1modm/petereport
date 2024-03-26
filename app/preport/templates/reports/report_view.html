@@ -25,7 +25,11 @@
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
               <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report_query.product.customer.pk %}">{{ DB_report_query.product.customer.name | bleach}}</a></li>
               <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report_query.product.pk %}">{{ DB_report_query.product.name | bleach}}</a></li>
-              <li class="breadcrumb-item active">{{ DB_report_query.title | bleach}}</li>
+              <li class="breadcrumb-item active">
+                {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                  <a href="{% url 'customer_edit' DB_report_query.pk %}" class="fas fa-pencil-alt">&nbsp;</a>
+                {% endif %}
+                {{ DB_report_query.title | bleach}}</li>
             </ol>
           </div>
         </div>

@@ -23,7 +23,11 @@
           <li class="breadcrumb-item"><a href="{% url 'customer_view' DB_report.product.customer.pk %}">{{ DB_report.product.customer.name}}</a></li>
           <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report.product.pk %}">{{ DB_report.product.name}}</a></li>
           <li class="breadcrumb-item"><a href="{% url 'report_view' DB_report.pk %}">{{ DB_report.title}}</a></li>
-          <li class="breadcrumb-item active">{% translate "Add CSPN Evaluation" %}</a></li>
+          <li class="breadcrumb-item active">
+            {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+              <a href="javascript: document.getElementById('form-object').submit();" class="fas fa-save">&nbsp;</a>
+            {% endif %}
+          {% translate "Add CSPN Evaluation" %}</a></li>
         </ol>
       </div>
     </div>
@@ -42,7 +46,7 @@
               </div>
 
 
-              <form role="form" method="post" enctype="multipart/form-data">
+              <form role="form" method="post" enctype="multipart/form-data" id="form-object">
                 {% csrf_token %}
                 <div class="card-body">
 

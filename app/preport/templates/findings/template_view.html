@@ -22,7 +22,11 @@
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/">{% translate "Home" %}</a></li>
               <li class="breadcrumb-item"><a href="{% url 'template_list' %}">{% translate "Templates" %}</a></li>
-              <li class="breadcrumb-item active">{{ DB_Template.title | bleach}}</li>
+              <li class="breadcrumb-item active">
+                {% if user.groups.all.0|stringformat:'s' == "administrator" %}
+                  <a href="{% url 'template_edit' DB_Template.pk %}" class="fas fa-pencil-alt">&nbsp;</a>
+                {% endif %}
+                {{ DB_Template.title | bleach}}</li>
             </ol>
           </div>
         </div>

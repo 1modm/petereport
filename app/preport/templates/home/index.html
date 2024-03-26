@@ -20,7 +20,7 @@
 
       <div class="row">
         <div class="col-lg-2 col-xs-6">
-
+          <a style="display:block" href="{% url 'customer_list' %}">
           <div class="small-box bg-purple">
             <div class="inner">
               <h3>{{total_customers}}</h3>
@@ -30,10 +30,11 @@
               <i class="fas fa-building"></i>
             </div>
           </div>
+          </a>
         </div>
 
         <div class="col-lg-2 col-xs-6">
-
+          <a style="display:block" href="{% url 'product_list' %}">
           <div class="small-box bg-info">
             <div class="inner">
               <h3>{{total_products}}</h3>
@@ -43,10 +44,11 @@
               <i class="fas fa-cube"></i>
             </div>
           </div>
+          </a>
         </div>
 
         <div class="col-lg-2 col-xs-6">
-
+          <a style="display:block" href="{% url 'report_list' %}">
           <div class="small-box bg-green">
             <div class="inner">
               <h3>{{total_reports}}</h3>
@@ -56,10 +58,11 @@
               <i class="fa fa-file-code"></i>
             </div>
           </div>
+          </a>
         </div>
 
         <div class="col-lg-3 col-xs-6">
-
+          <a style="display:block" href="{% url 'finding_list' %}">
           <div class="small-box bg-yellow">
             <div class="inner">
               <h3>{{count_product_findings_total}}</h3>
@@ -69,10 +72,11 @@
               <i class="fa fa-bug"></i>
             </div>
           </div>
+          </a>
         </div>
 
         <div class="col-lg-3 col-xs-6">
-
+          <a style="display:block" href="{% url 'finding_list' %}">
           <div class="small-box bg-red">
             <div class="inner">
               <h3>{{count_product_findings_critical_high}}</h3>
@@ -83,7 +87,7 @@
             </div>
           </div>
         </div>
-
+        </a>
       </div>
 
 
