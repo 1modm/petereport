@@ -29,7 +29,7 @@
               <li class="breadcrumb-item"><a href="{% url 'report_view' finding.report.pk %}">{{ finding.report.title}}</a></li>
               <li class="breadcrumb-item active">
                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                  <a href="{% url 'finding_edit' finding.pk %}" class="fas fa-pencil-alt">&nbsp;</a>
+                  <a href="{% url 'finding_edit' finding.pk %}#{{ finding.get_cvss_score_anchor }}" class="fas fa-pencil-alt">&nbsp;</a>
                 {% endif %}
                 {{ finding.title | bleach }}</li>
 
@@ -37,7 +37,7 @@
           </div>
         </div>
 
-         <br>
+        <br>
 
         <div class="row">
             <div class="col-md-7">
@@ -122,8 +122,12 @@
                       <div class="col-12 col-sm-4">
                         <div class="info-box bg-light">
                           <div class="info-box-content">
-                            <span class="info-box-number text-center text-muted">{% translate "CVSS Score" %}</span>
-                            <span class="info-box-text text-center text-muted mb-0">{{ finding.cvss_base_score | safe | bleach}}<span>
+                            <span class="info-box-number text-center text-muted">{% translate "CVSS Score" %} (Version {{finding.report.cvss_version|safe}})</span>
+                            <span class="info-box-text text-center text-muted mb-0">
+                              <a href="https://www.first.org/cvss/calculator/{{finding.report.cvss_version|safe}}#{{finding.get_cvss_score_anchor|safe}}">
+                                {{ finding.cvss_base_score | safe}}
+                              <a/>
+                            <span>
                           </span></span></div>
                         </div>
                       </div>
@@ -182,7 +186,7 @@
             <div class="card card-outline card-danger">
                 <div class="card-header">
                   <h3 class="card-title">
-                   <b>{% translate "Title" %}</b>
+                    <b>{% translate "Title" %}</b>
                   </h3>
                   <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">

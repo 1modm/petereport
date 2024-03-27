@@ -37,7 +37,7 @@
 
           {% if user.groups.all.0|stringformat:'s' == "administrator" %}
             <a href="{% url 'finding_add' DB_report_query.pk %}"><button type="button" class="btn btn-danger"><i class="fa fa-edit"></i> {% translate "Add Finding" %}</button></a>
-            <a href="{% url 'template_add_finding' DB_report_query.pk %}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Add Finding from template" %}</button></a>
+            <a href="{% url 'template_add_finding' DB_report_query.pk DB_report_query.cvss_version%}"><button type="button" class="btn btn-warning"><i class="fa fa-edit"></i> {% translate "Add Finding from template" %}</button></a>
             <a href="{% url 'findings_upload_csv' DB_report_query.pk %}"><button type="button" class="btn btn-info"><i class="fa fa-upload"></i> {% translate "Upload Findings" %}</button></a>
             <a href="{% url 'defectdojo_products' DB_report_query.pk %}"><button type="button" class="btn btn-success"><i class="fa fa-upload"></i> {% translate "Import Findings from DefectDojo" %}</button></a>
           {% endif %}
@@ -210,12 +210,64 @@
 
 <script>
   $(function () {
+    $('#findinglist thead tr')
+    .clone(true)
+    .addClass('filters')
+    .appendTo('#findinglist thead');
     $("#findinglist").DataTable({
       "paging": true,
       "searching": true,
       "responsive": true,
       "lengthChange": false,
       "autoWidth": false,
+      "orderCellsTop": true,
+      "fixedHeader": true,
+      initComplete: function () {
+        var api = this.api();
+
+        // For each column
+        api
+          .columns()
+          .eq(0)
+          .each(function (colIdx) {
+              // Set the header cell to contain the input element
+              var cell = $('.filters th').eq(
+                $(api.column(colIdx).header()).index()
+              );
+              var title = $(cell).text().trim();
+              if(title != "{% translate 'Actions' %}"){
+                $(cell).html('<input type="text" placeholder="' + title + '" />');
+
+                // On every keypress in this input
+                $('input',
+                    $('.filters th').eq($(api.column(colIdx).header()).index())
+                ).off('keyup change')
+                  .on('change', function (e) {
+                    // Get the search value
+                    $(this).attr('title', $(this).val());
+                    var regexr = '({search})';
+                    var cursorPosition = this.selectionStart;
+                    // Search the column for that value
+                    api.column(colIdx)
+                        .search(
+                        this.value != '' ? regexr.replace('{search}', '(((' + this.value + ')))') : '',
+                        this.value != '',
+                        this.value == ''
+                        )
+                        .draw();
+                    })
+                    .on('keyup', function (e) {
+                      e.stopPropagation();
+                      $(this).trigger('change');
+                      $(this)
+                        .focus()[0]
+                        .setSelectionRange(cursorPosition, cursorPosition);
+                    });
+                } else {
+                  $(cell).html('');
+                };
+              });
+      },
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#findinglist_wrapper .col-md-6:eq(0)');
   });

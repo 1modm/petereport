@@ -81,9 +81,10 @@ urlpatterns = [
     # Templates
     path('template/list/', views.template_list, name='template_list'),
     path('template/add/', views.template_add, name='template_add'),
-    path('template/add/finding/<int:pk>', views.template_add_finding, name='template_add_finding'),
+    path('template/add/finding/<int:pk>/<str:cvssversion>', views.template_add_finding, name='template_add_finding'),
     path('template/add/report/<int:pk>/<int:reportpk>', views.template_add_report, name='template_add_report'),
     path('template/view/<int:pk>', views.template_view, name='template_view'),
+    path('template/duplicate/', views.template_duplicate, name='template_duplicate'),
     path('template/delete/', views.template_delete, name='template_delete'),
     path('template/edit/<int:pk>', views.template_edit, name='template_edit'),
     # Deliverables

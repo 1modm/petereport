@@ -6,10 +6,10 @@ from django.forms import Textarea, TextInput, DateInput, ModelChoiceField, Check
 from .models import DB_ShareConnection, DB_Report, DB_Settings, DB_Finding, DB_Customer, DB_Product, DB_Finding_Template, DB_Appendix, DB_CWE, DB_OWASP, DB_AttackTree, DB_Custom_field, DB_FTSModel, DB_CSPN_Evaluation_Stage, DB_CSPN_Evaluation
 
 from django.utils.translation import gettext_lazy as _
-import preport.utils.fts as ufts
 from preport.utils.sharing import shares_deliverable, shares_finding
 from dal import autocomplete
 
+from petereport.settings import CVSS_VERSIONS_CHOICE
 import datetime
 
 
@@ -76,20 +76,25 @@ class ShareChoiceField(ModelChoiceField):
 class NewReportForm(forms.ModelForm):
 
     product_placeholder = _('(Select a product)')
-    product = CustomModelChoiceField(queryset=DB_Product.objects.all(
-    ), empty_label=product_placeholder, widget=forms.Select(attrs={'class': 'form-control'}))
+    product = CustomModelChoiceField(queryset=DB_Product.objects.all(),
+                                      empty_label=product_placeholder,
+                                      widget=forms.Select(attrs={'class': 'form-control'}))
 
     share_deliverable = ShareChoiceField(queryset=DB_ShareConnection.objects.all().filter(
         type="deliverable"), empty_label=_("None"), widget=forms.Select(attrs={'class': 'form-control'}), required=False)
     share_finding = ShareChoiceField(queryset=DB_ShareConnection.objects.all().filter(
         type="finding"), empty_label=_("None"), widget=forms.Select(attrs={'class': 'form-control'}), required=False)
+    
+
+    cvss_version = forms.ChoiceField(choices=CVSS_VERSIONS_CHOICE, required=True, widget=forms.Select(attrs={
+                             'class': 'form-control', 'id': 'selectcvssversion', 'onchange': 'TypeChange(this.value);', 'type': "text", 'required': "required"}))
 
     class Meta:
         today = datetime.date.today().strftime('%Y-%m-%d')
         nowformat = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
         model = DB_Report
         fields = ('product', 'report_id', 'title', 'classification', 'version', 'status', 'approver', 'author',
-                  'report_date', 'audit_start', 'audit_end', 'share_deliverable', 'share_finding',
+                  'report_date', 'audit_start', 'audit_end', 'cvss_version', 'share_deliverable', 'share_finding',
                   'executive_summary', 'audit_objectives', 'scope', 'outofscope', 'methodology', 'recommendation', 'tags')
         widgets = {
             'report_id': TextInput(attrs={'class': 'form-control', 'type': "text", 'required': "required"}),
@@ -213,6 +218,7 @@ class NewFindingTemplateForm(forms.ModelForm):
 
     severity = forms.ChoiceField(choices=severity_choices, required=True, widget=forms.Select(
         attrs={'class': 'form-control', 'type': "text", 'required': "required", 'placeholder': _("Critical/High/Medium/Low/Info/None")}))
+    
     cwe = CWEModelChoiceField(queryset=DB_CWE.objects.all(), empty_label=_(
         "(Select a CWE ID)"), widget=forms.Select(attrs={'class': 'form-control select2CWE'}))
     owasp = OWASPModelChoiceField(queryset=DB_OWASP.objects.all(), empty_label=_(

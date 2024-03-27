@@ -27,7 +27,7 @@
               <li class="breadcrumb-item"><a href="{% url 'product_view' DB_report_query.product.pk %}">{{ DB_report_query.product.name | bleach}}</a></li>
               <li class="breadcrumb-item active">
                 {% if user.groups.all.0|stringformat:'s' == "administrator" %}
-                  <a href="{% url 'customer_edit' DB_report_query.pk %}" class="fas fa-pencil-alt">&nbsp;</a>
+                  <a href="{% url 'report_edit' DB_report_query.pk %}" class="fas fa-pencil-alt">&nbsp;</a>
                 {% endif %}
                 {{ DB_report_query.title | bleach}}</li>
             </ol>
@@ -244,7 +244,7 @@
                     <div class="col-12 col-sm-4">
                       <div class="info-box bg-light">
                         <div class="info-box-content">
-                          <span class="info-box-number text-center text-muted">{% translate "Findings" %}</span>
+                          <span class="info-box-number text-center text-muted">{% translate "Findings" %} ({% translate "CVSS Version" %} {{ DB_report_query.cvss_version | safe | bleach}})</span>
                           <span class="info-box-text text-center text-muted mb-0">{{ count_finding_query | safe | bleach}}</span>
                         </div>
                       </div>
@@ -821,7 +821,7 @@
 
                       {% else %}
 
-                      <table id="attackt" class="table table-bordered table-hover">
+                      <table id="attacklist" class="table table-bordered table-hover">
 
                         <thead>
                           <tr>
@@ -1069,12 +1069,64 @@
 
 <script>
   $(function () {
+    $('#findinglist thead tr')
+    .clone(true)
+    .addClass('ffilters')
+    .appendTo('#findinglist thead');
     $("#findinglist").DataTable({
       "paging": true,
       "searching": true,
       "responsive": true,
       "lengthChange": false,
       "autoWidth": false,
+      "orderCellsTop": true,
+      "fixedHeader": true,
+      initComplete: function () {
+        var api = this.api();
+
+        // For each column
+        api
+          .columns()
+          .eq(0)
+          .each(function (colIdx) {
+              // Set the header cell to contain the input element
+              var cell = $('.ffilters th').eq(
+                $(api.column(colIdx).header()).index()
+              );
+              var title = $(cell).text().trim();
+              if(title != "{% translate 'Actions' %}"){
+                $(cell).html('<input type="text" placeholder="' + title + '" />');
+
+                // On every keypress in this input
+                $('input',
+                    $('.ffilters th').eq($(api.column(colIdx).header()).index())
+                ).off('keyup change')
+                  .on('change', function (e) {
+                    // Get the search value
+                    $(this).attr('title', $(this).val());
+                    var regexr = '({search})';
+                    var cursorPosition = this.selectionStart;
+                    // Search the column for that value
+                    api.column(colIdx)
+                        .search(
+                        this.value != '' ? regexr.replace('{search}', '(((' + this.value + ')))') : '',
+                        this.value != '',
+                        this.value == ''
+                        )
+                        .draw();
+                    })
+                    .on('keyup', function (e) {
+                      e.stopPropagation();
+                      $(this).trigger('change');
+                      $(this)
+                        .focus()[0]
+                        .setSelectionRange(cursorPosition, cursorPosition);
+                    });
+                } else {
+                  $(cell).html('');
+                };
+              });
+      },
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
       order: [[ 3, 'desc' ], [ 1, 'asc' ], [ 0, 'asc' ]]
     }).buttons().container().appendTo('#findinglist_wrapper .col-md-6:eq(0)');
@@ -1083,12 +1135,64 @@
 
 <script>
   $(function () {
+    $('#appendixlist thead tr')
+    .clone(true)
+    .addClass('afilters')
+    .appendTo('#appendixlist thead');
     $("#appendixlist").DataTable({
       "paging": true,
       "searching": true,
       "responsive": true,
       "lengthChange": false,
       "autoWidth": false,
+      "orderCellsTop": true,
+      "fixedHeader": true,
+      initComplete: function () {
+        var api = this.api();
+
+        // For each column
+        api
+          .columns()
+          .eq(0)
+          .each(function (colIdx) {
+              // Set the header cell to contain the input element
+              var cell = $('.afilters th').eq(
+                $(api.column(colIdx).header()).index()
+              );
+              var title = $(cell).text().trim();
+              if(title != "{% translate 'Actions' %}"){
+                $(cell).html('<input type="text" placeholder="' + title + '" />');
+
+                // On every keypress in this input
+                $('input',
+                    $('.afilters th').eq($(api.column(colIdx).header()).index())
+                ).off('keyup change')
+                  .on('change', function (e) {
+                    // Get the search value
+                    $(this).attr('title', $(this).val());
+                    var regexr = '({search})';
+                    var cursorPosition = this.selectionStart;
+                    // Search the column for that value
+                    api.column(colIdx)
+                        .search(
+                        this.value != '' ? regexr.replace('{search}', '(((' + this.value + ')))') : '',
+                        this.value != '',
+                        this.value == ''
+                        )
+                        .draw();
+                    })
+                    .on('keyup', function (e) {
+                      e.stopPropagation();
+                      $(this).trigger('change');
+                      $(this)
+                        .focus()[0]
+                        .setSelectionRange(cursorPosition, cursorPosition);
+                    });
+                } else {
+                  $(cell).html('');
+                };
+              });
+      },
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#appendixlist_wrapper .col-md-6:eq(0)');
   });
@@ -1096,14 +1200,131 @@
 
 <script>
   $(function () {
-    $("#attackt").DataTable({
+    $('#attacklist thead tr')
+    .clone(true)
+    .addClass('atfilters')
+    .appendTo('#attacklist thead');
+    $("#attacklist").DataTable({
       "paging": true,
       "searching": true,
       "responsive": true,
       "lengthChange": false,
       "autoWidth": false,
+      "orderCellsTop": true,
+      "fixedHeader": true,
+      initComplete: function () {
+        var api = this.api();
+
+        // For each column
+        api
+          .columns()
+          .eq(0)
+          .each(function (colIdx) {
+              // Set the header cell to contain the input element
+              var cell = $('.atfilters th').eq(
+                $(api.column(colIdx).header()).index()
+              );
+              var title = $(cell).text().trim();
+              if(title != "{% translate 'Actions' %}"){
+                $(cell).html('<input type="text" placeholder="' + title + '" />');
+
+                // On every keypress in this input
+                $('input',
+                    $('.atfilters th').eq($(api.column(colIdx).header()).index())
+                ).off('keyup change')
+                  .on('change', function (e) {
+                    // Get the search value
+                    $(this).attr('title', $(this).val());
+                    var regexr = '({search})';
+                    var cursorPosition = this.selectionStart;
+                    // Search the column for that value
+                    api.column(colIdx)
+                        .search(
+                        this.value != '' ? regexr.replace('{search}', '(((' + this.value + ')))') : '',
+                        this.value != '',
+                        this.value == ''
+                        )
+                        .draw();
+                    })
+                    .on('keyup', function (e) {
+                      e.stopPropagation();
+                      $(this).trigger('change');
+                      $(this)
+                        .focus()[0]
+                        .setSelectionRange(cursorPosition, cursorPosition);
+                    });
+                } else {
+                  $(cell).html('');
+                };
+              });
+      },
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#attackt_wrapper .col-md-6:eq(0)');
+    }).buttons().container().appendTo('#attacklist_wrapper .col-md-6:eq(0)');
+  });
+</script>
+
+<script>
+  $(function () {
+    $('#deliverablelist thead tr')
+    .clone(true)
+    .addClass('dfilters')
+    .appendTo('#deliverablelist thead');
+    $("#deliverablelist").DataTable({
+      "paging": true,
+      "searching": true,
+      "responsive": true,
+      "lengthChange": false,
+      "autoWidth": false,
+      "orderCellsTop": true,
+      "fixedHeader": true,
+      initComplete: function () {
+        var api = this.api();
+
+        // For each column
+        api
+          .columns()
+          .eq(0)
+          .each(function (colIdx) {
+              // Set the header cell to contain the input element
+              var cell = $('.dfilters th').eq(
+                $(api.column(colIdx).header()).index()
+              );
+              var title = $(cell).text().trim();
+              if(title != "{% translate 'Actions' %}"){
+                $(cell).html('<input type="text" placeholder="' + title + '" />');
+
+                // On every keypress in this input
+                $('input',
+                    $('.dfilters th').eq($(api.column(colIdx).header()).index())
+                ).off('keyup change')
+                  .on('change', function (e) {
+                    // Get the search value
+                    $(this).attr('title', $(this).val());
+                    var regexr = '({search})';
+                    var cursorPosition = this.selectionStart;
+                    // Search the column for that value
+                    api.column(colIdx)
+                        .search(
+                        this.value != '' ? regexr.replace('{search}', '(((' + this.value + ')))') : '',
+                        this.value != '',
+                        this.value == ''
+                        )
+                        .draw();
+                    })
+                    .on('keyup', function (e) {
+                      e.stopPropagation();
+                      $(this).trigger('change');
+                      $(this)
+                        .focus()[0]
+                        .setSelectionRange(cursorPosition, cursorPosition);
+                    });
+                } else {
+                  $(cell).html('');
+                };
+              });
+      },
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+    }).buttons().container().appendTo('#deliverablelist_wrapper .col-md-6:eq(0)');
   });
 </script>
 

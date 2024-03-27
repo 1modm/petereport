@@ -3,14 +3,15 @@ from __future__ import unicode_literals
 from django.db import models
 from martor.models import MartorField
 from multi_email_field.fields import MultiEmailField
-from django.core.validators import validate_image_file_extension
 from taggit.managers import TaggableManager
 import datetime
 import re
 
+from petereport.settings import CVSS_VERSION_DEFAULT
+
 import pathlib
 
-cvss_regex = re.compile('.+ \((CVSS:.+)\)$')
+cvss_regex = re.compile('.+ \((CVSS:(.+?)/.+)\)$')
 
 # ---------- OWASP ------------
 
@@ -161,6 +162,7 @@ class DB_Report(models.Model):
 	audit_objectives = MartorField(blank=True)
 	scope = MartorField(blank=True)
 	outofscope = MartorField(blank=True)
+	cvss_version =  models.CharField(blank=True, max_length=200, default=CVSS_VERSION_DEFAULT)
 	methodology = MartorField(blank=True)
 	recommendation = MartorField(blank=True)
 	creation_date = models.DateTimeField(auto_now_add=True)
@@ -283,6 +285,12 @@ class DB_Finding_Template(models.Model):
 		m = cvss_regex.search(self.cvss_base_score)
 		if m:
 			return m.group(1)
+	
+	def get_cvss_version(self):
+		m = cvss_regex.search(self.cvss_base_score)
+		if m:
+			return m.group(2)
+
 
 # ---------- Appendix ------------
 

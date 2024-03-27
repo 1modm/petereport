@@ -29,6 +29,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = DJANGO_CONFIG['secret_key']
 
+# CVSS Versions
+CVSS_VERSION_DEFAULT = '3.1'
+CVSS_VERSIONS_CHOICE = (
+        ('', _('(Select CVSS Version)')),
+        ('3.1', _('3.1')),
+        ('4.0', _('4.0')),)
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJANGO_CONFIG['debug']
 DJANGO_LOG_LEVEL = DJANGO_CONFIG['django_log_level']

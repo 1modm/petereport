@@ -52,7 +52,7 @@ import pypandoc
 from timeit import default_timer as timer
 
 # Martor
-from petereport.settings import BASE_DIR, DEBUG_PANDOC_ON_ERROR, MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MARTOR_MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, TEMPLATES_DIRECTORIES
+from petereport.settings import BASE_DIR, DEBUG_PANDOC_ON_ERROR, MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MARTOR_MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, TEMPLATES_DIRECTORIES, CVSS_VERSION_DEFAULT
 
 # PeTeReport config
 from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_CONFIG, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG
@@ -1962,7 +1962,8 @@ def finding_add(request,pk):
         form.fields['cwe'].initial = '-1'
         form.fields['owasp'].initial = '-1'
 
-    return render(request, 'findings/finding_add.html', {
+    cvss_version = DB_report_query.cvss_version
+    return render(request, 'findings/finding_add_' + cvss_version + '.html', {
         'form': form, 'DB_report': DB_report_query})
 
 @login_required
@@ -1987,7 +1988,8 @@ def finding_edit(request,pk):
 
     else:
         form = NewFindingForm(instance=finding)
-    return render(request, 'findings/finding_add.html', {
+    cvss_version = finding.report.cvss_version
+    return render(request, 'findings/finding_add_' + cvss_version + '.html', {
         'form': form, 'DB_report': DB_report_query
     })
 
@@ -2019,6 +2021,30 @@ def finding_duplicate(request):
             finding.save()
         except django.db.utils.IntegrityError:
             finding.finding_id = DB_Finding.objects.filter(finding_id__contains = finding.finding_id, finding_id__endswith = copy_datetime).latest("creation_date").finding_id
+            finding.finding_id = finding.finding_id + copy_datetime
+            finding.save()
+
+
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"fail"}', content_type='application/json')
+    
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def template_duplicate(request):
+
+    if request.method == 'POST':
+        duplicate_id = request.POST['duplicate_id']
+        finding = DB_Finding_Template.objects.get(pk=duplicate_id)
+        finding.pk = None
+        finding._state.adding = True
+        copy_datetime = '-COPY-' + str(datetime.datetime.utcnow().strftime('%Y%m%d%H%M'))
+        finding.finding_id = finding.finding_id + copy_datetime
+
+        try:
+            finding.save()
+        except django.db.utils.IntegrityError:
+            finding.finding_id = DB_Finding_Template.objects.filter(finding_id__contains = finding.finding_id, finding_id__endswith = copy_datetime).latest("creation_date").finding_id
             finding.finding_id = finding.finding_id + copy_datetime
             finding.save()
 
@@ -2555,9 +2581,10 @@ def template_add(request):
         form.fields['impact'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['recommendation'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
         form.fields['ref'].initial = "" #PETEREPORT_TEMPLATES['initial_text']
-        form.fields['cwe'].initial = '1'
+        form.fields['cwe'].initial = '-1'
+        form.fields['owasp'].initial = '-1'
 
-    return render(request, 'findings/template_add.html', {
+    return render(request, 'findings/template_add_' + CVSS_VERSION_DEFAULT + '.html', {
         'form': form
     })
 
@@ -2582,7 +2609,9 @@ def template_edit(request, pk):
     else:
         form = NewFindingTemplateForm(instance=template)
 
-    return render(request, 'findings/template_add.html', {
+    cvss_version = template.get_cvss_version()
+
+    return render(request, 'findings/template_add_' + cvss_version + '.html', {
         'form': form
     })
 
@@ -2611,10 +2640,12 @@ def template_view(request,pk):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def template_add_finding(request,pk):
+def template_add_finding(request, pk, cvssversion):
 
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_findings_query = DB_Finding_Template.objects.order_by('title')
+
+    template_version_ids = [template.finding_id for template in DB_Finding_Template.objects.all() if template.get_cvss_version() == cvssversion]
+    DB_findings_query = DB_Finding_Template.objects.filter(finding_id__in=template_version_ids).order_by('title')
 
     return render(request, 'findings/templateaddfinding.html', {'DB_findings_query': DB_findings_query, 'DB_report_query': DB_report_query})
 
