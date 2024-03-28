@@ -552,7 +552,7 @@
                 </div>
                 <div class="card-body">
 
-                     <div class="row">
+                    <div class="row">
                       <div class="col-md-12">
 
                       {% if count_finding_query == 0 %}
@@ -565,13 +565,15 @@
 
                         <thead>
                           <tr>
+                            <th style="width: 0%">{% translate "Order" %}</th>
                             <th style="width: 40%">{% translate "Title" %}</th>
                             <th style="width: 5%">{% translate "Status" %}</th>
                             <th style="width: 5%">{% translate "Severity" %}</th>
-                            <th style="width: 10%">{% translate "CVSS Score" %}</th>
+                            <th style="width: 5%">{% translate "CVSS Score" %}</th>
                             <th style="width: 5%">{% translate "CWE" %}</th>
                             <th style="width: 5%">{% translate "OWASP" %}</th>
                             <th style="width: 30%"class="text-center">{% translate "Actions" %}</th>
+                            <th>ID</th>
                           </tr>
                         </thead>
 
@@ -579,14 +581,15 @@
                           {% for finding in DB_finding_query %}
                           <tr>
                                   <td>
+                                    {{ finding.order }}
+                                  </td>
+                                  <td>
                                     {{ finding.title | safe_markdown | bleach}}
                                   </td>
                                   <td>
                                     {{ finding.status | safe_markdown | bleach}}
                                   </td>
-
                                   <td>
-
                                         {% if finding.severity == "Critical" %}
                                             <b><font color="#CC0000">{{ finding.severity }}</font></b>
                                         {% elif finding.severity == "High" %}
@@ -600,7 +603,6 @@
                                         {% else %}
                                             <b>{{ finding.severity }}</b> ({% translate "will not appear in the report" %})
                                         {% endif %}
-
                                   </td>
                                   <td>
                                       {{ finding.cvss_score }}
@@ -627,6 +629,9 @@
                                         <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target=".mm-modal-clone-finding{{finding.pk}}"><i class="fas fa-copy"></i> {% translate "Clone" %} </button>
                                         <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target=".mm-modal-del-finding-{{finding.pk}}"><i class="fas fa-trash"></i> {% translate "Delete" %}</button>
                                       {% endif %}
+                                  </td>
+                                  <td>
+                                    {{ finding.finding_id }}
                                   </td>
                           </tr>
 
@@ -1066,20 +1071,54 @@
     );
 </script>
 
-
 <script>
   $(function () {
+    const createdCell = function(cell) {
+      let original;
+      cell.setAttribute('contenteditable', true)
+      cell.setAttribute('spellcheck', false)
+      cell.addEventListener("focus", function(e) {
+        original = e.target.textContent
+        console.log('Original: ', original)
+      })
+      cell.addEventListener("blur", function(e) {
+        if (original !== e.target.textContent) {
+          const row = $('#findinglist').DataTable().row(e.target.parentElement)
+          const cell = $('#findinglist').DataTable().cell(this)
+          cell.invalidate().draw()
+          var url_finding_order = "{% url 'finding_order' '0' %}".replace('0', row.data()[8])
+          $.ajax({
+            url:  url_finding_order,
+            headers:{ "X-CSRFToken": '{{ csrf_token }}' },
+            type: 'POST',
+            data: cell.data(),
+            success: function() {
+              //console.log('Row changed: ', row.data())
+            },
+            error: function() {
+              cell.data(original).invalidate().draw()
+              //console.log('Row not changed: ', row.data())
+            }
+          })
+        }
+      })
+    };
+
     $('#findinglist thead tr')
     .clone(true)
     .addClass('ffilters')
     .appendTo('#findinglist thead');
-    $("#findinglist").DataTable({
+    findinglistTable = $("#findinglist").DataTable({
+      columnDefs: [
+        { visible: false, targets: [0, 8] },
+        { createdCell: createdCell, targets: [0] }
+      ],
       "paging": true,
       "searching": true,
       "responsive": true,
       "lengthChange": false,
-      "autoWidth": false,
-      "orderCellsTop": true,
+      "autoWidth": true,
+      "orderCellsTop": false,
       "fixedHeader": true,
       initComplete: function () {
         var api = this.api();
@@ -1094,7 +1133,7 @@
                 $(api.column(colIdx).header()).index()
               );
               var title = $(cell).text().trim();
-              if(title != "{% translate 'Actions' %}"){
+              if (title != "{% translate 'Order' %}" && title != "{% translate 'Actions' %}" && title != "") {
                 $(cell).html('<input type="text" placeholder="' + title + '" />');
 
                 // On every keypress in this input
@@ -1126,9 +1165,8 @@
                   $(cell).html('');
                 };
               });
-      },
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
-      order: [[ 3, 'desc' ], [ 1, 'asc' ], [ 0, 'asc' ]]
+    },
+    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
     }).buttons().container().appendTo('#findinglist_wrapper .col-md-6:eq(0)');
   });
 </script>
@@ -1160,7 +1198,7 @@
                 $(api.column(colIdx).header()).index()
               );
               var title = $(cell).text().trim();
-              if(title != "{% translate 'Actions' %}"){
+              if (title != "{% translate 'Actions' %}") {
                 $(cell).html('<input type="text" placeholder="' + title + '" />');
 
                 // On every keypress in this input
@@ -1355,33 +1393,33 @@
                   textStyle: {
                     fontSize:15
                   }
-                 },{
+                },{
                   value: "High",
                   textStyle: {
                     fontSize:15
                   }
-                 }, {
+                }, {
                   value: "Medium",
                   textStyle: {
                     fontSize:15
                   }
-                 } , {
+                } , {
                   value: "Low",
                   textStyle: {
                     fontSize:15
                   }
-                 }, {
+                }, {
                   value: "Info",
                   textStyle: {
                     fontSize:15
                   }
-                 }]
+                }]
             },
             yAxis: {
               type: 'value',
               interval: 1,
               axisLabel:{
-               fontSize: 12
+                fontSize: 12
               }
             },
 
@@ -1697,8 +1735,8 @@ function DeleteID_D(del_id) {
       headers:{
         "X-CSRFToken": '{{ csrf_token }}'
       },
-      data : { 'report_pk': {{DB_report_query.pk}},
-               'deliverable_pk': deliverable_pk},
+      data : {'report_pk': {{DB_report_query.pk}},
+              'deliverable_pk': deliverable_pk},
 
       success : function(json) {
         document.location.href = "{% url 'report_view' DB_report_query.pk %}" + "#Deliverables";

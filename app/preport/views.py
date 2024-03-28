@@ -2,7 +2,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
@@ -17,6 +17,7 @@ from dal import autocomplete
 from taggit.models import Tag
 import uuid
 import time
+import re
 
 import preport.utils.fts as ufts
 import preport.utils.urls as uurls
@@ -61,6 +62,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+clean_html_tag_regexp = re.compile("<.*?>")
 
 # Not all Django output can be passed unmodified to json. In particular, lazy
 # translation objects need a special encoder written for them.
@@ -195,7 +198,7 @@ def index(request):
         total_reports += count_product_report
 
         for report in DB_Report_query:
-            DB_finding_query = DB_Finding.objects.filter(report=report.id).order_by('cvss_score')
+            DB_finding_query = DB_Finding.objects.filter(report=report.id).order_by('cvss_score', 'status').reverse()
             count_product_findings = DB_finding_query.count()
             product_findings[report.id] = count_product_findings
             count_product_findings_total += count_product_findings
@@ -205,7 +208,7 @@ def index(request):
                 elif finding.severity == 'Medium':
                     count_product_findings_medium += 1
 
-    DB_finding_query = DB_Finding.objects.order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.order_by('cvss_score', 'status').reverse()
 
     # CWE - OWASP
     cwe_rows = []
@@ -245,16 +248,16 @@ def index(request):
     # TOP 10 findings
     DB_finding_query = DB_finding_query[:10]
 
-    return render(request, 'home/index.html', {  'total_customers': total_customers,
-                                                 'total_products': total_products,
-                                                 'total_reports': total_reports,
-                                                 'count_product_findings_total': count_product_findings_total,
-                                                 'count_product_findings_critical_high': count_product_findings_critical_high,
-                                                 'count_product_findings_medium': count_product_findings_medium,
-                                                 'DB_finding_query':DB_finding_query,
-                                                 'cwe_categories': cwe_categories,
-                                                 'owasp_categories': owasp_categories,
-                                                 })
+    return render(request, 'home/index.html', { 'total_customers': total_customers,
+                                                'total_products': total_products,
+                                                'total_reports': total_reports,
+                                                'count_product_findings_total': count_product_findings_total,
+                                                'count_product_findings_critical_high': count_product_findings_critical_high,
+                                                'count_product_findings_medium': count_product_findings_medium,
+                                                'DB_finding_query':DB_finding_query,
+                                                'cwe_categories': cwe_categories,
+                                                'owasp_categories': owasp_categories,
+                                                })
 
 
 # ----------------------------------------------------------------------
@@ -682,18 +685,6 @@ def report_duplicate(request):
 
 @login_required
 @allowed_users(allowed_roles=['administrator'])
-def report_upload_custom_report(request,pk):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            handle_uploaded_file(request.FILES['file'])
-            return HttpResponseRedirect('/success/url/')
-    else:
-        form = UploadFileForm()
-    return render(request, 'upload.html', {'form': form})
-
-@login_required
-@allowed_users(allowed_roles=['administrator'])
 def report_edit(request,pk):
 
     report = get_object_or_404(DB_Report, pk=pk)
@@ -712,11 +703,10 @@ def report_edit(request,pk):
     })
 
 
-
 @login_required
 def report_view(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score', 'status').reverse()
     count_finding_query = DB_finding_query.count()
     report_tags = u", ".join(o.name for o in DB_Report.tags.all())
 
@@ -901,7 +891,7 @@ def report_download_markdown(request, cst, pk):
 
         # DB
         DB_report_query = get_object_or_404(DB_Report, pk=pk)
-        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score', 'status').reverse()
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('order', 'status')
 
         # Datetime
         now = datetime.datetime.utcnow()
@@ -1037,7 +1027,7 @@ def report_download_html(request, cst, pk):
     if tpl_cst_dir_pp.is_relative_to(tpl_dir):
         # DB
         DB_report_query = get_object_or_404(DB_Report, pk=pk)
-        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score', 'status').reverse()
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('order', 'status')
 
         # Datetime
         now = datetime.datetime.utcnow()
@@ -1234,7 +1224,7 @@ def report_download_pdf(request, cst, pk):
     if tpl_cst_dir_pp.is_relative_to(tpl_dir):
         # DB
         DB_report_query = get_object_or_404(DB_Report, pk=pk)
-        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score', 'status').reverse()
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('order', 'status')
         DB_cspn_query = DB_CSPN_Evaluation.objects.filter(report=DB_report_query).order_by('stage__cspn_id')
         DB_settings_query = DB_Settings.objects.get()
 
@@ -1558,7 +1548,7 @@ def report_download_jupyter(request, cst, pk):
     if tpl_cst_dir_pp.is_relative_to(tpl_dir):
         # DB
         DB_report_query = get_object_or_404(DB_Report, pk=pk)
-        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score', 'status').reverse()
+        DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('order', 'status')
 
         # Datetime
         now = datetime.datetime.utcnow()
@@ -1690,8 +1680,7 @@ def report_download_jupyter(request, cst, pk):
                 return response
 
     raise Http404
-
-
+    
 # ----------------------------------------------------------------------
 #                           Deliverables
 # ----------------------------------------------------------------------
@@ -1903,22 +1892,22 @@ def cspn_edit(request,pk):
 @login_required
 def report_findings(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score', 'status').reverse()
     count_finding_query = DB_finding_query.count()
 
-    return render(request, 'findings/reportfindings.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
+    return render(request, 'findings/report_findings.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 
 @login_required
 def finding_list(request):
-    DB_finding_query = DB_Finding.objects.order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.order_by('cvss_score', 'status').reverse()
     count_finding_query = DB_finding_query.count()
 
     return render(request, 'findings/findings_list.html', {'Status': '', 'Link': 'list', 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
 
 @login_required
 def findings_opened(request):
-    DB_finding_query = DB_Finding.objects.filter(status='Opened').order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.filter(status='Opened').order_by('cvss_score', 'status').reverse()
     count_finding_query = DB_finding_query.count()
 
     return render(request, 'findings/findings_list.html', {'Status': 'Opened', 'Link': 'opened', 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
@@ -1926,7 +1915,7 @@ def findings_opened(request):
 
 @login_required
 def findings_closed(request):
-    DB_finding_query = DB_Finding.objects.filter(status='Closed').order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.filter(status='Closed').order_by('cvss_score', 'status').reverse()
     count_finding_query = DB_finding_query.count()
 
     return render(request, 'findings/findings_list.html', {'Status': 'Closed', 'Link': 'closed', 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
@@ -2056,7 +2045,7 @@ def template_duplicate(request):
 @login_required
 def finding_view(request,pk):
     finding = get_object_or_404(DB_Finding, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(pk=pk).order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.filter(pk=pk).order_by('cvss_score', 'status').reverse()
     finding_tags = u", ".join(o.name for o in finding.tags.all())
     DB_appendix = DB_Appendix.objects.filter(finding__in=DB_finding_query)
     DB_attackflow = DB_AttackFlow.objects.filter(finding__in=DB_finding_query)
@@ -2127,7 +2116,23 @@ def findings_download_csv(request,pk):
 
     return response
 
-
+@login_required
+@allowed_users(allowed_roles=['administrator'])
+def finding_order(request, pk):
+    if request.method == 'POST':
+        try:
+            finding = DB_Finding.objects.get(pk=pk)
+            finding.order = int(re.sub(clean_html_tag_regexp, "", request.body.decode('utf-8')))
+            finding.save(update_fields=['order'])
+            return HttpResponse('{"order":'+ str(finding.order) + '}', content_type='application/json')
+        except DB_Report.DoesNotExist:
+            return HttpResponseServerError('{"status":"finding does not exist"}', content_type='application/json')
+        except ValueError:
+            return HttpResponseServerError('{"status":"order is not an integer"}', content_type='application/json')
+        except TypeError:
+            return HttpResponseServerError('{"status":"order is not an integer"}', content_type='application/json')
+    else:
+        return HttpResponseServerError('{"status":"bad http method"}', content_type='application/json')
 
 
 @login_required
@@ -2378,7 +2383,7 @@ def defectdojo_import_finding(request,pk,ddpk):
 @login_required
 def report_appendix(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('order', 'status').reverse()
     DB_appendix_query = DB_Appendix.objects.filter(finding__in=DB_finding_query)
 
     count_appendix_query = DB_appendix_query.count()
@@ -2819,7 +2824,7 @@ def owasp_edit(request,pk):
 @login_required
 def reportattackflow(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('order', 'status').reverse()
     DB_attackflow_query = DB_AttackFlow.objects.filter(finding__in=DB_finding_query)
 
     count_attackflowquery = DB_attackflow_query.count()
@@ -2830,7 +2835,7 @@ def reportattackflow(request,pk):
 @login_required
 def attackflow_add(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('cvss_score').reverse()
+    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('order', 'status').reverse()
     count_finding_query = DB_finding_query.count()
 
     return render(request, 'attackflow/attackflow_add.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})

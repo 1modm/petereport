@@ -54,6 +54,7 @@ urlpatterns = [
     path('finding/duplicate/', views.finding_duplicate, name='finding_duplicate'),
     path('finding/opened/', views.findings_opened, name='findings_opened'),
     path('finding/closed/', views.findings_closed, name='findings_closed'),
+    path('finding/order/<int:pk>', views.finding_order, name='finding_order'),
     path('finding/csv/<int:pk>', views.findings_download_csv, name='findings_download_csv'),
     path('findings/upload/<int:pk>', views.findings_upload_csv, name='findings_upload_csv'),
     path('findings/defectdojo/products/<int:pk>', views.defectdojo_products, name='defectdojo_products'),

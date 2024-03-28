@@ -11,4 +11,5 @@ sudo tlmgr install  footnotebackref \
                     needspace \
                     sourcesanspro \
                     sourcecodepro \
+                    awesomebox \
                     titling

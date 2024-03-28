@@ -223,6 +223,7 @@ class DB_CSPN_Evaluation(models.Model):
 class DB_Finding(models.Model):
 	report = models.ForeignKey(DB_Report, on_delete=models.CASCADE)
 	finding_id = models.CharField(blank=True, max_length=200)
+	order = models.PositiveIntegerField(default=0)
 	status = models.CharField(blank=True, max_length=200, default="Opened")
 	created_at = models.DateTimeField(auto_now_add=True)
 	closed_at = models.DateTimeField(blank=True, null=True)
@@ -240,7 +241,7 @@ class DB_Finding(models.Model):
 	owasp = models.ForeignKey(DB_OWASP, default=0, on_delete=models.SET_DEFAULT, null=False, blank=False)
 	tags = TaggableManager(blank=True)
 	fts_enabled = True
-	fts_excluded_fields = ['report', 'finding_id', 'cwe', 'owasp']
+	fts_excluded_fields = ['report', 'finding_id', 'cwe', 'owasp', 'order']
 
 	def __str__(self):
 		return str(self.title)
@@ -248,7 +249,7 @@ class DB_Finding(models.Model):
 		return self.title
 
 	def save(self, *args, **kwargs):
-		if self.status == "Closed":
+		if self.status == "Closed" and self.closed_at is None:
 			self.closed_at = datetime.datetime.now()
 		super().save(*args, **kwargs)
 

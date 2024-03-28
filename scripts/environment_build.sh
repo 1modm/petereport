@@ -2,7 +2,7 @@
 
 set -eu -o pipefail # Fail on error , debug all lines
 
-
+export PIPENV_VERBOSITY=-1
 
 pipenv run ./app/manage.py makemigrations
 pipenv run ./app/manage.py migrate
