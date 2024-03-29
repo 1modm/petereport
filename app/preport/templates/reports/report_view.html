@@ -42,7 +42,9 @@
               <a href="{% url 'report_findings' DB_report_query.pk %}"><button type="button" class="btn btn-danger"><i class="fa fa-bug"></i> {% translate "Findings" %}</button></a>
               <a href="{% url 'report_appendix' DB_report_query.pk %}"><button type="button" class="btn btn-success"><i class="fa fa-folder"></i> {% translate "Appendix" %}</button></a>
               <a href="{% url 'reportattackflow' DB_report_query.pk %}"><button type="button" class="btn btn-warning"><i class="fa fa-sitemap"></i> {% translate "Attack Flows" %}</button></a>
+              {% if enable_cspn %}
               <a href="{% url 'report_cspn_evaluations' DB_report_query.pk %}"><button type="button" class="btn btn-primary"><i class="fa fa-check-square"></i> {% translate "CSPN Evaluations" %}</button></a>
+              {% endif %}
 
             </div>
 

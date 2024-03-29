@@ -209,6 +209,7 @@
             </ul>
           </li>
 
+          {% if enable_cspn %}
           <li class="nav-item">
             <a href="{% url 'cspn_list' %}" class="nav-link">
               <i class="nav-icon fas fa-check-square text-primary"></i>
@@ -226,6 +227,7 @@
               </li>
             </ul>
           </li>
+          {% endif %}
 
           <li class="nav-item">
             <a href="{% url 'share_list' %}" class="nav-link">

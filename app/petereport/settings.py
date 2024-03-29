@@ -30,7 +30,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = DJANGO_CONFIG['secret_key']
 
 # CVSS Versions
-CVSS_VERSION_DEFAULT = '3.1'
 CVSS_VERSIONS_CHOICE = (
         ('', _('(Select CVSS Version)')),
         ('3.1', _('3.1')),

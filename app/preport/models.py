@@ -7,7 +7,7 @@ from taggit.managers import TaggableManager
 import datetime
 import re
 
-from petereport.settings import CVSS_VERSION_DEFAULT
+from petereport.settings import PETEREPORT_CONFIG
 
 import pathlib
 
@@ -162,7 +162,7 @@ class DB_Report(models.Model):
 	audit_objectives = MartorField(blank=True)
 	scope = MartorField(blank=True)
 	outofscope = MartorField(blank=True)
-	cvss_version =  models.CharField(blank=True, max_length=200, default=CVSS_VERSION_DEFAULT)
+	cvss_version =  models.CharField(blank=True, max_length=200, default=PETEREPORT_CONFIG['cvss_version_default'])
 	methodology = MartorField(blank=True)
 	recommendation = MartorField(blank=True)
 	creation_date = models.DateTimeField(auto_now_add=True)

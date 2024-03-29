@@ -57,9 +57,11 @@
                       <th style="width: 10%">
                           {% translate "Findings" %}
                       </th>
+                      {% if enable_cspn %}
                       <th style="width: 10%">
                         {% translate "CSPN Eval." %}
                       </th>
+                      {% endif %}
                       <th style="width: 30%" class="text-center">
                           {% translate "Actions" %}
                       </th>
@@ -82,9 +84,11 @@
                       <td>
                         <span class="pull-right badge bg-red">{{ product.db_report_set.all|findings_count }}</span> {% translate "Finding" %}{{ product.db_report_set.all|findings_count|pluralize:"s" }}
                       </td>
+                      {% if enable_cspn %}
                       <td>
                         <span class="pull-right badge bg-primary">{{ product.db_report_set.all|cspn_evaluations_count }}</span> {% translate "CSPN" %}{{ product.db_report_set.all|cspn_evaluations_count|pluralize:"s" }}
                       </td>
+                      {% endif %}
                       <td class="project-actions text-center">
                           <a class="btn btn-primary btn-sm" href="{% url 'product_view' product.pk %}">
                               <i class="fas fa-folder"></i>

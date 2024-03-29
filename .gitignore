@@ -145,3 +145,4 @@ dmypy.json
 /backups/*
 /nginx/petereport_local.key
 /nginx/petereport_local.crt
+/snippet.py

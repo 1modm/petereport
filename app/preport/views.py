@@ -53,7 +53,7 @@ import pypandoc
 from timeit import default_timer as timer
 
 # Martor
-from petereport.settings import BASE_DIR, DEBUG_PANDOC_ON_ERROR, MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MARTOR_MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, TEMPLATES_DIRECTORIES, CVSS_VERSION_DEFAULT
+from petereport.settings import BASE_DIR, DEBUG_PANDOC_ON_ERROR, MAX_IMAGE_UPLOAD_SIZE, MARTOR_UPLOAD_PATH, MARTOR_MEDIA_URL, MEDIA_ROOT, TEMPLATES_ROOT, REPORTS_MEDIA_ROOT, TEMPLATES_DIRECTORIES
 
 # PeTeReport config
 from config.petereport_config import PETEREPORT_MARKDOWN, PETEREPORT_CONFIG, PETEREPORT_TEMPLATES, DEFECTDOJO_CONFIG
@@ -161,12 +161,14 @@ def header_footer_data(request):
     company_name = DB_Settings.objects.get().company_name
     company_picture = DB_Settings.objects.get().company_picture
     company_website = DB_Settings.objects.get().company_website
+    enable_cspn = PETEREPORT_CONFIG['enable_cspn']
 
     return {'application_name': application_name,
             'application_license': application_license,
             'company_name': company_name,
             'company_picture': company_picture,
             'company_website': company_website,
+            'enable_cspn': enable_cspn,
             }
 
 
@@ -487,7 +489,9 @@ def product_list(request):
         count_product_report = DB_Report.objects.filter(product=product_in_db.id).count()
         report_number[product_in_db.id] = count_product_report
 
-    return render(request, 'products/product_list.html', {'DB_product_query': DB_product_query, 'report_number': report_number})
+    return render(request, 'products/product_list.html', {'DB_product_query': DB_product_query,
+                                                          'report_number': report_number,
+                                                          'enable_cspn': PETEREPORT_CONFIG['enable_cspn']})
 
 
 
@@ -571,7 +575,15 @@ def product_view(request,pk):
             elif finding.severity == 'Medium':
                 count_product_findings_medium += 1
 
-    return render(request, 'products/product_view.html', {'pk': pk, 'DB_product_query': DB_product_query, 'DB_report_query': DB_report_query, 'count_product_report': count_product_report, 'product_findings': count_product_findings_total, 'count_product_findings_critical_high': count_product_findings_critical_high, 'count_product_findings_medium': count_product_findings_medium, 'product_tags': product_tags})
+    return render(request, 'products/product_view.html', {'pk': pk,
+                                                          'DB_product_query': DB_product_query,
+                                                          'DB_report_query': DB_report_query,
+                                                          'count_product_report': count_product_report,
+                                                          'product_findings': count_product_findings_total,
+                                                          'count_product_findings_critical_high': count_product_findings_critical_high,
+                                                          'count_product_findings_medium': count_product_findings_medium, 
+                                                          'product_tags': product_tags,
+                                                          'enable_cspn': PETEREPORT_CONFIG['enable_cspn']})
 
 
 
@@ -585,7 +597,8 @@ def report_list(request):
 
     DB_report_query = DB_Report.objects.order_by('pk').all()
 
-    return render(request, 'reports/report_list.html', {'DB_report_query': DB_report_query})
+    return render(request, 'reports/report_list.html', {'DB_report_query': DB_report_query,
+                                                        'enable_cspn': PETEREPORT_CONFIG['enable_cspn']})
 
 
 
@@ -793,7 +806,8 @@ def report_view(request,pk):
                                                         'DB_deliverable_query': DB_deliverable_query,
                                                         'count_deliverable_query': count_deliverable_query,
                                                         'report_tags': report_tags,
-                                                        'templates_directories': TEMPLATES_DIRECTORIES})
+                                                        'templates_directories': TEMPLATES_DIRECTORIES,
+                                                        'enable_cspn': PETEREPORT_CONFIG['enable_cspn']})
 
 
 @login_required
@@ -2589,7 +2603,7 @@ def template_add(request):
         form.fields['cwe'].initial = '-1'
         form.fields['owasp'].initial = '-1'
 
-    return render(request, 'findings/template_add_' + CVSS_VERSION_DEFAULT + '.html', {
+    return render(request, 'findings/template_add_' + PETEREPORT_CONFIG['cvss_version_default'] + '.html', {
         'form': form
     })
 
