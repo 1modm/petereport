@@ -21,7 +21,9 @@ env-clean:		## Clean Environment
 	${ROOT_DIR}/scripts/environment_clean.sh
 
 docker-build:	## Build Docker Images
+	${ROOT_DIR}/scripts/deploy_custom_files.sh deploy ${ENV}
 	${COMPOSE_PREFIX_CMD} docker-compose ${COMPOSE_CONFIG} build ${SERVICES}
+	${ROOT_DIR}/scripts/deploy_custom_files.sh undeploy ${ENV}
 
 docker-up:		## Up Docker Containers
 	${COMPOSE_PREFIX_CMD} docker-compose ${COMPOSE_CONFIG} up -d

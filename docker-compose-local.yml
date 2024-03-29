@@ -44,6 +44,8 @@ services:
       - PETEREPORT_MEDIA_HOST=https://report2.redteam.corp
       - PETEREPORT_PDF_ENGINE=xelatex
       - PETEREPORT_REPORT_TITLEPAGE_COLOR=ffffff
+      - PETEREPORT_CVSS_VERSION_DEFAULT=3.1
+      - PETEREPORT_ENABLE_CSPN=True
     command: bash -c "
       sleep 1 &&
       pipenv install --deploy --ignore-pipfile --python 3.11 &&

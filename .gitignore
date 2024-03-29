@@ -84,6 +84,9 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# VS Code
+/.vscode
+
 # IPython
 profile_default/
 ipython_config.py
@@ -136,7 +139,6 @@ dmypy.json
 .pyre/
 
 # Petereport Application
-/.vscode
 /petereport.code-workspace
 /app/db/petereport.sqlite3
 /app/db/petereport.sqlite3-journal
@@ -146,3 +148,5 @@ dmypy.json
 /nginx/petereport_local.key
 /nginx/petereport_local.crt
 /snippet.py
+docker-compose-local.yml
+/deploy
