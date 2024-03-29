@@ -21,4 +21,3 @@ cd $(dirname $0)/.. && {
     mkdir -p ./app/storage_reports/{custom,html,images,jupyter,markdown,pdf,pandoc} &&
     mkdir -p ./app/media/uploads
 }
-VTu4,@W(o;'\EQYCm?W_!P:N`df@mQ=S)vXZi"kaAn3_d:-)+jwk>k5mLcSe>rCK
