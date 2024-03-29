@@ -2,7 +2,7 @@
 
 set -eu -o pipefail # Fail on error , debug all lines
 
-if [ $# -ge 2 ] && [ -n "$1" ] && [ -n "$2" ] && [ "$2" = "local" ] || [ "$2" = "production" ]; then
+if [ $# -ge 2 ] && [ -n "$1" ] && [ -n "$2" ] && [ "$2" = "local" ] || [ "$2" = "complete" ]; then
     
     tarfiles=$(mktemp)
 
