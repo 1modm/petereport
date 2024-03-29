@@ -2383,7 +2383,7 @@ def defectdojo_import_finding(request,pk,ddpk):
 @login_required
 def report_appendix(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('order', 'status').reverse()
+    DB_finding_query = DB_Finding.objectsfilter(report=DB_report_query).order_by('order', 'cvss_base_score', 'status').reverse()
     DB_appendix_query = DB_Appendix.objects.filter(finding__in=DB_finding_query)
 
     count_appendix_query = DB_appendix_query.count()
@@ -2824,7 +2824,7 @@ def owasp_edit(request,pk):
 @login_required
 def reportattackflow(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('order', 'status').reverse()
+    DB_finding_query = DB_Finding.objectsfilter(report=DB_report_query).order_by('order', 'cvss_base_score', 'status').reverse()
     DB_attackflow_query = DB_AttackFlow.objects.filter(finding__in=DB_finding_query)
 
     count_attackflowquery = DB_attackflow_query.count()
@@ -2835,7 +2835,7 @@ def reportattackflow(request,pk):
 @login_required
 def attackflow_add(request,pk):
     DB_report_query = get_object_or_404(DB_Report, pk=pk)
-    DB_finding_query = DB_Finding.objects.filter(report=DB_report_query).order_by('order', 'status').reverse()
+    DB_finding_query = DB_Finding.objectsfilter(report=DB_report_query).order_by('order', 'cvss_base_score', 'status').reverse()
     count_finding_query = DB_finding_query.count()
 
     return render(request, 'attackflow/attackflow_add.html', {'DB_report_query': DB_report_query, 'DB_finding_query': DB_finding_query, 'count_finding_query': count_finding_query})
