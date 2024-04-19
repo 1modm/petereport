@@ -17,7 +17,7 @@
     "fields": {
         "owasp_id": "1",
         "owasp_year": "2021",
-        "owasp_full_id": "AO1:2021",
+        "owasp_full_id": "A01:2021",
         "owasp_name": "Broken Access Control",
         "owasp_description": "Access control enforces policy such that users cannot act outside of their intended permissions. Failures typically lead to unauthorized information disclosure, modification, or destruction of all data or performing a business function outside the user's limits.",
         "owasp_url": "https://owasp.org/Top10/A01_2021-Broken_Access_Control/"
@@ -29,7 +29,7 @@
     "fields": {
         "owasp_id": "2",
         "owasp_year": "2021",
-        "owasp_full_id": "AO2:2021",
+        "owasp_full_id": "A02:2021",
         "owasp_name": "Cryptographic Failures",
         "owasp_description": "The first thing is to determine the protection needs of data in transit and at rest. For example, passwords, credit card numbers, health records, personal information, and business secrets require extra protection, mainly if that data falls under privacy laws, e.g., EU's General Data Protection Regulation (GDPR), or regulations, e.g., financial data protection such as PCI Data Security Standard (PCI DSS).",
         "owasp_url": "https://owasp.org/Top10/A02_2021-Cryptographic_Failures/"
@@ -41,7 +41,7 @@
     "fields": {
         "owasp_id": "3",
         "owasp_year": "2021",
-        "owasp_full_id": "AO3:2021",
+        "owasp_full_id": "A03:2021",
         "owasp_name": "Injection",
         "owasp_description": "An application is vulnerable to attack when: 1/ User-supplied data is not validated, filtered, or sanitized by the application. 2/ Dynamic queries or non-parameterized calls without context-aware escaping are used directly in the interpreter. 3/ Hostile data is used within object-relational mapping (ORM) search parameters to extract additional, sensitive records. 4/ Hostile data is directly used or concatenated. The SQL or command contains the structure and malicious data in dynamic queries, commands, or stored procedures.",
         "owasp_url": "https://owasp.org/Top10/A03_2021-Injection/"
@@ -53,7 +53,7 @@
     "fields": {
         "owasp_id": "4",
         "owasp_year": "2021",
-        "owasp_full_id": "AO4:2021",
+        "owasp_full_id": "A04:2021",
         "owasp_name": "Insecure Design",
         "owasp_description": "Insecure design is a broad category representing different weaknesses, expressed as “missing or ineffective control design.” Insecure design is not the source for all other Top 10 risk categories. There is a difference between insecure design and insecure implementation. We differentiate between design flaws and implementation defects for a reason, they have different root causes and remediation. A secure design can still have implementation defects leading to vulnerabilities that may be exploited. An insecure design cannot be fixed by a perfect implementation as by definition, needed security controls were never created to defend against specific attacks. One of the factors that contribute to insecure design is the lack of business risk profiling inherent in the software or system being developed, and thus the failure to determine what level of security design is required.",
         "owasp_url": "https://owasp.org/Top10/A04_2021-Insecure_Design/"
@@ -65,7 +65,7 @@
     "fields": {
         "owasp_id": "5",
         "owasp_year": "2021",
-        "owasp_full_id": "AO5:2021",
+        "owasp_full_id": "A05:2021",
         "owasp_name": "Security Misconfiguration",
         "owasp_description": "The application might be vulnerable if the application is: 1/ Missing appropriate security hardening across any part of the application stack or improperly configured permissions on cloud services. 2/ Unnecessary features are enabled or installed (e.g., unnecessary ports, services, pages, accounts, or privileges). 3/ Default accounts and their passwords are still enabled and unchanged. 4/ Error handling reveals stack traces or other overly informative error messages to users. 5/ For upgraded systems, the latest security features are disabled or not configured securely. 6/ The security settings in the application servers, application frameworks (e.g., Struts, Spring, ASP.NET), libraries, databases, etc., are not set to secure values. 7/ The server does not send security headers or directives, or they are not set to secure values. 8/ The software is out of date or vulnerable (see A06:2021-Vulnerable and Outdated Components). Without a concerted, repeatable application security configuration process, systems are at a higher risk.",
         "owasp_url": "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/"
@@ -77,7 +77,7 @@
     "fields": {
         "owasp_id": "6",
         "owasp_year": "2021",
-        "owasp_full_id": "AO6:2021",
+        "owasp_full_id": "A06:2021",
         "owasp_name": "Vulnerable and Outdated Components",
         "owasp_description": "You are likely vulnerable: 1/ If you do not know the versions of all components you use (both client-side and server-side). This includes components you directly use as well as nested dependencies. 2/ If the software is vulnerable, unsupported, or out of date. This includes the OS, web/application server, database management system (DBMS), applications, APIs and all components, runtime environments, and libraries. 3/ If you do not scan for vulnerabilities regularly and subscribe to security bulletins related to the components you use. 4/ If you do not fix or upgrade the underlying platform, frameworks, and dependencies in a risk-based, timely fashion. This commonly happens in environments when patching is a monthly or quarterly task under change control, leaving organizations open to days or months of unnecessary exposure to fixed vulnerabilities. 5/ If software developers do not test the compatibility of updated, upgraded, or patched libraries. 6/ If you do not secure the components' configurations (see A05:2021-Security Misconfiguration).",
         "owasp_url": "https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/"
@@ -89,7 +89,7 @@
     "fields": {
         "owasp_id": "7",
         "owasp_year": "2021",
-        "owasp_full_id": "AO7:2021",
+        "owasp_full_id": "A07:2021",
         "owasp_name": "Identification and Authentication Failures",
         "owasp_description": "Confirmation of the user's identity, authentication, and session management is critical to protect against authentication-related attacks. There may be authentication weaknesses if the application: 1/ Permits automated attacks such as credential stuffing, where the attacker has a list of valid usernames and passwords.2/ Permits brute force or other automated attacks.3/ Permits default, weak, or well-known passwords, such as Password1 or admin/admin.4/ Uses weak or ineffective credential recovery and forgot-password processes, such as knowledge-based answers, which cannot be made safe.5/ Uses plain text, encrypted, or weakly hashed passwords data stores (see A02:2021-Cryptographic Failures). 6/ Has missing or ineffective multi-factor authentication. 7/ Exposes session identifier in the URL. 8/ Reuse session identifier after successful login. 9/ Does not correctly invalidate Session IDs. User sessions or authentication tokens (mainly single sign-on (SSO) tokens) aren't properly invalidated during logout or a period of inactivity.",
         "owasp_url": "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/"
@@ -101,7 +101,7 @@
     "fields": {
         "owasp_id": "8",
         "owasp_year": "2021",
-        "owasp_full_id": "AO8:2021",
+        "owasp_full_id": "A08:2021",
         "owasp_name": "Software and Data Integrity Failures",
         "owasp_description": "Software and data integrity failures relate to code and infrastructure that does not protect against integrity violations. An example of this is where an application relies upon plugins, libraries, or modules from untrusted sources, repositories, and content delivery networks (CDNs). An insecure CI/CD pipeline can introduce the potential for unauthorized access, malicious code, or system compromise. Lastly, many applications now include auto-update functionality, where updates are downloaded without sufficient integrity verification and applied to the previously trusted application. Attackers could potentially upload their own updates to be distributed and run on all installations. Another example is where objects or data are encoded or serialized into a structure that an attacker can see and modify is vulnerable to insecure deserialization.",
         "owasp_url": "https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/"
@@ -113,7 +113,7 @@
     "fields": {
         "owasp_id": "9",
         "owasp_year": "2021",
-        "owasp_full_id": "AO9:2021",
+        "owasp_full_id": "A09:2021",
         "owasp_name": "Security Logging and Monitoring Failures",
         "owasp_description": "Returning to the OWASP Top 10 2021, this category is to help detect, escalate, and respond to active breaches. Without logging and monitoring, breaches cannot be detected. Insufficient logging, detection, monitoring, and active response occurs any time: 1/ Auditable events, such as logins, failed logins, and high-value transactions, are not logged. 2/ Warnings and errors generate no, inadequate, or unclear log messages. 3/ Logs of applications and APIs are not monitored for suspicious activity. 4/ Logs are only stored locally. 5/ Appropriate alerting thresholds and response escalation processes are not in place or effective. 6/ Penetration testing and scans by dynamic application security testing (DAST) tools (such as OWASP ZAP) do not trigger alerts. 7/ The application cannot detect, escalate, or alert for active attacks in real-time or near real-time. You are vulnerable to information leakage by making logging and alerting events visible to a user or an attacker (see A01:2021-Broken Access Control).",
         "owasp_url": "https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/"
