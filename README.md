@@ -59,3 +59,9 @@ PeTeReport (**Pe**n**Te**st **Report**) is written in Django and Python 3 with t
 - [CSV Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-CSV_Offensive_Security_network.csv "CSV Sample")
 - [Jupyter Sample](https://github.com/1modm/petereport/raw/main/sample_reports/PEN-JUPYTER_Offensive_Security_network.ipynb "Jupyter Sample")
 
+
+### Infrastructure model
+![Infrastructure main model](.infragenie/infrastructure_main_model.svg)
+- [petereport_django component model](.infragenie/petereport_django_component_model.svg)
+
+---
