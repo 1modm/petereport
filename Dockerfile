@@ -1,5 +1,4 @@
-FROM debian:stable-slim
-
+FROM debian:bookworm-slim
 # Set environment variables
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -23,7 +22,7 @@ RUN apt-get -y install python3-minimal python3-pypandoc
 RUN apt-get -y install pipenv
 RUN apt-get -y install wget
 RUN apt-get -y install libpangocairo-1.0-0
-RUN apt-get -y install python3-distutils
+RUN apt-get -y install python3-setuptools
 RUN apt -y purge python3-gunicorn gunicorn
 
 ARG TARGETARCH
